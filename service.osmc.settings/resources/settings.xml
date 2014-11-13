@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+ <category label="OSMC Settings">
+ <setting label="Setting1" type="text" enable="true" id="prefix"/>
+ <setting id="firstrun" type="bool" default="true" visible="false"/>
+ </category>
+</settings>
