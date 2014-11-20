@@ -98,7 +98,8 @@ class Main(object):
 
 			log('Opening walkthru GUI')
 
-		gui = walkthru
+		# gui = walkthru
+		gui = settings
 
 			# __addon__.setSetting('firstrun', 'false')
 
