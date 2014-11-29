@@ -15,6 +15,8 @@ import socket
 import threading
 import time
 import sys
+
+
 path = xbmcaddon.Addon().getAddonInfo('path')
 lib = os.path.join(path, 'resources','lib')
 media = os.path.join(path, 'resources','skins','Default','media')
@@ -24,6 +26,29 @@ sys.path.append(xbmc.translatePath(lib))
 
 def log(message):
 	xbmc.log(str(message))
+
+
+def json_query(query):
+
+	print 'heeere'
+
+	xbmc_request = json.dumps(query)
+	raw = xbmc.executeJSONRPC(xbmc_request)
+	clean = unicode(raw, 'utf-8', errors='ignore')
+	response = json.loads(clean)
+	result = response.get('result', response)
+
+	return result
+
+all_addons = {  "jsonrpc"    : "2.0",
+				"method"     : "Addons.GetAddons",
+				"params"     : {
+							    "enabled": "all",
+							    "properties": 
+											["thumbnail", "enabled"]
+							   },
+				"id"         : 1 }
+
 
 class walkthru_gui(xbmcgui.WindowXMLDialog):
 
@@ -44,22 +69,24 @@ class walkthru_gui(xbmcgui.WindowXMLDialog):
 
 	def onInit(self):
 
-		self.hdg = self.getControl(110)
-		self.hdg.setLabel('Exit')
-		self.hdg.setVisible(True)
+		pass
 
-		self.panel = self.getControl(52)
+		# self.hdg = self.getControl(110)
+		# self.hdg.setLabel('Exit')
+		# self.hdg.setVisible(True)
 
-		for icon in self.nine_icons:
+		# self.panel = self.getControl(52)
 
-			icon_path = os.path.join(media, icon)
+		# for icon in self.nine_icons:
 
-			self.tmp = xbmcgui.ListItem(label=icon, label2='', thumbnailImage=icon_path)
-			self.panel.addItem(self.tmp)
+		# 	icon_path = os.path.join(media, icon)
+
+		# 	self.tmp = xbmcgui.ListItem(label=icon, label2='', thumbnailImage=icon_path)
+		# 	self.panel.addItem(self.tmp)
 
 	def onClick(self, controlID):
 
-		if controlID == 110:
+		if controlID == 105:
 			self.close()
 
 
@@ -68,10 +95,32 @@ def open():
 	__addon__        = xbmcaddon.Addon()
 	scriptPath       = __addon__.getAddonInfo('path')
 	xmlfile = 'settings_main.xml'
+	xmlfile = 'settings_gui.xml'
 
 	GUI = walkthru_gui(xmlfile, scriptPath, 'Default')
 
-	GUI.doModal()
+	test = xbmcaddon.Addon('script.module.osmcsetting.dummy')
+
+	test.openSettings()
+
+	# THIS WILL NOT WORK WITH MODULES
+
+	# get all addons
+	addon_list = json_query(all_addons)
+
+	addons = addon_list.get('addons',{})
+
+	# find all osmc setting addons
+	# get the addons names and icons
+	for addon in addons:
+		log(addon.get('addonid',''))
+		if 'script.module.osmcsetting.' in addon.get('addonid',''):
+			log(addon)
+
+
+	# load them into the window
+
+	# GUI.doModal()
 
 	log('Exiting GUI')
 

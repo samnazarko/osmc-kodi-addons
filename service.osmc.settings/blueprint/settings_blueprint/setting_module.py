@@ -4,7 +4,7 @@
 
 	In order to accomodate easier changes and enhancements, each OSMC settings group/module is a separate addon. 
 
-	The module can be discovered by the OSA by name; the structure of which must be script.osmc.setting.ModuleSpecificName .
+	The module can be discovered by the OSA by name; the structure of which must be script.module.osmcsetting.ModuleSpecificName .
 
 	The module must have a class called SettingGroup. Instances of this class are used by the OSA to:
 		- call the settings window for the module to allow the user to make changes
@@ -180,9 +180,19 @@ def SettingGroup:
 		'''
 			Method for applying the stored setting for setting x on first boot
 		'''
+
 	#																															 #
 	##############################################################################################################################
-	
+
+
+	# FIRST SETTING METHOD
+	def first_method(self):
+
+		''' 
+			The method to call before all the other setting methods are called.
+
+		'''	
+
 
 	# FINAL SETTING METHOD
 	def final_method(self):
