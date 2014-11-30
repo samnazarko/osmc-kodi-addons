@@ -50,7 +50,7 @@ def SettingGroup:
 
 		self.setting_method_dict = 	{
 
-									'first_method' :	self.method_first,
+									'first_method' :	self.first_method,
 
 									'setting_nameX': 	{
 														'method_to_apply_changes': self.method_to_apply_changes_X,
@@ -68,7 +68,7 @@ def SettingGroup:
 														'setting_value' : ''
 														},
 
-									'final_method' :	self.method_final
+									'final_method' :	self.final_method
 
 									}
 
@@ -192,6 +192,9 @@ def SettingGroup:
 
 		''' 
 			The method to call before all the other setting methods are called.
+
+			For example, this could be a call to stop a service. The final method could then start the service again. 
+			This can be used to apply the setting changes.
 
 		'''	
 

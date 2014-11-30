@@ -3,394 +3,290 @@
     <defaultcontrol always="true">100</defaultcontrol>
     <animation effect="fade" time="250">WindowOpen</animation>
     <animation effect="fade" time="500">WindowClose</animation>
-<controls>
-
-    <!-- background -->
-    <control description="BG" type="image">
-        <posx>0</posx>
-        <posy>0</posy>
-        <width>1920</width>
-        <height>1080</height>
-        <texture>blueBG.png</texture>
-        <aspectratio>scale</aspectratio>
-    </control>
-
-    <!-- explanatory text window -->
-    <control type="textbox" id="2">
-       <description>Explanatory Text Box</description>
-       <posx>0</posx>
-       <posy>0</posy>
-       <width>840</width>
-       <height>1080</height>
-       <visible>true</visible>
-       <colordiffuse>FFFFFFFF</colordiffuse>
-       <font>font13</font>
-       <textcolor>FFFFFFFF</textcolor>
-       <pulseonselect>false</pulseonselect>
-       <pagecontrol>13</pagecontrol>
-       <scrolltime>200</scrolltime>
-       <!-- <autoscroll delay="3000" time="1000" repeat="10000">!Control.HasFocus(13)</autoscroll> -->
-       <label>Text to display goes here [CR] next line... </label>
-    </control>>
-
-
-    <!-- 9 box grid grouping -->
-    <control type="group" id="100">
-        <description>Nine Box Grid Group</description>
-        <posx>840</posx>
-        <posy>0</posy>
-        <width>1080</width>
-        <height>1080</height>
-        <defaultcontrol>105</defaultcontrol>
-        <visible>true</visible>
-        <onup>100</onup>
-        <ondown>100</ondown>
-        <onleft>100</onleft>
-        <onright>100</onright>
-
-        <!-- button 1 - top left -->
-        <control type="button" id="101">
-              <description>Top Left</description>
-              <posx>190</posx>
-              <posy>190</posy>
-              <width>180</width>
-              <height>180</height>
-              <visible>true</visible>
-              <colordiffuse>FFFFFFFF</colordiffuse>
-              <texturefocus>square.png</texturefocus>
-              <texturenofocus>square.png</texturenofocus>
-              <label>no label</label>
-              <font>font12</font>
-              <textcolor>FFFFFFFF</textcolor>
-              <focusedcolor>FFFFFFFF</focusedcolor>
-              <disabledcolor>80FFFFFF</disabledcolor>
-              <invalidcolor>FFFFFFFF</invalidcolor>
-              <align></align>
-              <aligny></aligny>
-              <textoffsetx></textoffsetx>
-              <textoffsety></textoffsety>
-              <pulseonselect>false</pulseonselect>
-              <onclick></onclick>
-              <onfocus>-</onfocus>
-              <onunfocus>-</onunfocus>
-              <onup>107</onup>
-              <ondown>104</ondown>
-              <onleft>103</onleft>
-              <onright>102</onright>
+    <controls>
+        <!-- background -->
+        <control description="BG" type="image">
+            <posx>0</posx>
+            <posy>0</posy>
+            <width>1920</width>
+            <height>1080</height>
+            <texture>blueBG.png</texture>
+            <aspectratio>scale</aspectratio>
+        </control>
+        <!-- explanatory text window -->
+        <control id="2" type="textbox">
+            <description>Explanatory Text Box</description>
+            <posx>0</posx>
+            <posy>0</posy>
+            <width>840</width>
+            <height>1080</height>
+            <visible>true</visible>
+            <colordiffuse>FFFFFFFF</colordiffuse>
+            <font>font13</font>
+            <textcolor>FFFFFFFF</textcolor>
+            <pulseonselect>false</pulseonselect>
+            <pagecontrol>13</pagecontrol>
+            <scrolltime>200</scrolltime>
+            <!-- <autoscroll delay="3000" time="1000" repeat="10000">!Control.HasFocus(13)</autoscroll>-->
+            <label>Text to display goes here [CR] next line... </label>
+        </control>
+        <!-- 9 box grid grouping -->
+        <control id="100" type="group">
+            <description>Nine Box Grid Group</description>
+            <posx>840</posx>
+            <posy>0</posy>
+            <width>1080</width>
+            <height>1080</height>
+            <defaultcontrol>105</defaultcontrol>
+            <visible>true</visible>
+            <onup>100</onup>
+            <ondown>100</ondown>
+            <onleft>100</onleft>
+            <onright>100</onright>
+            <!-- button 1 - top left -->
+            <control id="101" type="button">
+                <description>Top Left</description>
+                <posx>190</posx>
+                <posy>190</posy>
+                <width>180</width>
+                <height>180</height>
+                <visible>true</visible>
+                <texturefocus>square.png</texturefocus>
+                <texturenofocus>square.png</texturenofocus>
+                <label>no label</label>
+                <pulseonselect>false</pulseonselect>
+                <onclick/>
+                <onfocus>-</onfocus>
+                <onunfocus>-</onunfocus>
+                <onup>107</onup>
+                <ondown>104</ondown>
+                <onleft>103</onleft>
+                <onright>102</onright>
                 <animation type="Focus">
-                    <effect type="slide" end="-50,-50" time="200" />
-                    <effect type="zoom"  end="200"    time="200" center="auto" delay="50"/>
+                    <effect end="-50,-50" time="200" type="slide"/>
+                    <effect center="auto" delay="50" end="200" time="200" type="zoom"/>
                 </animation>
                 <animation type="Unfocus">
-                    <effect type="slide" start="-50,-50" end="0,0" time="200" delay="200" />
-                    <effect type="zoom"  start="200"    end="100" time="200" center="auto"/>
-                </animation>               
-        </control>
-
-        <!-- button 2 - top middle -->
-        <control type="button" id="102">
-              <description>Top Middle</description>
-              <posx>450</posx>
-              <posy>190</posy>
-              <width>180</width>
-              <height>180</height>
-              <visible>true</visible>
-              <colordiffuse>FFFFFFFF</colordiffuse>
-              <texturefocus>square.png</texturefocus>
-              <texturenofocus>square.png</texturenofocus>
-              <label>no label</label>
-              <font>font12</font>
-              <textcolor>FFFFFFFF</textcolor>
-              <focusedcolor>FFFFFFFF</focusedcolor>
-              <disabledcolor>80FFFFFF</disabledcolor>
-              <invalidcolor>FFFFFFFF</invalidcolor>
-              <align></align>
-              <aligny></aligny>
-              <textoffsetx></textoffsetx>
-              <textoffsety></textoffsety>
-              <pulseonselect>false</pulseonselect>
-              <onclick></onclick>
-              <onfocus>-</onfocus>
-              <onunfocus>-</onunfocus>
-              <onup>108</onup>
-              <ondown>105</ondown>
-              <onleft>101</onleft>
-              <onright>103</onright>
+                    <effect delay="200" end="0,0" start="-50,-50" time="200" type="slide"/>
+                    <effect center="auto" end="100" start="200" time="200" type="zoom"/>
+                </animation>
+            </control>
+            <!-- button 2 - top middle -->
+            <control id="102" type="button">
+                <description>Top Middle</description>
+                <posx>450</posx>
+                <posy>190</posy>
+                <width>180</width>
+                <height>180</height>
+                <visible>true</visible>
+                <texturefocus>square.png</texturefocus>
+                <texturenofocus>square.png</texturenofocus>
+                <label>no label</label>
+                <pulseonselect>false</pulseonselect>
+                <onclick/>
+                <onfocus>-</onfocus>
+                <onunfocus>-</onunfocus>
+                <onup>108</onup>
+                <ondown>105</ondown>
+                <onleft>101</onleft>
+                <onright>103</onright>
                 <animation type="Focus">
-                    <effect type="slide" end="0,-100" time="200" />
-                    <effect type="zoom"  end="200"    time="200" center="auto" delay="50"/>
+                    <effect end="0,-100" time="200" type="slide"/>
+                    <effect center="auto" delay="50" end="200" time="200" type="zoom"/>
                 </animation>
                 <animation type="Unfocus">
-                    <effect type="slide" start="0,-100" end="0,0" time="200" delay="200" />
-                    <effect type="zoom"  start="200"    end="100" time="200" center="auto"/>
-                </animation>                
-        </control>
-
-        <!-- button 1 - top right -->
-        <control type="button" id="103">
-              <description>Top Right</description>
-              <posx>710</posx>
-              <posy>190</posy>
-              <width>180</width>
-              <height>180</height>
-              <visible>true</visible>
-              <colordiffuse>FFFFFFFF</colordiffuse>
-              <texturefocus>square.png</texturefocus>
-              <texturenofocus>square.png</texturenofocus>
-              <label>no label</label>
-              <font>font12</font>
-              <textcolor>FFFFFFFF</textcolor>
-              <focusedcolor>FFFFFFFF</focusedcolor>
-              <disabledcolor>80FFFFFF</disabledcolor>
-              <invalidcolor>FFFFFFFF</invalidcolor>
-              <align></align>
-              <aligny></aligny>
-              <textoffsetx></textoffsetx>
-              <textoffsety></textoffsety>
-              <pulseonselect>false</pulseonselect>
-              <onclick></onclick>
-              <onfocus>-</onfocus>
-              <onunfocus>-</onunfocus>
-              <onup>109</onup>
-              <ondown>106</ondown>
-              <onleft>102</onleft>
-              <onright>101</onright>
+                    <effect delay="200" end="0,0" start="0,-100" time="200" type="slide"/>
+                    <effect center="auto" end="100" start="200" time="200" type="zoom"/>
+                </animation>
+            </control>
+            <!-- button 1 - top right -->
+            <control id="103" type="button">
+                <description>Top Right</description>
+                <posx>710</posx>
+                <posy>190</posy>
+                <width>180</width>
+                <height>180</height>
+                <visible>true</visible>
+                <texturefocus>square.png</texturefocus>
+                <texturenofocus>square.png</texturenofocus>
+                <label>no label</label>
+                <pulseonselect>false</pulseonselect>
+                <onclick/>
+                <onfocus>-</onfocus>
+                <onunfocus>-</onunfocus>
+                <onup>109</onup>
+                <ondown>106</ondown>
+                <onleft>102</onleft>
+                <onright>101</onright>
                 <animation type="Focus">
-                    <effect type="slide" end="50,-50" time="200" />
-                    <effect type="zoom"  end="200"    time="200" center="auto" delay="50"/>
+                    <effect end="50,-50" time="200" type="slide"/>
+                    <effect center="auto" delay="50" end="200" time="200" type="zoom"/>
                 </animation>
                 <animation type="Unfocus">
-                    <effect type="slide" start="50,-50" end="0,0" time="200" delay="200" />
-                    <effect type="zoom"  start="200"    end="100" time="200" center="auto"/>
-                </animation>               
-        </control>
-
-        <!-- button 1 - middle left -->
-        <control type="button" id="104">
-              <description>Middle Left</description>
-              <posx>190</posx>
-              <posy>450</posy>
-              <width>180</width>
-              <height>180</height>
-              <visible>true</visible>
-              <colordiffuse>FFFFFFFF</colordiffuse>
-              <texturefocus>square.png</texturefocus>
-              <texturenofocus>square.png</texturenofocus>
-              <label>no label</label>
-              <font>font12</font>
-              <textcolor>FFFFFFFF</textcolor>
-              <focusedcolor>FFFFFFFF</focusedcolor>
-              <disabledcolor>80FFFFFF</disabledcolor>
-              <invalidcolor>FFFFFFFF</invalidcolor>
-              <align></align>
-              <aligny></aligny>
-              <textoffsetx></textoffsetx>
-              <textoffsety></textoffsety>
-              <pulseonselect>false</pulseonselect>
-              <onclick></onclick>
-              <onfocus>-</onfocus>
-              <onunfocus>-</onunfocus>
-              <onup>101</onup>
-              <ondown>107</ondown>
-              <onleft>106</onleft>
-              <onright>105</onright>
+                    <effect delay="200" end="0,0" start="50,-50" time="200" type="slide"/>
+                    <effect center="auto" end="100" start="200" time="200" type="zoom"/>
+                </animation>
+            </control>
+            <!-- button 1 - middle left -->
+            <control id="104" type="button">
+                <description>Middle Left</description>
+                <posx>190</posx>
+                <posy>450</posy>
+                <width>180</width>
+                <height>180</height>
+                <visible>true</visible>
+                <texturefocus>square.png</texturefocus>
+                <texturenofocus>square.png</texturenofocus>
+                <label>no label</label>
+                <pulseonselect>false</pulseonselect>
+                <onclick/>
+                <onfocus>-</onfocus>
+                <onunfocus>-</onunfocus>
+                <onup>101</onup>
+                <ondown>107</ondown>
+                <onleft>106</onleft>
+                <onright>105</onright>
                 <animation type="Focus">
-                    <effect type="slide" end="-100,0" time="200" />
-                    <effect type="zoom"  end="200"    time="200" center="auto" delay="50"/>
+                    <effect end="-100,0" time="200" type="slide"/>
+                    <effect center="auto" delay="50" end="200" time="200" type="zoom"/>
                 </animation>
                 <animation type="Unfocus">
-                    <effect type="slide" start="-100,0" end="0,0" time="200" delay="200" />
-                    <effect type="zoom"  start="200"    end="100" time="200" center="auto"/>
-                </animation>                 
-        </control>
-
-        <!-- button 1 - middle middle -->
-        <control type="button" id="105">
-              <description>Middle Middle</description>
-              <posx>450</posx>
-              <posy>450</posy>
-              <width>180</width>
-              <height>180</height>
-              <visible>true</visible>
-              <colordiffuse>FFFFFFFF</colordiffuse>
-              <texturefocus>square.png</texturefocus>
-              <texturenofocus>square.png</texturenofocus>
-              <label>no label</label>
-              <font>font12</font>
-              <textcolor>FFFFFFFF</textcolor>
-              <focusedcolor>FFFFFFFF</focusedcolor>
-              <disabledcolor>80FFFFFF</disabledcolor>
-              <invalidcolor>FFFFFFFF</invalidcolor>
-              <align></align>
-              <aligny></aligny>
-              <textoffsetx></textoffsetx>
-              <textoffsety></textoffsety>
-              <pulseonselect>false</pulseonselect>
-              <onclick></onclick>
-              <onfocus>-</onfocus>
-              <onunfocus>-</onunfocus>
-              <onup>102</onup>
-              <ondown>108</ondown>
-              <onleft>104</onleft>
-              <onright>106</onright>         
-        </control>
-
-        <!-- button 1 - middle right -->
-        <control type="button" id="106">
-              <description>Middle Right</description>
-              <posx>710</posx>
-              <posy>450</posy>
-              <width>180</width>
-              <height>180</height>
-              <visible>true</visible>
-              <colordiffuse>FFFFFFFF</colordiffuse>
-              <texturefocus>square.png</texturefocus>
-              <texturenofocus>square.png</texturenofocus>
-              <label>no label</label>
-              <font>font12</font>
-              <textcolor>FFFFFFFF</textcolor>
-              <focusedcolor>FFFFFFFF</focusedcolor>
-              <disabledcolor>80FFFFFF</disabledcolor>
-              <invalidcolor>FFFFFFFF</invalidcolor>
-              <align></align>
-              <aligny></aligny>
-              <textoffsetx></textoffsetx>
-              <textoffsety></textoffsety>
-              <pulseonselect>false</pulseonselect>
-              <onclick></onclick>
-              <onfocus>-</onfocus>
-              <onunfocus>-</onunfocus>
-              <onup>103</onup>
-              <ondown>109</ondown>
-              <onleft>105</onleft>
-              <onright>104</onright>
+                    <effect delay="200" end="0,0" start="-100,0" time="200" type="slide"/>
+                    <effect center="auto" end="100" start="200" time="200" type="zoom"/>
+                </animation>
+            </control>
+            <!-- button 1 - middle middle -->
+            <control id="105" type="button">
+                <description>Middle Middle</description>
+                <posx>450</posx>
+                <posy>450</posy>
+                <width>180</width>
+                <height>180</height>
+                <visible>true</visible>
+                <texturefocus>square.png</texturefocus>
+                <texturenofocus>square.png</texturenofocus>
+                <label>no label</label>
+                <pulseonselect>false</pulseonselect>
+                <onclick/>
+                <onfocus>-</onfocus>
+                <onunfocus>-</onunfocus>
+                <onup>102</onup>
+                <ondown>108</ondown>
+                <onleft>104</onleft>
+                <onright>106</onright>
+            </control>
+            <!-- button 1 - middle right -->
+            <control id="106" type="button">
+                <description>Middle Right</description>
+                <posx>710</posx>
+                <posy>450</posy>
+                <width>180</width>
+                <height>180</height>
+                <visible>true</visible>
+                <texturefocus>square.png</texturefocus>
+                <texturenofocus>square.png</texturenofocus>
+                <label>no label</label>
+                <pulseonselect>false</pulseonselect>
+                <onclick/>
+                <onfocus>-</onfocus>
+                <onunfocus>-</onunfocus>
+                <onup>103</onup>
+                <ondown>109</ondown>
+                <onleft>105</onleft>
+                <onright>104</onright>
                 <animation type="Focus">
-                    <effect type="slide" end="100,0" time="200" />
-                    <effect type="zoom"  end="200"    time="200" center="auto" delay="50"/>
+                    <effect end="100,0" time="200" type="slide"/>
+                    <effect center="auto" delay="50" end="200" time="200" type="zoom"/>
                 </animation>
                 <animation type="Unfocus">
-                    <effect type="slide" start="100,0" end="0,0" time="200" delay="200" />
-                    <effect type="zoom"  start="200"    end="100" time="200" center="auto"/>
-                </animation>                 
-        </control>
-
-        <!-- button 1 - bottom left -->
-        <control type="button" id="107">
-              <description>Bottom Left</description>
-              <posx>190</posx>
-              <posy>710</posy>
-              <width>180</width>
-              <height>180</height>
-              <visible>true</visible>
-              <colordiffuse>FFFFFFFF</colordiffuse>
-              <texturefocus>square.png</texturefocus>
-              <texturenofocus>square.png</texturenofocus>
-              <label>no label</label>
-              <font>font12</font>
-              <textcolor>FFFFFFFF</textcolor>
-              <focusedcolor>FFFFFFFF</focusedcolor>
-              <disabledcolor>80FFFFFF</disabledcolor>
-              <invalidcolor>FFFFFFFF</invalidcolor>
-              <align></align>
-              <aligny></aligny>
-              <textoffsetx></textoffsetx>
-              <textoffsety></textoffsety>
-              <pulseonselect>false</pulseonselect>
-              <onclick></onclick>
-              <onfocus>-</onfocus>
-              <onunfocus>-</onunfocus>
-              <onup>104</onup>
-              <ondown>101</ondown>
-              <onleft>109</onleft>
-              <onright>108</onright>
+                    <effect delay="200" end="0,0" start="100,0" time="200" type="slide"/>
+                    <effect center="auto" end="100" start="200" time="200" type="zoom"/>
+                </animation>
+            </control>
+            <!-- button 1 - bottom left -->
+            <control id="107" type="button">
+                <description>Bottom Left</description>
+                <posx>190</posx>
+                <posy>710</posy>
+                <width>180</width>
+                <height>180</height>
+                <visible>true</visible>
+                <texturefocus>square.png</texturefocus>
+                <texturenofocus>square.png</texturenofocus>
+                <label>no label</label>
+                <pulseonselect>false</pulseonselect>
+                <onclick/>
+                <onfocus>-</onfocus>
+                <onunfocus>-</onunfocus>
+                <onup>104</onup>
+                <ondown>101</ondown>
+                <onleft>109</onleft>
+                <onright>108</onright>
                 <animation type="Focus">
-                    <effect type="slide" end="-50,50" time="200" />
-                    <effect type="zoom"  end="200"    time="200" center="auto" delay="50"/>
+                    <effect end="-50,50" time="200" type="slide"/>
+                    <effect center="auto" delay="50" end="200" time="200" type="zoom"/>
                 </animation>
                 <animation type="Unfocus">
-                    <effect type="slide" start="-50,50" end="0,0" time="200" delay="200" />
-                    <effect type="zoom"  start="200"    end="100" time="200" center="auto"/>
-                </animation>               
-        </control>                                                            
-
-        <!-- button 1 - bottom middle -->
-        <control type="button" id="108">
-              <description>Bottom Middle</description>
-              <posx>450</posx>
-              <posy>710</posy>
-              <width>180</width>
-              <height>180</height>
-              <visible>true</visible>
-              <colordiffuse>FFFFFFFF</colordiffuse>
-              <texturefocus>square.png</texturefocus>
-              <texturenofocus>square.png</texturenofocus>
-              <label>no label</label>
-              <font>font12</font>
-              <textcolor>FFFFFFFF</textcolor>
-              <focusedcolor>FFFFFFFF</focusedcolor>
-              <disabledcolor>80FFFFFF</disabledcolor>
-              <invalidcolor>FFFFFFFF</invalidcolor>
-              <align></align>
-              <aligny></aligny>
-              <textoffsetx></textoffsetx>
-              <textoffsety></textoffsety>
-              <pulseonselect>false</pulseonselect>
-              <onclick></onclick>
-              <onfocus>-</onfocus>
-              <onunfocus>-</onunfocus>
-              <onup>105</onup>
-              <ondown>102</ondown>
-              <onleft>107</onleft>
-              <onright>109</onright>
+                    <effect delay="200" end="0,0" start="-50,50" time="200" type="slide"/>
+                    <effect center="auto" end="100" start="200" time="200" type="zoom"/>
+                </animation>
+            </control>
+            <!-- button 1 - bottom middle -->
+            <control id="108" type="button">
+                <description>Bottom Middle</description>
+                <posx>450</posx>
+                <posy>710</posy>
+                <width>180</width>
+                <height>180</height>
+                <visible>true</visible>
+                <texturefocus>square.png</texturefocus>
+                <texturenofocus>square.png</texturenofocus>
+                <label>no label</label>
+                <pulseonselect>false</pulseonselect>
+                <onclick/>
+                <onfocus>-</onfocus>
+                <onunfocus>-</onunfocus>
+                <onup>105</onup>
+                <ondown>102</ondown>
+                <onleft>107</onleft>
+                <onright>109</onright>
                 <animation type="Focus">
-                    <effect type="slide" end="0,100" time="200" />
-                    <effect type="zoom"  end="200"    time="200" center="auto" delay="50"/>
+                    <effect end="0,100" time="200" type="slide"/>
+                    <effect center="auto" delay="50" end="200" time="200" type="zoom"/>
                 </animation>
                 <animation type="Unfocus">
-                    <effect type="slide" start="0,100" end="0,0" time="200" delay="200" />
-                    <effect type="zoom"  start="200"    end="100" time="200" center="auto"/>
-                </animation>                 
-        </control>
-
-        <!-- button 1 - bottom right -->
-        <control type="button" id="109">
-              <description>Bottom Right</description>
-              <posx>710</posx>
-              <posy>710</posy>
-              <width>180</width>
-              <height>180</height>
-              <visible>true</visible>
-              <colordiffuse>FFFFFFFF</colordiffuse>
-              <texturefocus>square.png</texturefocus>
-              <texturenofocus>square.png</texturenofocus>
-              <label>no label</label>
-              <font>font12</font>
-              <textcolor>FFFFFFFF</textcolor>
-              <focusedcolor>FFFFFFFF</focusedcolor>
-              <disabledcolor>80FFFFFF</disabledcolor>
-              <invalidcolor>FFFFFFFF</invalidcolor>
-              <align></align>
-              <aligny></aligny>
-              <textoffsetx></textoffsetx>
-              <textoffsety></textoffsety>
-              <pulseonselect>false</pulseonselect>
-              <onclick></onclick>
-              <onfocus>-</onfocus>
-              <onunfocus>-</onunfocus>
-              <onup>106</onup>
-              <ondown>103</ondown>
-              <onleft>108</onleft>
-              <onright>107</onright>
+                    <effect delay="200" end="0,0" start="0,100" time="200" type="slide"/>
+                    <effect center="auto" end="100" start="200" time="200" type="zoom"/>
+                </animation>
+            </control>
+            <!-- button 1 - bottom right -->
+            <control id="109" type="button">
+                <description>Bottom Right</description>
+                <posx>710</posx>
+                <posy>710</posy>
+                <width>180</width>
+                <height>180</height>
+                <visible>true</visible>
+                <texturefocus>square.png</texturefocus>
+                <texturenofocus>square.png</texturenofocus>
+                <label>no label</label>
+                <pulseonselect>false</pulseonselect>
+                <onclick/>
+                <onfocus>-</onfocus>
+                <onunfocus>-</onunfocus>
+                <onup>106</onup>
+                <ondown>103</ondown>
+                <onleft>108</onleft>
+                <onright>107</onright>
                 <animation type="Focus">
-                    <effect type="slide" end="50,50" time="200" />
-                    <effect type="zoom"  end="200"    time="200" center="auto" delay="50"/>
+                    <effect end="50,50" time="200" type="slide"/>
+                    <effect center="auto" delay="50" end="200" time="200" type="zoom"/>
                 </animation>
                 <animation type="Unfocus">
-                    <effect type="slide" start="50,50" end="0,0" time="200" delay="200" />
-                    <effect type="zoom"  start="200"    end="100" time="200" center="auto"/>
-                </animation>               
+                    <effect delay="200" end="0,0" start="50,50" time="200" type="slide"/>
+                    <effect center="auto" end="100" start="200" time="200" type="zoom"/>
+                </animation>
+            </control>
         </control>
-
-    </control>    
-</controls>
+    </controls>
 </window>

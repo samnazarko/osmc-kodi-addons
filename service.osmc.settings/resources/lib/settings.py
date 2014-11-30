@@ -22,32 +22,12 @@ lib = os.path.join(path, 'resources','lib')
 media = os.path.join(path, 'resources','skins','Default','media')
 sys.path.append(xbmc.translatePath(lib))
 
+	__addon__        = xbmcaddon.Addon()
+	scriptPath       = __addon__.getAddonInfo('path')
 
 
 def log(message):
 	xbmc.log(str(message))
-
-
-def json_query(query):
-
-	print 'heeere'
-
-	xbmc_request = json.dumps(query)
-	raw = xbmc.executeJSONRPC(xbmc_request)
-	clean = unicode(raw, 'utf-8', errors='ignore')
-	response = json.loads(clean)
-	result = response.get('result', response)
-
-	return result
-
-all_addons = {  "jsonrpc"    : "2.0",
-				"method"     : "Addons.GetAddons",
-				"params"     : {
-							    "enabled": "all",
-							    "properties": 
-											["thumbnail", "enabled"]
-							   },
-				"id"         : 1 }
 
 
 class walkthru_gui(xbmcgui.WindowXMLDialog):
@@ -92,35 +72,63 @@ class walkthru_gui(xbmcgui.WindowXMLDialog):
 
 def open():
 
-	__addon__        = xbmcaddon.Addon()
-	scriptPath       = __addon__.getAddonInfo('path')
-	xmlfile = 'settings_main.xml'
+	# known modules is a list of tuples detailing all the known and permissable modules and services
+	# (order, module name, icon): the order is the hierarchy of addons (which is used to 
+	# determine the positions of addon in the gui), the icon is the image that will be used in the
+	# gui (they need to be stored in resources/skins/Default/media/)
+	known_modules = 	[
+
+						(1,
+						"script.module.osmcsetting.dummy",
+						"circle.png"),
+
+						]
+
+
+	# order of addon hierarchy
+	# fewer than 9 items
+	# 105 is Apply
+	one_page = [102, 104, 106, 108, 101, 103, 107, 109]
+	
+	# more than 8 items, fewer than 17
+	# 105 & 205 are Apply
+	# 109 is Next
+	two_page = [102, 104, 106, 108, 101, 103, 107, 202, 204, 206, 208, 201, 203, 207, 209]
+
+	# more than 16 items, fewer than 25
+	# 105 & 205 & 305 are Apply
+	# 109 & 209 are Next
+	three_page = [102, 104, 106, 108, 101, 103, 107, 202, 204, 206, 208, 201, 203, 207, 302, 304, 306, 308, 301, 303, 307, 309]
+
+	order_lists = [one_page, two_page, three_page]
+
+	# window xml to use
+	# xmlfile = 'settings_main.xml'
 	xmlfile = 'settings_gui.xml'
 
+	# instantiate the window
 	GUI = walkthru_gui(xmlfile, scriptPath, 'Default')
 
-	test = xbmcaddon.Addon('script.module.osmcsetting.dummy')
+	# check if modules and services exist, add the ones that exist to the live_modules list
+	live_modules = [x for x in known_modules if check_live(x) == True].sort()
 
-	test.openSettings()
+	# determine which order list is used
+	order_list = order_lists[len(live_modules) // 8]
 
-	# THIS WILL NOT WORK WITH MODULES
+	# place them into the gui
+	for i, module in enumerate(live_modules):
+		control = self.getControl(order_list[i])
+		# set the icon (texturefocus, texturenofocus)
+		control.
 
-	# get all addons
-	addon_list = json_query(all_addons)
+	# add Applies
+	
 
-	addons = addon_list.get('addons',{})
-
-	# find all osmc setting addons
-	# get the addons names and icons
-	for addon in addons:
-		log(addon.get('addonid',''))
-		if 'script.module.osmcsetting.' in addon.get('addonid',''):
-			log(addon)
+	# add Nexts
 
 
-	# load them into the window
-
-	# GUI.doModal()
+	# display the window
+	GUI.doModal()
 
 	log('Exiting GUI')
 
