@@ -13,13 +13,15 @@
 	This class must follow the structure as listed below.
 
 		- the class must have a method called 'apply_settings' for the application of all settings changes 
+
 		- the class must have a dictionary called setting_method_dict, which contains for every applicable setting:
 				- the setting name as a key
-				- the currently applied setting value
-				- the method to call to apply any changes to the setting 
-				o an optional setting specific method to call immediately after booting
+					- the currently applied setting value
+					- the method to call to apply any changes to the setting 
+					o an optional setting specific method to call immediately after booting
 				o an optional method to apply before any other setting change methods are called
 				o an optional method to apply after all other setting change methods have been called
+
 		- the setting_method_dict must be populated on instantiation of the class
 				- this can be from the settings.xml for the module (preferred), or
 				- from a separate config file (as in the case of the config.txt file for the Raspberry Pi)
