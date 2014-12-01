@@ -172,15 +172,15 @@
                 <ondown>107</ondown>
                 <onleft>106</onleft>
                 <onright>105</onright>
-                <animation type="Focus">
-                    <effect end="-100,0" time="200" type="slide"/>
-                    <effect center="auto" delay="50" end="200" time="200" type="zoom"/>
-                </animation>
+                <viewtype label="1041">icon</viewtype>
                 <animation type="Unfocus">
                     <effect delay="200" end="0,0" start="-100,0" time="200" type="slide"/>
                     <effect center="auto" end="100" start="200" time="200" type="zoom"/>
                 </animation>
-                <viewtype label="1041">icon</viewtype>
+                <animation type="Focus">
+                    <effect end="-100,0" time="200" type="slide"/>
+                    <effect center="auto" delay="50" end="200" time="200" type="zoom"/>
+                </animation>
                 <itemlayout height="180" width="180">
                     <control type="image">
                         <posx>0</posx>
@@ -196,7 +196,7 @@
                         <posy>0</posy>
                         <width>180</width>
                         <height>180</height>
-                        <info>$INFO[ListItem.Property(FO_ICON)]</info>
+                        <info>ListItem.Icon</info>
                     </control>
                 </focusedlayout>
             </control>
@@ -228,7 +228,7 @@
                         <posy>0</posy>
                         <width>180</width>
                         <height>180</height>
-                        <info>$INFO[ListItem.Property(FO_ICON)]</info>
+                        <texture>$INFO[ListItem.Property(FO_ICON)]</texture>
                     </control>
                 </focusedlayout>
             </control>
@@ -267,7 +267,7 @@
                         <posy>0</posy>
                         <width>180</width>
                         <height>180</height>
-                       <info>$INFO[ListItem.Property(FO_ICON)]</info>
+                        <info>$INFO[ListItem.Property(FO_ICON)]</info>
                     </control>
                 </focusedlayout>
             </control>

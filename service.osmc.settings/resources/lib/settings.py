@@ -22,8 +22,8 @@ lib = os.path.join(path, 'resources','lib')
 media = os.path.join(path, 'resources','skins','Default','media')
 sys.path.append(xbmc.translatePath(lib))
 
-	__addon__        = xbmcaddon.Addon()
-	scriptPath       = __addon__.getAddonInfo('path')
+__addon__        = xbmcaddon.Addon()
+scriptPath       = __addon__.getAddonInfo('path')
 
 
 def log(message):
@@ -50,16 +50,19 @@ class walkthru_gui(xbmcgui.WindowXMLDialog):
 							]
 
 		# these are for testing only
-		APPLY_ICON_IMAGE = 'key.png'
-		APPLY_ICON_IMAGE_FO = 'lock.png'
+		self.APPLY_ICON_IMAGE = 'up.png'
+		self.APPLY_ICON_IMAGE_FO = 'down.png'
+
+
+	def onInit(self):
 
 		# place the items into the gui
 		for i, module in enumerate(self.live_modules):
 
 			# set the icon (texturefocus, texturenofocus)
 			list_item = xbmcgui.ListItem(label='', label2='', thumbnailImage = module[2])
-			list_item.setProperty('FO_ICON') = 'FO_' + module[2]
-			list_item.setProperty('Action') = module[1]
+			list_item.setProperty('FO_ICON','FO_' + module[2])
+			list_item.setProperty('Action', module[1])
 
 			self.getControl(self.order_of_fill[i]).addItem(list_item)
 
@@ -67,83 +70,85 @@ class walkthru_gui(xbmcgui.WindowXMLDialog):
 		for apply_button in self.apply_buttons:
 
 			# set the image
-			list_item = xbmcgui.ListItem(label='', label2='', thumbnailImage = APPLY_ICON_IMAGE)
-			list_item.setProperty('FO_ICON') = APPLY_ICON_IMAGE_FO
-			list_item.setProperty('Action') = "Apply"
+			list_item = xbmcgui.ListItem(label='', label2='', thumbnailImage = self.APPLY_ICON_IMAGE)
+			list_item.setProperty('FO_ICON', self.APPLY_ICON_IMAGE_FO)
+			list_item.setProperty('Action', "Apply")
 
 			self.getControl(apply_button).addItem(list_item)
 
 
-
-
-	def onInit(self):
-
-		pass
-
-		# self.hdg = self.getControl(110)
-		# self.hdg.setLabel('Exit')
-		# self.hdg.setVisible(True)
-
-		# self.panel = self.getControl(52)
-
-		# for icon in self.nine_icons:
-
-		# 	icon_path = os.path.join(media, icon)
-
-		# 	self.tmp = xbmcgui.ListItem(label=icon, label2='', thumbnailImage=icon_path)
-		# 	self.panel.addItem(self.tmp)
-
 	def onClick(self, controlID):
 
-		if controlID == 105:
+		if not (controlID - 5) % 100:
 			self.close()
 
 
-def open():
+class OSMCGui(object):
 
-	# known modules is a list of tuples detailing all the known and permissable modules and services
-	# (order, module name, icon): the order is the hierarchy of addons (which is used to 
-	# determine the positions of addon in the gui), the icon is the image that will be used in the
-	# gui (they need to be stored in resources/skins/Default/media/)
-	known_modules = 	[
+	def __init__(self):
 
-						(1,
-						"script.module.osmcsetting.dummy",
-						"sub.png"),
+		self.create_gui()
 
-						]
+	def create_gui(self):
+		# known modules is a list of tuples detailing all the known and permissable modules and services
+		# (order, module name, icon): the order is the hierarchy of addons (which is used to 
+		# determine the positions of addon in the gui), the icon is the image that will be used in the
+		# gui (they need to be stored in resources/skins/Default/media/)
+		self.known_modules = 	[
+
+								(1,
+								"script.module.osmcsetting.dummy",
+								"sub.png"),
+
+								]
+
+		# order of addon hierarchy
+		# 105 is Apply
+		self.item_order    = [104, 106, 102, 108, 101, 109, 103, 107]
+		self.apply_button  = [105]
+
+		# window xml to use
+		# xmlfile = 'settings_main.xml'
+		self.xmlfile = 'settings_gui.xml'
+
+		# check if modules and services exist, add the ones that exist to the live_modules list
+		self.live_modules = [z for z in [self.check_live(x) for x in self.known_modules] if z]
+		self.live_modules.sort()
+
+		# determine which order list is used, indexed to 0
+		self.number_of_pages_needed = (len(self.live_modules) // 8) +1
+
+		self.order_of_fill = [ item + (100 * x) for item in self.item_order   for x in range(self.number_of_pages_needed) ]
+		self.apply_buttons = [ item + (100 * x) for item in self.apply_button for x in range(self.number_of_pages_needed) ]
 
 
-	# order of addon hierarchy
-	# 105 is Apply
-	item_order    = [104, 106, 102, 108, 101, 109, 103, 107]
-	apply_button  = [105]
+		# instantiate the window
+		self.GUI = walkthru_gui(self.xmlfile, scriptPath, 'Default', order_of_fill=self.order_of_fill,
+			apply_buttons=self.apply_buttons, live_modules=self.live_modules)
 
-	order_lists = [one_page, two_page, three_page]
+	
 
-	# window xml to use
-	# xmlfile = 'settings_main.xml'
-	xmlfile = 'settings_gui.xml'
+	def open(self):
 
-	# check if modules and services exist, add the ones that exist to the live_modules list
-	live_modules = [x for x in known_modules if check_live(x) == True].sort()
+		'''
+			Opens the gui window
+		'''
 
-	# determine which order list is used, indexed to 0
-	number_of_pages_needed = (len(live_modules) // 8)
+		# display the window
+		self.GUI.doModal()
 
-	order_of_fill = [ item + (100 * (x + 1)) for item in item_order   for x in range(number_of_pages_needed) ]
-	apply_buttons = [ item + (100 * (x + 1)) for item in apply_button for x in range(number_of_pages_needed) ]
+		log('Exiting GUI')
 
-
-	# instantiate the window
-	GUI = walkthru_gui(xmlfile, scriptPath, 'Default', order_of_fill=order_of_fill, apply_buttons=apply_buttons, live_modules=live_modules)
+		del self.GUI
 
 
-	# display the window
-	GUI.doModal()
 
-	log('Exiting GUI')
+	def check_live(self, module):
+		'''
+			Checks to see whether the module exists and is active. If it doesnt exist, or is set to inactive,
+			then return False, otherwise import the module (or the setting_module.py in the service or addons
+			resources/lib/) and create then return the instance of the SettingGroup in that module.
+		'''
 
-	del GUI
-
+		return module
 

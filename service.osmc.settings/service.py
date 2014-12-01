@@ -106,7 +106,9 @@ class Main(object):
 		# else:
 		# 	gui = settings.gui()
 
-		threading.Thread(target=gui.open()).start()
+		opened_gui = settings.OSMCGui()
+
+		threading.Thread(target=opened_gui.open()).start()
 
 
 if __name__ == "__main__":
