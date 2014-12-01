@@ -32,7 +32,11 @@ def log(message):
 
 class walkthru_gui(xbmcgui.WindowXMLDialog):
 
-	def __init__(self, strXMLname, strFallbackPath, strDefaultName):
+	def __init__(self, strXMLname, strFallbackPath, strDefaultName, **kwargs):
+
+		self.order_of_fill  = kwargs.get('order_of_fill',  [])
+		self.apply_buttons  = kwargs.get('apply_buttons',  [])
+		self.live_modules = kwargs.get('live_modules', [])
 
 		self.nine_icons = [ 'square.png',
 							'up.png',
@@ -45,7 +49,32 @@ class walkthru_gui(xbmcgui.WindowXMLDialog):
 							'key.png'
 							]
 
-		pass
+		# these are for testing only
+		APPLY_ICON_IMAGE = 'key.png'
+		APPLY_ICON_IMAGE_FO = 'lock.png'
+
+		# place the items into the gui
+		for i, module in enumerate(self.live_modules):
+
+			# set the icon (texturefocus, texturenofocus)
+			list_item = xbmcgui.ListItem(label='', label2='', thumbnailImage = module[2])
+			list_item.setProperty('FO_ICON') = 'FO_' + module[2]
+			list_item.setProperty('Action') = module[1]
+
+			self.getControl(self.order_of_fill[i]).addItem(list_item)
+
+		# set up the apply buttons
+		for apply_button in self.apply_buttons:
+
+			# set the image
+			list_item = xbmcgui.ListItem(label='', label2='', thumbnailImage = APPLY_ICON_IMAGE)
+			list_item.setProperty('FO_ICON') = APPLY_ICON_IMAGE_FO
+			list_item.setProperty('Action') = "Apply"
+
+			self.getControl(apply_button).addItem(list_item)
+
+
+
 
 	def onInit(self):
 
@@ -80,25 +109,15 @@ def open():
 
 						(1,
 						"script.module.osmcsetting.dummy",
-						"circle.png"),
+						"sub.png"),
 
 						]
 
 
 	# order of addon hierarchy
-	# fewer than 9 items
 	# 105 is Apply
-	one_page = [102, 104, 106, 108, 101, 103, 107, 109]
-	
-	# more than 8 items, fewer than 17
-	# 105 & 205 are Apply
-	# 109 is Next
-	two_page = [102, 104, 106, 108, 101, 103, 107, 202, 204, 206, 208, 201, 203, 207, 209]
-
-	# more than 16 items, fewer than 25
-	# 105 & 205 & 305 are Apply
-	# 109 & 209 are Next
-	three_page = [102, 104, 106, 108, 101, 103, 107, 202, 204, 206, 208, 201, 203, 207, 302, 304, 306, 308, 301, 303, 307, 309]
+	item_order    = [104, 106, 102, 108, 101, 109, 103, 107]
+	apply_button  = [105]
 
 	order_lists = [one_page, two_page, three_page]
 
@@ -106,25 +125,18 @@ def open():
 	# xmlfile = 'settings_main.xml'
 	xmlfile = 'settings_gui.xml'
 
-	# instantiate the window
-	GUI = walkthru_gui(xmlfile, scriptPath, 'Default')
-
 	# check if modules and services exist, add the ones that exist to the live_modules list
 	live_modules = [x for x in known_modules if check_live(x) == True].sort()
 
-	# determine which order list is used
-	order_list = order_lists[len(live_modules) // 8]
+	# determine which order list is used, indexed to 0
+	number_of_pages_needed = (len(live_modules) // 8)
 
-	# place them into the gui
-	for i, module in enumerate(live_modules):
-		control = self.getControl(order_list[i])
-		# set the icon (texturefocus, texturenofocus)
-		control.
+	order_of_fill = [ item + (100 * (x + 1)) for item in item_order   for x in range(number_of_pages_needed) ]
+	apply_buttons = [ item + (100 * (x + 1)) for item in apply_button for x in range(number_of_pages_needed) ]
 
-	# add Applies
-	
 
-	# add Nexts
+	# instantiate the window
+	GUI = walkthru_gui(xmlfile, scriptPath, 'Default', order_of_fill=order_of_fill, apply_buttons=apply_buttons, live_modules=live_modules)
 
 
 	# display the window
