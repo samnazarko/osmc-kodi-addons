@@ -4,9 +4,15 @@
 
 	In order to accomodate easier changes and enhancements, each OSMC settings group/module is a separate addon. 
 
-	The module can be discovered by the OSA by name; the structure of which must be script.module.osmcsetting.ModuleSpecificName .
+	The module can be setup as 
+		- an xbmc module
+			- the name must take the form script.module.osmcsetting.ModuleSpecificName
+			- it must have a folder called lib, and this must contain a file called setting_module.py 
+		- as a service
+			- the service must have a file called setting_module.py in its resources/lib/ folder.
 
-	The module must have a class called SettingGroup. Instances of this class are used by the OSA to:
+	The setting_module.py file must have a class called SettingGroup.
+	Instances of this class are used by the OSA to:
 		- call the settings window for the module to allow the user to make changes
 		- call methods of the instance to apply any changes to the settings 
 
@@ -15,9 +21,9 @@
 		- the class must have a method called 'apply_settings' for the application of all settings changes 
 
 		- the class must have a dictionary called setting_method_dict, which contains for every applicable setting:
-				- the setting name as a key
-					- the currently applied setting value
-					- the method to call to apply any changes to the setting 
+				- the setting name as a key (this must match the id in the settings.xml)
+					- the currently active setting value
+					- a method to call to apply any changes to the setting 
 					o an optional setting specific method to call immediately after booting
 				o an optional method to apply before any other setting change methods are called
 				o an optional method to apply after all other setting change methods have been called
@@ -50,7 +56,7 @@ def SettingGroup:
 
 		self.setting_method_dict = 	{
 
-									'first_method' :	self.method_first,
+									'first_method' :	self.first_method,
 
 									'setting_nameX': 	{
 														'method_to_apply_changes': self.method_to_apply_changes_X,
@@ -68,7 +74,7 @@ def SettingGroup:
 														'setting_value' : ''
 														},
 
-									'final_method' :	self.method_final
+									'final_method' :	self.final_method
 
 									}
 
@@ -84,6 +90,12 @@ def SettingGroup:
 
 	# PUBLIC METHOD
 	def apply_settings(self):
+
+		'''
+			This method will apply all of the settings. It calls the first setting method, if it exists. 
+			Then it calls the method listed in setting_method_dict for each setting. Then it calls the
+			final method, again, if it exists.
+		'''
 
 		# retrieve the current settings
 		new_settings = self.settings_processor()
@@ -192,6 +204,9 @@ def SettingGroup:
 
 		''' 
 			The method to call before all the other setting methods are called.
+
+			For example, this could be a call to stop a service. The final method could then start the service again. 
+			This can be used to apply the setting changes.
 
 		'''	
 
