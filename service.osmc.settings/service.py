@@ -61,6 +61,12 @@ class Main(object):
 		self.listener = comms.communicator(self.parent_queue)
 		self.listener.start()
 
+		# the gui is created and stored in memory for quick access
+		# after a few hours, the gui should be removed from memory
+		self.stored_gui = settings.OSMCGui()
+		self.gui_last_accessed = datetime.now()
+		self.skip_check = True
+
 		# daemon
 		self._daemon()
 
@@ -81,11 +87,27 @@ class Main(object):
 		
 				if response == 'open':
 
-					self.open_gui()
+					self.open_gui(queue=self.parent_queue)
+
+				elif response == 'refresh_gui':
+
+					# if the gui calls for its own refresh, then delete the existing one and open a new instance
+
+					del self.stored_gui
+
+					self.open_gui(queue=self.parent_queue)
 
 			xbmc.sleep(1000)
 
 			log('blip!')
+
+			# THIS PART MAY NOT BE NEEDED, BUT IS INCLUDED HERE ANYWAY FOR TESTING PURPOSES
+			# if the gui was last accessed more than four hours
+			if not self.skip_check and (datetime.now() - self.gui_last_accessed).total_seconds() > 14400:
+
+				self.skip_check = True
+
+				del self.stored_gui
 
 		self.listener.stop()
 
@@ -98,17 +120,25 @@ class Main(object):
 
 			log('Opening walkthru GUI')
 
-		# gui = walkthru
-		gui = settings
+		else:
 
-			# __addon__.setSetting('firstrun', 'false')
+			log('Opening OSMC settings GUI')
 
-		# else:
-		# 	gui = settings.gui()
+			try:
+				# try opening the gui
+				threading.Thread(target=self.stored_gui.open()).start()
+				self.gui_last_accessed = datetime.now()
+				self.skip_check = False
 
-		opened_gui = settings.OSMCGui()
+			except:
+				# if that doesnt work then it is probably because the gui was too old and has been deleted
+				# so recreate the gui and open it
 
-		threading.Thread(target=opened_gui.open()).start()
+				self.stored_gui = settings.OSMCGui()
+				self.gui_last_accessed = datetime.now()
+				self.skip_check = False
+
+				threading.Thread(target=self.stored_gui.open()).start()
 
 
 if __name__ == "__main__":

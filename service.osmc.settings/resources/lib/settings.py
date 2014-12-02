@@ -15,6 +15,7 @@ import socket
 import threading
 import time
 import sys
+import imp
 
 
 path = xbmcaddon.Addon().getAddonInfo('path')
@@ -34,9 +35,11 @@ class walkthru_gui(xbmcgui.WindowXMLDialog):
 
 	def __init__(self, strXMLname, strFallbackPath, strDefaultName, **kwargs):
 
-		self.order_of_fill  = kwargs.get('order_of_fill',  [])
-		self.apply_buttons  = kwargs.get('apply_buttons',  [])
-		self.live_modules = kwargs.get('live_modules', [])
+		self.order_of_fill  = kwargs.get('order_of_fill', [])
+		self.apply_buttons  = kwargs.get('apply_buttons', [])
+		self.live_modules   = kwargs.get('live_modules' , [])
+
+		self.module_holder  = {}
 
 		self.nine_icons = [ 'square.png',
 							'up.png',
@@ -60,11 +63,14 @@ class walkthru_gui(xbmcgui.WindowXMLDialog):
 		for i, module in enumerate(self.live_modules):
 
 			# set the icon (texturefocus, texturenofocus)
-			list_item = xbmcgui.ListItem(label='', label2='', thumbnailImage = module[2])
-			list_item.setProperty('FO_ICON','FO_' + module[2])
-			list_item.setProperty('Action', module[1])
+			list_item = xbmcgui.ListItem(label=module['id'], label2='', thumbnailImage = module['FX_Icon'])
+			list_item.setProperty('FO_ICON', module['FO_Icon'])
 
-			self.getControl(self.order_of_fill[i]).addItem(list_item)
+			controlID = self.order_of_fill[i]
+
+			self.getControl(controlID).addItem(list_item)
+
+			self.module_holder[controlID] = module
 
 		# set up the apply buttons
 		for apply_button in self.apply_buttons:
@@ -77,15 +83,35 @@ class walkthru_gui(xbmcgui.WindowXMLDialog):
 			self.getControl(apply_button).addItem(list_item)
 
 
+	def onAction(self, action):
+
+		actionID = action.getId()
+
+		if (actionID in (10, 92)):
+			self.close()
+
+
 	def onClick(self, controlID):
 
 		if not (controlID - 5) % 100:
 			self.close()
 
+		else:
+
+			module = self.module_holder.get(controlID, {})
+			instance = module.get('SET', False)
+
+			try:
+				module.open_settings_window()
+			except:
+				log('Settings window for __ %s __ failed to open' % module.get('id', "Unknown"))
+
 
 class OSMCGui(object):
 
-	def __init__(self):
+	def __init__(self, **kwargs):
+
+		self.queue = kwargs['queue']
 
 		self.create_gui()
 
@@ -94,13 +120,9 @@ class OSMCGui(object):
 		# (order, module name, icon): the order is the hierarchy of addons (which is used to 
 		# determine the positions of addon in the gui), the icon is the image that will be used in the
 		# gui (they need to be stored in resources/skins/Default/media/)
-		self.known_modules = 	[
-
-								(1,
-								"script.module.osmcsetting.dummy",
-								"sub.png"),
-
-								]
+		self.known_modules_order = 	{
+									"script.module.osmcsetting.dummy":			0
+									}
 
 		# order of addon hierarchy
 		# 105 is Apply
@@ -112,8 +134,9 @@ class OSMCGui(object):
 		self.xmlfile = 'settings_gui.xml'
 
 		# check if modules and services exist, add the ones that exist to the live_modules list
-		self.live_modules = [z for z in [self.check_live(x) for x in self.known_modules] if z]
-		self.live_modules.sort()
+		self.ordered_live_modules = self.retrieve_modules()
+		self.ordered_live_modules.sort()
+		self.live_modules = [x[1] for x in self.ordered_live_modules]
 
 		# determine which order list is used, indexed to 0
 		self.number_of_pages_needed = (len(self.live_modules) // 8) +1
@@ -127,7 +150,6 @@ class OSMCGui(object):
 			apply_buttons=self.apply_buttons, live_modules=self.live_modules)
 
 	
-
 	def open(self):
 
 		'''
@@ -137,18 +159,86 @@ class OSMCGui(object):
 		# display the window
 		self.GUI.doModal()
 
+		# check is a reboot is required
+		reboot = False
+		for module in self.live_modules:
+			m = module.get('SET', False)
+			try:
+				if m.reboot_required:
+					reboot = True
+					break
+			except:
+				pass
+
+		if reboot:
+			self.queue.put('reboot')
+
+
 		log('Exiting GUI')
 
 		del self.GUI
 
 
-
-	def check_live(self, module):
+	def retrieve_modules(self):
 		'''
-			Checks to see whether the module exists and is active. If it doesnt exist, or is set to inactive,
+			Checks to see whether the module exists and is active. If it doesnt exist (or is set to inactive)
 			then return False, otherwise import the module (or the setting_module.py in the service or addons
 			resources/lib/) and create then return the instance of the SettingGroup in that module.
+
 		'''
 
-		return module
+		self.module_tally = 1000
+
+		addon_folder  = os.path.join([xbmc.translatePath("special://userdata"), "addons"])
+
+		folders       = [item for item in os.listdir(addon_folder) if os.path.isdir(item)].sort()
+
+		sub_folders   = [x for x in [self.inspect_folder(addon_folder, folder) for folder in folders] if x]
+
+		return osmc_modules
+
+
+	def inspect_folder(self, addon_folder, sub_folder):
+		'''
+			Checks the provided folder to see if it is a genuine OSMC module.
+			Returns a tuple.
+				(preferred order of module, module name: {unfocussed icon, focussed icon, instance of OSMCSetting class})
+		'''
+
+		# check for osmc subfolder, return nothing is it doesnt exist
+		osmc_subfolder = os.path.join([addon_folder, sub_folder, "osmc"])
+		if not os.path.isdir(osmc_subfolder): return
+
+		# check for OSMCSetting.py, return nothing is it doesnt exist
+		osmc_setting_file = os.path.join([osmc_subfolder, "OSMCSetting.py"])
+		if not os.path.isfile(osmc_setting_file): return
+
+		# check for the unfocussed icon.png
+		osmc_setting_FX_icon = os.path.join([osmc_subfolder, "FX_Icon.png"])
+		if not os.path.isfile(osmc_setting_FX_icon): return
+
+		# check for the focussed icon.png
+		osmc_setting_FO_icon = os.path.join([osmc_subfolder, "FO_Icon.png"])
+		if not os.path.isfile(osmc_setting_FO_icon): return
+
+		# if you got this far then this is almost certainly an OSMC setting
+		try:
+			OSMCSetting = imp.load_source(OSMCSetting.py, osmc_subfolder)
+			setting_instance = OSMCSetting.OSMCSettingClass()
+		except:
+			log('OSMCSetting __ %s __ failed to import' % sub_folder)
+			return
+
+		# success!
+		log('OSMC Setting Module __ %s __ found and imported' % sub_folder)
+
+		# DETERMINE ORRDER OF ADDONS, THIS CAN BE HARDCODED FOR SOME OR THE USER SHOULD BE ABLE TO CHOOSE THEIR OWN ORDER
+		if sub_folder in self.known_modules_order.keys():
+			order = self.known_modules_order[sub_folder]
+		else:
+			order = self.module_tally
+			self.module_tally += 1
+
+		return (order, {'id': sub_folder, 'FX_Icon': osmc_setting_FX_icon, 'FO_Icon': osmc_setting_FO_icon, 'SET':setting_instance})
+
 
