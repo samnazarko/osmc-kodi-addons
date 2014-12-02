@@ -92,7 +92,7 @@ class OSMCSettingClass(object):
 
 	'''
 
-	def __init___(self):
+	def __init__(self):
 
 		''' 
 			The setting_data_method contains all the settings in the settings group, as well as the methods to call when a
@@ -103,18 +103,19 @@ class OSMCSettingClass(object):
 
 		self.setting_data_method = 	{
 
-									'setting_nameX': 	{
-														'setting_value' : 'Pluto'
+									'mercury': 	{
+														'setting_value' : '',
 														'method_to_apply_changes': self.method_to_apply_changes_X,
 														},
 
-									'setting_nameY': 	{
-														'setting_value' : 'Mars'
-														},
-
-									'setting_nameZ': 	{
-														'setting_value' : 'Venus'
-														},
+									'venus': 	{'setting_value' : ''},
+									'earth': 	{'setting_value' : ''},
+									'mars': 	{'setting_value' : ''},
+									'jupiter': 	{'setting_value' : ''},
+									'saturn': 	{'setting_value' : ''},
+									'uranus': 	{'setting_value' : ''},
+									'neptune': 	{'setting_value' : ''},
+									'pluto': 	{'setting_value' : ''},									
 
 									}
 
@@ -124,6 +125,9 @@ class OSMCSettingClass(object):
 
 		# a flag to determine whether a setting change requires a reboot to take effect
 		self.reboot_required = False
+
+		print 'START'
+		print self.setting_data_method
 
 
 	def populate_setting_data_method(self):
@@ -148,9 +152,15 @@ class OSMCSettingClass(object):
 			own user interfaces.
 		'''
 
-		me = xbmcaddon.Addon (self.addonid)
+		print xbmcaddon.Addon("script.module.osmcsetting.dummy").getAddonInfo('id')
+		me = xbmcaddon.Addon(self.addonid)
 
 		me.openSettings()
+
+		self.apply_settings()
+
+		print 'END'
+		print self.setting_data_method
 
 
 	def apply_settings(self):
@@ -210,9 +220,11 @@ class OSMCSettingClass(object):
 
 		latest_settings = {}
 
+		addon = xbmcaddon.Addon(self.addonid)
+
 		for key in self.setting_data_method.keys():
 
-			latest_settings[key] = xbmcaddon.getSetting(key)
+			latest_settings[key] = addon.getSetting(key)
 
 		return latest_settings
 
@@ -273,8 +285,10 @@ class OSMCSettingClass(object):
 
 		'''
 
-		pass
+		print 'Fuck yeah!'
 
 	#																															 #
 	##############################################################################################################################
 
+if __name__ == "__main__":
+	pass

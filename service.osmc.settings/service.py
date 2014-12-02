@@ -29,6 +29,7 @@ import json
 import Queue
 import os
 import threading
+import datetime
 
 # XBMC modules
 import xbmc
@@ -63,8 +64,8 @@ class Main(object):
 
 		# the gui is created and stored in memory for quick access
 		# after a few hours, the gui should be removed from memory
-		self.stored_gui = settings.OSMCGui()
-		self.gui_last_accessed = datetime.now()
+		self.stored_gui = settings.OSMCGui(queue=self.parent_queue)
+		self.gui_last_accessed = datetime.datetime.now()
 		self.skip_check = True
 
 		# daemon
@@ -87,7 +88,7 @@ class Main(object):
 		
 				if response == 'open':
 
-					self.open_gui(queue=self.parent_queue)
+					self.open_gui()
 
 				elif response == 'refresh_gui':
 
@@ -95,7 +96,7 @@ class Main(object):
 
 					del self.stored_gui
 
-					self.open_gui(queue=self.parent_queue)
+					self.open_gui()
 
 			xbmc.sleep(1000)
 
@@ -103,7 +104,7 @@ class Main(object):
 
 			# THIS PART MAY NOT BE NEEDED, BUT IS INCLUDED HERE ANYWAY FOR TESTING PURPOSES
 			# if the gui was last accessed more than four hours
-			if not self.skip_check and (datetime.now() - self.gui_last_accessed).total_seconds() > 14400:
+			if not self.skip_check and (datetime.datetime.now() - self.gui_last_accessed).total_seconds() > 14400:
 
 				self.skip_check = True
 
@@ -116,7 +117,7 @@ class Main(object):
 
 		log('firstrun? %s' % __setting__('firstrun'))
 		
-		if __setting__('firstrun') == 'true':
+		if __setting__('firstrun') == 'fartstrue':
 
 			log('Opening walkthru GUI')
 
@@ -124,22 +125,22 @@ class Main(object):
 
 			log('Opening OSMC settings GUI')
 
-			try:
-				# try opening the gui
-				threading.Thread(target=self.stored_gui.open()).start()
-				self.gui_last_accessed = datetime.now()
-				self.skip_check = False
+			# try:
+			# try opening the gui
+			threading.Thread(target=self.stored_gui.open()).start()
+			self.gui_last_accessed = datetime.datetime.now()
+			self.skip_check = False
 
-			except:
-				# if that doesnt work then it is probably because the gui was too old and has been deleted
-				# so recreate the gui and open it
+			# except:
+			# 	# if that doesnt work then it is probably because the gui was too old and has been deleted
+			# 	# so recreate the gui and open it
 
-				self.stored_gui = settings.OSMCGui()
-				self.gui_last_accessed = datetime.now()
-				self.skip_check = False
+			# 	self.stored_gui = settings.OSMCGui(queue=self.parent_queue)
+			# 	self.gui_last_accessed = datetime.datetime.now()
+			# 	self.skip_check = False
 
-				threading.Thread(target=self.stored_gui.open()).start()
-
+			# 	threading.Thread(target=self.stored_gui.open()).start()
+			log('gui threading finished')
 
 if __name__ == "__main__":
 

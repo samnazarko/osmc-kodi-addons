@@ -39,6 +39,10 @@ class walkthru_gui(xbmcgui.WindowXMLDialog):
 		self.apply_buttons  = kwargs.get('apply_buttons', [])
 		self.live_modules   = kwargs.get('live_modules' , [])
 
+		log(kwargs)
+
+		log(len(self.live_modules))
+
 		self.module_holder  = {}
 
 		self.nine_icons = [ 'square.png',
@@ -101,10 +105,12 @@ class walkthru_gui(xbmcgui.WindowXMLDialog):
 			module = self.module_holder.get(controlID, {})
 			instance = module.get('SET', False)
 
-			try:
-				module.open_settings_window()
-			except:
-				log('Settings window for __ %s __ failed to open' % module.get('id', "Unknown"))
+			log(instance)
+
+			# try:
+			instance.open_settings_window()
+			# except:
+			# log('Settings window for __ %s __ failed to open' % module.get('id', "Unknown"))
 
 
 class OSMCGui(object):
@@ -139,10 +145,13 @@ class OSMCGui(object):
 		self.live_modules = [x[1] for x in self.ordered_live_modules]
 
 		# determine which order list is used, indexed to 0
-		self.number_of_pages_needed = (len(self.live_modules) // 8) +1
+		self.number_of_pages_needed = (len(self.live_modules) // 9) +1
 
-		self.order_of_fill = [ item + (100 * x) for item in self.item_order   for x in range(self.number_of_pages_needed) ]
-		self.apply_buttons = [ item + (100 * x) for item in self.apply_button for x in range(self.number_of_pages_needed) ]
+		log('number_of_pages_needed')
+		log(self.number_of_pages_needed)
+
+		self.order_of_fill = [ item + (100 * x) for x in range(self.number_of_pages_needed) for item in self.item_order    ]
+		self.apply_buttons = [ item + (100 * x) for x in range(self.number_of_pages_needed) for item in self.apply_button  ]
 
 
 		# instantiate the window
@@ -155,7 +164,7 @@ class OSMCGui(object):
 		'''
 			Opens the gui window
 		'''
-
+		log('Opening GUI')
 		# display the window
 		self.GUI.doModal()
 
@@ -176,7 +185,7 @@ class OSMCGui(object):
 
 		log('Exiting GUI')
 
-		del self.GUI
+		# del self.GUI
 
 
 	def retrieve_modules(self):
@@ -189,11 +198,11 @@ class OSMCGui(object):
 
 		self.module_tally = 1000
 
-		addon_folder  = os.path.join([xbmc.translatePath("special://userdata"), "addons"])
+		addon_folder  = os.path.join(xbmc.translatePath("special://home"), "addons/")
 
-		folders       = [item for item in os.listdir(addon_folder) if os.path.isdir(item)].sort()
+		folders       = [item for item in os.listdir(addon_folder) if os.path.isdir(os.path.join(addon_folder, item))]
 
-		sub_folders   = [x for x in [self.inspect_folder(addon_folder, folder) for folder in folders] if x]
+		osmc_modules   = [x for x in [self.inspect_folder(addon_folder, folder) for folder in folders] if x]
 
 		return osmc_modules
 
@@ -206,28 +215,31 @@ class OSMCGui(object):
 		'''
 
 		# check for osmc subfolder, return nothing is it doesnt exist
-		osmc_subfolder = os.path.join([addon_folder, sub_folder, "osmc"])
+		osmc_subfolder = os.path.join(addon_folder, sub_folder, "resources", "osmc")
 		if not os.path.isdir(osmc_subfolder): return
 
 		# check for OSMCSetting.py, return nothing is it doesnt exist
-		osmc_setting_file = os.path.join([osmc_subfolder, "OSMCSetting.py"])
+		osmc_setting_file = os.path.join(osmc_subfolder, "OSMCSetting.py")
 		if not os.path.isfile(osmc_setting_file): return
 
 		# check for the unfocussed icon.png
-		osmc_setting_FX_icon = os.path.join([osmc_subfolder, "FX_Icon.png"])
+		osmc_setting_FX_icon = os.path.join(osmc_subfolder, "FX_Icon.png")
 		if not os.path.isfile(osmc_setting_FX_icon): return
 
 		# check for the focussed icon.png
-		osmc_setting_FO_icon = os.path.join([osmc_subfolder, "FO_Icon.png"])
+		osmc_setting_FO_icon = os.path.join(osmc_subfolder, "FO_Icon.png")
 		if not os.path.isfile(osmc_setting_FO_icon): return
 
 		# if you got this far then this is almost certainly an OSMC setting
-		try:
-			OSMCSetting = imp.load_source(OSMCSetting.py, osmc_subfolder)
-			setting_instance = OSMCSetting.OSMCSettingClass()
-		except:
-			log('OSMCSetting __ %s __ failed to import' % sub_folder)
-			return
+		# try:
+		new_module_name = sub_folder.replace('.','')
+		log(new_module_name)
+		OSMCSetting = imp.load_source(new_module_name, osmc_setting_file)
+		log(dir(OSMCSetting))
+		setting_instance = OSMCSetting.OSMCSettingClass()
+		# except:
+		# 	log('OSMCSetting __ %s __ failed to import' % sub_folder)
+		# 	return
 
 		# success!
 		log('OSMC Setting Module __ %s __ found and imported' % sub_folder)
