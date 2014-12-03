@@ -125,21 +125,21 @@ class Main(object):
 
 			log('Opening OSMC settings GUI')
 
-			# try:
-			# try opening the gui
-			threading.Thread(target=self.stored_gui.open()).start()
-			self.gui_last_accessed = datetime.datetime.now()
-			self.skip_check = False
+			try:
+				# try opening the gui
+				threading.Thread(target=self.stored_gui.open()).start()
+				self.gui_last_accessed = datetime.datetime.now()
+				self.skip_check = False
 
-			# except:
-			# 	# if that doesnt work then it is probably because the gui was too old and has been deleted
-			# 	# so recreate the gui and open it
+			except:
+				# if that doesnt work then it is probably because the gui was too old and has been deleted
+				# so recreate the gui and open it
 
-			# 	self.stored_gui = settings.OSMCGui(queue=self.parent_queue)
-			# 	self.gui_last_accessed = datetime.datetime.now()
-			# 	self.skip_check = False
+				self.stored_gui = settings.OSMCGui(queue=self.parent_queue)
+				self.gui_last_accessed = datetime.datetime.now()
+				self.skip_check = False
 
-			# 	threading.Thread(target=self.stored_gui.open()).start()
+				threading.Thread(target=self.stored_gui.open()).start()
 			log('gui threading finished')
 
 if __name__ == "__main__":

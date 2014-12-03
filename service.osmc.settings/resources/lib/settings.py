@@ -56,6 +56,8 @@ class walkthru_gui(xbmcgui.WindowXMLDialog):
 							'key.png'
 							]
 
+		self.first_run = True
+
 		# these are for testing only
 		self.APPLY_ICON_IMAGE = 'up.png'
 		self.APPLY_ICON_IMAGE_FO = 'down.png'
@@ -63,28 +65,33 @@ class walkthru_gui(xbmcgui.WindowXMLDialog):
 
 	def onInit(self):
 
-		# place the items into the gui
-		for i, module in enumerate(self.live_modules):
+		if self.first_run:
+			self.first_run = False
 
-			# set the icon (texturefocus, texturenofocus)
-			list_item = xbmcgui.ListItem(label=module['id'], label2='', thumbnailImage = module['FX_Icon'])
-			list_item.setProperty('FO_ICON', module['FO_Icon'])
+			log('OONNIINNIITTTT')
 
-			controlID = self.order_of_fill[i]
+			# place the items into the gui
+			for i, module in enumerate(self.live_modules):
 
-			self.getControl(controlID).addItem(list_item)
+				# set the icon (texturefocus, texturenofocus)
+				list_item = xbmcgui.ListItem(label=module['id'], label2='', thumbnailImage = module['FX_Icon'])
+				list_item.setProperty('FO_ICON', module['FO_Icon'])
 
-			self.module_holder[controlID] = module
+				controlID = self.order_of_fill[i]
 
-		# set up the apply buttons
-		for apply_button in self.apply_buttons:
+				self.getControl(controlID).addItem(list_item)
 
-			# set the image
-			list_item = xbmcgui.ListItem(label='', label2='', thumbnailImage = self.APPLY_ICON_IMAGE)
-			list_item.setProperty('FO_ICON', self.APPLY_ICON_IMAGE_FO)
-			list_item.setProperty('Action', "Apply")
+				self.module_holder[controlID] = module
 
-			self.getControl(apply_button).addItem(list_item)
+			# set up the apply buttons
+			for apply_button in self.apply_buttons:
+
+				# set the image
+				list_item = xbmcgui.ListItem(label='', label2='', thumbnailImage = self.APPLY_ICON_IMAGE)
+				list_item.setProperty('FO_ICON', self.APPLY_ICON_IMAGE_FO)
+				list_item.setProperty('Action', "Apply")
+
+				self.getControl(apply_button).addItem(list_item)
 
 
 	def onAction(self, action):
