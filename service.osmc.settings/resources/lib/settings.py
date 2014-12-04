@@ -68,7 +68,7 @@ class walkthru_gui(xbmcgui.WindowXMLDialog):
 		if self.first_run:
 			self.first_run = False
 
-			log('OONNIINNIITTTT')
+			
 
 			# place the items into the gui
 			for i, module in enumerate(self.live_modules):
@@ -171,9 +171,19 @@ class OSMCGui(object):
 		'''
 			Opens the gui window
 		'''
+		
 		log('Opening GUI')
 		# display the window
 		self.GUI.doModal()
+
+		# run the apply_settings method on all modules
+		for module in self.live_modules:
+			m = module.get('SET', False)
+			try:
+				m.apply_settings()
+			except:
+				log('apply_settings failed for %s' % m.addonid)
+
 
 		# check is a reboot is required
 		reboot = False

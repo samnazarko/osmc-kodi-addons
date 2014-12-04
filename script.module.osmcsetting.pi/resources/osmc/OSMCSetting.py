@@ -36,6 +36,9 @@
 												- the name of all settings in the module
 												- the current value of those settings
 												- [optional] a method to call for each setting when the value changes
+												- [optional] a method to call to filter the data before adding it to the 
+												  setting_data_method dict. Can also be used to populate the setting.xml with 
+												  external data.
 
 
 
@@ -75,13 +78,17 @@
 	The developer is free to create any methods they see fit, but the ones listed above are specifically used by the OSA.
 
 	Settings changes are applied when the OSG is called to close. But this behaviour can be changed to occur when the addon
-	settings window closes by editing the open_settings_window method and eliminating the apply_settings method.
+	settings window closes by editing the open_settings_window. The method apply_settings will still be called by OSG, so 
+	keep that in mind.
 
 '''
 
 
 # XBMC Modules
 import xbmcaddon
+
+# OSMC SETTING Modules
+import config_tools as ct
 
 
 class OSMCSettingClass(object):
@@ -99,23 +106,43 @@ class OSMCSettingClass(object):
 			setting_value has changed and the existing setting_value. 
 		'''
 
-		self.addonid = "script.module.osmcsetting.dummy"
+		self.addonid = "script.module.osmcsetting.pi"
+		self.me = xbmcaddon.Addon(self.addonid)
+
+		# i have added a filter method to filter the data recieved from an external source before adding it to the setting dict
 
 		self.setting_data_method = 	{
 
-									'mercury': 	{
-														'setting_value' : '',
-														'method_to_apply_changes': self.method_to_apply_changes_X,
-														},
+									'mercury': 					{
+																'setting_value' : '',
+																'apply': self.method_to_apply_changes_X,
+																},
 
-									'venus': 	{'setting_value' : ''},
-									'earth': 	{'setting_value' : ''},
-									'mars': 	{'setting_value' : ''},
-									'jupiter': 	{'setting_value' : ''},
-									'saturn': 	{'setting_value' : ''},
-									'uranus': 	{'setting_value' : ''},
-									'neptune': 	{'setting_value' : ''},
-									'pluto': 	{'setting_value' : ''},									
+									'hdmi_safe': 				{'setting_value' : '', 'filter': self.filter_bool},
+									'hdmi_ignore_edid': 		{'setting_value' : '', 'filter': self.filter_bool},
+									'hdmi_edid_file': 			{'setting_value' : '', 'filter': self.filter_bool},
+									'hdmi_ignore_edid_audio': 	{'setting_value' : '', 'filter': self.filter_bool},
+									'hdmi_ignore_cec': 			{'setting_value' : '', 'filter': self.filter_bool},
+									'hdmi_ignore_cec_init': 	{'setting_value' : '', 'filter': self.filter_bool},
+									'hdmi_force_hotplug': 		{'setting_value' : '', 'filter': self.filter_bool},
+									'hdmi_ignore_hotplug': 		{'setting_value' : '', 'filter': self.filter_bool},
+									'hdmi_boost': 				{'setting_value' : ''},
+									'CEA_mode': 				{'setting_value' : ''},
+									'DMT_mode': 				{'setting_value' : ''},
+									'hdmi_group': 				{'setting_value' : ''},
+									'hdmi_mode': 				{'setting_value' : ''},
+									'disable_overscan': 		{'setting_value' : '', 'filter': self.filter_bool},
+									'overscan_left': 			{'setting_value' : ''},
+									'overscan_right': 			{'setting_value' : ''},
+									'overscan_top': 			{'setting_value' : ''},
+									'overscan_bottom': 			{'setting_value' : ''},
+									'display_rotate': 			{'setting_value' : ''},
+									'is256': 					{'setting_value' : '', 'filter': self.filter_is256},
+									'gpu_mem_256': 				{'setting_value' : ''},
+									'gpu_mem_512': 				{'setting_value' : ''},
+									'decode_mpg2': 				{'setting_value' : ''},
+									'decode_wvc1': 				{'setting_value' : ''},
+									'other_settings_string': 	{'setting_value' : '', 'filter': self.filter_other_string},								
 
 									}
 
@@ -125,6 +152,10 @@ class OSMCSettingClass(object):
 
 		# a flag to determine whether a setting change requires a reboot to take effect
 		self.reboot_required = False
+
+		################ module specific variables @@@@@@@@@@@@@@@@@@@@@@
+
+		self.test_config = 'config.txt'
 
 		print 'START'
 		print self.setting_data_method
@@ -136,11 +167,45 @@ class OSMCSettingClass(object):
 			Populates the setting_value in the setting_data_method.
 		'''
 
+		# this is the method to use if you are populating the dict from the settings.xml
 		latest_settings = self.settings_retriever_xml()
 
+		# but I am going to set up my own process in addition to the xml one, I will be reading some
+		# settings from the config.txt, and getting the rest from the settings.xml
+		self.config_settings = read_config(self.test_config)
+
+
+		# cycle through the setting_data_method dict, and populate with the settings values
 		for key in self.setting_data_method.keys():
 
-			self.setting_data_method[key]['setting_value'] = latest_settings[key]
+			# grab the filter method (if there is one)
+			filter_method = self.setting_data_method.get(key,{}).get('filter',{})
+
+			# if the key is in the config.txt
+			if key in self.config_settings:
+
+				# get the setting value, filter it if needed
+				if filter_method:
+					setting_value = filter_method(self.config_settings[key])
+				else:
+					setting_value = self.config_settings[key]
+
+				# set the value in the setting_data_method
+				self.setting_data_method[key]['setting_value'] = setting_value
+				
+				# also set the value in the settings.xml
+				self.me.setSetting(key, setting_value)
+
+			else: # if the key ISNT in the config.txt then set the value from the settings.xml
+
+				# get the setting value, filter it if needed
+				if filter_method:
+					setting_value = filter_method(latest_settings[key])
+				else:
+					setting_value = latest_settings[key]
+
+				self.setting_data_method[key]['setting_value'] = setting_value
+
 
 
 	def open_settings_window(self):
@@ -152,11 +217,12 @@ class OSMCSettingClass(object):
 			own user interfaces.
 		'''
 
-		print xbmcaddon.Addon("script.module.osmcsetting.dummy").getAddonInfo('id')
+		print xbmcaddon.Addon("script.module.osmcsetting.pi").getAddonInfo('id')
 		me = xbmcaddon.Addon(self.addonid)
 
 		me.openSettings()
 
+		# code placed here will run when the modules settings window is closed
 		self.apply_settings()
 
 		print 'END'
@@ -284,9 +350,46 @@ class OSMCSettingClass(object):
 			Method for implementing changes to setting x 
 
 		'''
+		print 'hells yeah!'
 
-		print 'Fuck yeah!'
 
+	def filter_on_populate_X(self, data):
+
+		'''
+			Method to filter the data before adding to the setting_data_method dict.
+
+			This is useful if you are getting the populating from an external source like the Pi's config.txt.
+			This method could end with a call to another method to populate the settings.xml from that same source.
+		'''
+
+	def filter_bool(self, data):
+
+		''' method to convert number or text into boolean '''
+
+		if data in [1, '1']:
+			return 'true'
+		else:
+			return 'false'
+
+
+	def filter_other_string(self, data=''):
+
+		''' Method to collate all the unknown settings from the config.txt into a single string. '''
+
+
+		config_keys = set(self.config_settings.keys())
+		xml_keys    = set(self.setting_data_method.keys())
+
+		unknown_settings = list(config_keys.difference(xml_keys))
+
+		return "|=|".join(unknown_settings
+
+
+	def filter_is256(self, data):
+
+		''' Method to check whether the Pi has 256 or 512 memory '''
+
+		
 	#																															 #
 	##############################################################################################################################
 
