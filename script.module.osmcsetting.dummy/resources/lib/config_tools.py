@@ -216,3 +216,32 @@ def read_configtxt(configtxt, known_settings=[]):
     read_settings['unknown'] = ';'.join(unknown_settings)
 
     return read_settings
+
+
+
+
+def test_sysconfig():
+
+    # open the config file
+    with open('C:\\Temp\\config.txt','r') as f:
+
+        # call the entire contents of the file the "root" section and read the file into the initial string
+        ini_str = '[root]\n' + f.read()
+
+    # dont know if this is needed
+    # CHECK IN TESTING
+    ini_fp = StringIO.StringIO(ini_str)
+    
+    # instantiate a config parser
+    file_config = ConfigParser.RawConfigParser()
+
+    # read the string into the config parser, file_config represents the previous config data
+    file_config.readfp(ini_fp)
+
+    print file_config.options('root')
+
+
+
+if ( __name__ == "__main__" ):
+
+    test_sysconfig()
