@@ -56,7 +56,7 @@ def read_config(config_location, parser_provided=False, return_the_parser=False)
         return settings
 
 
-def write_config(config_location, parser_provided=False, changes={}):
+def write_config(config_location,  changes={}):
 
     '''
         Write the changes back to the config.txt.
@@ -65,11 +65,16 @@ def write_config(config_location, parser_provided=False, changes={}):
         'changes' can also include a key 'remove', the value of which is a list with the settings to remove from the config file.
     '''
 
+    print 's'
+    print 's'
+    print 's'
+    print 's'
+    print 's'
+    print 's'
+    print changes
+
     # grab the parser if it isnt provided
-    if parser_provided:
-        blotter = parser_provided
-    else:
-        blotter = grab_configtxt(config_location)
+    blotter = grab_configtxt(config_location)
 
     # force all data to be written as a string
     blotter.optionxform = str
@@ -77,12 +82,10 @@ def write_config(config_location, parser_provided=False, changes={}):
     # loop through the changes and make the change to the config
     for setting, value in changes.iteritems():
 
-        # if the setting is the remove list, then remove those entries from the config
-        if setting == 'remove':
+        # if the setting is set to be removed, then remove those entries from the config
+        if value == 'remove':
 
-            for removal_candidate in changes.get('remove', []):
-
-                blotter.remove_option('osmc', removal_candidate)
+            blotter.remove_option('osmc', setting)
 
             continue
             
@@ -102,52 +105,6 @@ def write_config(config_location, parser_provided=False, changes={}):
     with open(config_location,'w') as f:
         for line in long_string_file.readlines():
             f.write(line.replace(" = ","="))
-
-
-
-def test():
-    '''
-        tester for read and write
-    '''
-
-    config_location = 'C:\\Temp\\config.txt'
-
-    settings_dict = read_config(config_location)
-
-    print settings_dict
-
-    settings_dict['new_setting'] = 'farts'
-
-    print settings_dict
-
-    removes = []
-    changes = {}
-
-    for k, v in settings_dict.iteritems():
-
-        if k == 'replace_this':
-
-            removes.append(k)
-
-            continue
-        else:
-            changes[k] = random.randint(0,500)
-
-
-    for change, v in changes.iteritems():
-        settings_dict[change] = v
-
-    for remove in removes:
-        del settings_dict[remove]
-
-    settings_dict['remove'] = removes
-
-
-    print settings_dict
-
-    write_config(config_location, changes=settings_dict)
-
-
 
 
 if ( __name__ == "__main__" ):

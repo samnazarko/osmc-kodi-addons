@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<addon id="script.module.osmcsetting.dummy"
-       name="osmcsetting.dummy"
+<addon id="script.module.osmcsetting.template"
+       name="osmcsetting.template"
        version="0.0.3"
        provider-name="KodeKarnage">
     <requires>
@@ -11,7 +11,7 @@
 <extension point="xbmc.python.module" library="lib" />
 
     <extension point="xbmc.addon.metadata">
-        <summary lang="en">osmcsetting.dummy</summary>
+        <summary lang="en">osmcsetting.template</summary>
         <description lang="en"></description>
         <language>en</language>
         <platform>all</platform>

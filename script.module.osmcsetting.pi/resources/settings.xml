@@ -3,15 +3,18 @@
 
 <category label="HDMI">
 <setting id="hdmi_safe" label="hdmi_safe" type="bool" default="false"/>
+<setting label="hdmi_force_hotplug=1, hdmi_ignore_edid=0xa5000080, config_hdmi_boost=4, hdmi_group=2, hdmi_mode=4, disable_overscan=0" enable="false" visible="eq(-1,true)"/>
 <setting id="hdmi_ignore_edid" label="hdmi_ignore_edid" type="bool" default="false"/>
-<setting id="hdmi_edid_file" label="hdmi_edid_file" type="bool" default="false"/>
-<setting id="hdmi_ignore_edid_audio" label="hdmi_ignore_edid_audio" type="bool" default="false"/>  
+<setting id="store_hdmi_to_file" label="store_hdmi_to_file" type="bool" default="false"/>
+<setting label="store_hdmi_to_file should be disabled before using a different tv or hdmi port" enable="false" visible="eq(-1,true)"/>
+<setting id="hdmi_edid_file" label="hdmi_edid_file" type="bool" default="false" visible='false'/>
+<setting id="hdmi_force_hotplug" label="hdmi_force_hotplug" type="bool" default="false" visible='false'/>
+<!-- <setting id="hdmi_ignore_edid_audio" label="hdmi_ignore_edid_audio" type="bool" default="false"/>   -->
 <setting id="hdmi_ignore_cec" label="hdmi_ignore_cec" type="bool" default="false"/>
-<setting id="hdmi_ignore_cec_init" label="hdmi_ignore_cec_init" type="bool" default="false"/>
-<setting id="hdmi_force_hotplug" label="hdmi_force_hotplug" type="bool" default="false"/>
-<setting id="hdmi_ignore_hotplug" label="hdmi_ignore_hotplug" type="bool" default="false"/>
+<!-- <setting id="hdmi_ignore_cec_init" label="hdmi_ignore_cec_init" type="bool" default="false"/> -->
+<!-- <setting id="hdmi_ignore_hotplug" label="hdmi_ignore_hotplug" type="bool" default="false"/> -->
 <setting id="hdmi_boost" label="hdmi_boost" type="slider" default="0" range="0,1,7" option="int" />
-<setting id="hdmi_group" label="hdmi_group" type="enum"  lvalues="CEA|DMT" default="CEA"/>
+<setting id="hdmi_group" label="hdmi_group" type="enum"  lvalues="off|CEA|DMT" default="CEA"/>
 <setting id="CEA_mode" label="CEA_mode" type="action" visible="eq(-1,CEA)" option="close" action="RunScript($CWD/resources/lib/hdmi_mode_window.py, CEA)"/>
 <setting id="DMT_mode" label="DMT_mode" type="action" visible="eq(-2,DMT)" option="close" action="RunScript($CWD/resources/lib/hdmi_mode_window.py, DMT)"/>
 <setting id="hdmi_mode" label="hdmi_mode" type="number" visible="false" default="0"/>
@@ -19,12 +22,7 @@
 </category>
 
 <category label="DISPLAY">
-
-<setting id="disable_overscan" label="disable_overscan" type="bool" default="true"/>
-<setting id="overscan_left" label="overscan_left" type="slider" visible="eq(-1,false)" default='0' subsetting="true" range="-80,1,80"/>
-<setting id="overscan_right" label="overscan_right" type="slider" visible="eq(-2,false)" default='0' subsetting="true" range="-80,1,80"/>
-<setting id="overscan_top" label="overscan_top" type="slider" visible="eq(-3,false)" default='0' subsetting="true" range="-80,1,80"/>
-<setting id="overscan_bottom" label="overscan_bottom" type="slider" visible="eq(-4,false)" default='0' subsetting="true" range="-80,1,80"/>
+<!-- <setting id="disable_overscan" label="disable_overscan" type="bool" default="true"/> -->
 <setting id="display_rotate" label="display_rotate" type="enum" lvalues="0|90|180|270|flip_hori|flip_vert"/> 
 
 </category>
@@ -38,8 +36,8 @@
 </category>
 
 <category label="LICENCES">
-<setting id="decode_mpg2" label="decode_mpg2" type="text"  />
-<setting id="decode_wvc1" label="decode_wvc1" type="text"  />
+<setting id="decode_MPG2" label="decode_mpg2" type="text"  />
+<setting id="decode_WVC1" label="decode_wvc1" type="text"  />
 
 </category>
 
