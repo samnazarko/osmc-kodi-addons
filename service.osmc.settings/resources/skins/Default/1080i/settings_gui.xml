@@ -219,15 +219,17 @@
                         <posy>0</posy>
                         <width>180</width>
                         <height>180</height>
-                        <texture>OSMC_icon_grey.png</texture>
+                        <texture>OSMC_icon_line.png</texture>
                     </control>
                 </itemlayout>
                 <focusedlayout height="180" width="180">               
                     <control type="image">
                         <animation type="Focus">
-                            <effect end="130" time="200" type="zoom" pulse="true" tween="elastic" easing="inout" center="auto"/>
-                            <!-- <effect end="-360" time="750" type="rotate" tween="back" easing="inout" center="auto" delay="500" /> -->
+                            <effect start="140, 5" end="140, 140" time="100" type="zoom" center="auto"/>
                         </animation>
+                        <animation type="Unfocus">
+                            <effect start="140, 140" end="140, 5" time="100" type="zoom" center="auto"/>
+                        </animation>                        
                         <posx>0</posx>
                         <posy>0</posy>
                         <width>180</width>
