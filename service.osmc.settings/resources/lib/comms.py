@@ -26,7 +26,7 @@ class communicator(threading.Thread):
 		self.daemon = True
 
 		# create the listening socket, it creates new connections when connected to
-		self.address = '/var/tmp/osmc.settings.sockfile'
+		self.address = '/var/lock/osmc.settings.sockfile'
 
 		if os.path.exists(self.address):
 			os.remove(self.address)
