@@ -35,7 +35,10 @@
 		setting_data_method 			: This dictionary contains:
 												- the name of all settings in the module
 												- the current value of those settings
-												- [optional] a method to call for each setting when the value changes
+												- [optional] apply - a method to call for each setting when the value changes
+												- [optional] translate - a method to call to translate the data before adding it to the 
+												  setting_data_method dict. The translate method must have a 'reverse' argument which 
+												  when set to True, reverses the transformation.  
 
 
 
@@ -75,7 +78,8 @@
 	The developer is free to create any methods they see fit, but the ones listed above are specifically used by the OSA.
 
 	Settings changes are applied when the OSG is called to close. But this behaviour can be changed to occur when the addon
-	settings window closes by editing the open_settings_window method and eliminating the apply_settings method.
+	settings window closes by editing the open_settings_window. The method apply_settings will still be called by OSG, so 
+	keep that in mind.
 
 '''
 
@@ -99,13 +103,20 @@ class OSMCSettingClass(object):
 			setting_value has changed and the existing setting_value. 
 		'''
 
-		self.addonid = "script.module.osmcsetting.dummy"
+		self.addonid = "script.module.osmcsetting.template"
+		self.me = xbmcaddon.Addon(self.addonid)
+
+		self.description = 	"""
+								This is the text that is shown on the OSG. It should describe what the settings module is for,
+								the settings it controls, and anything else you want, I suppose.
+							"""
 
 		self.setting_data_method = 	{
 
 									'mercury': 	{
 														'setting_value' : '',
-														'method_to_apply_changes': self.method_to_apply_changes_X,
+														'apply'			: self.method_to_apply_changes_X,
+														'translate'		: self.translate_on_populate_X,
 														},
 
 									'venus': 	{'setting_value' : ''},
@@ -127,7 +138,8 @@ class OSMCSettingClass(object):
 		self.reboot_required = False
 
 		print 'START'
-		print self.setting_data_method
+		for x, k in self.setting_data_method.iteritems():
+			print "%s = %s" % (x, k.get('setting_value','farts'))
 
 
 	def populate_setting_data_method(self):
@@ -136,11 +148,23 @@ class OSMCSettingClass(object):
 			Populates the setting_value in the setting_data_method.
 		'''
 
+		# this is the method to use if you are populating the dict from the settings.xml
 		latest_settings = self.settings_retriever_xml()
 
+		# cycle through the setting_data_method dict, and populate with the settings values
 		for key in self.setting_data_method.keys():
 
-			self.setting_data_method[key]['setting_value'] = latest_settings[key]
+			# grab the translate method (if there is one)
+			translate_method = self.setting_data_method.get(key,{}).get('translate',{})
+
+			# get the setting value, translate it if needed
+			if translate_method:
+				setting_value = translate_method(latest_settings[key])
+			else:
+				setting_value = latest_settings[key]
+
+			# add it to the dictionary
+			self.setting_data_method[key]['setting_value'] = setting_value
 
 
 	def open_settings_window(self):
@@ -152,15 +176,15 @@ class OSMCSettingClass(object):
 			own user interfaces.
 		'''
 
-		print xbmcaddon.Addon("script.module.osmcsetting.dummy").getAddonInfo('id')
-		me = xbmcaddon.Addon(self.addonid)
+		self.me.openSettings()
 
-		me.openSettings()
-
+		# code placed here will run when the modules settings window is closed
+		# the code below ensures that the apply_settings method is called immediately after closing the settings window
 		self.apply_settings()
 
 		print 'END'
-		print self.setting_data_method
+		for x, k in self.setting_data_method.iteritems():
+			print "%s = %s" % (x, k.get('setting_value','farts'))
 
 
 	def apply_settings(self):
@@ -171,14 +195,12 @@ class OSMCSettingClass(object):
 			final_method, again, if it exists.
 		'''
 
-		# retrieve the current settings
+		# retrieve the current settings from the settings.xml (this is where the user has made changes)
 		new_settings = self.settings_retriever_xml()
 
-		# call the first method if there is one
-		first_method = self.setting_data_method.get('first_method', False)
-
+		# call the first method, if there is one
 		try:
-			first_method()
+			self.first_method()
 		except:
 			pass
 
@@ -186,9 +208,11 @@ class OSMCSettingClass(object):
 		# apply the individual settings changes
 		for k, v in self.setting_data_method.iteritems():
 
-			method = v.get('method_to_apply_changes', False)
-			value  = v['setting_value']
+			# get the application method and stored setting value from the dictionary
+			method = v.get('apply', False)
+			value  = v.get('setting_value', '')
 
+			# if the new setting is different to the stored setting then change the dict and run the 'apply' method
 			if new_settings[k] != value:
 
 				# change stored setting_value to the new value
@@ -196,16 +220,14 @@ class OSMCSettingClass(object):
 
 				# if a specific apply method exists for the setting, then call that
 				try:
-					method(value)
+					method(setting_value)
 				except:
 					pass
 
 
 		# call the final method if there is one
-		final_method = self.setting_data_method.get('final_method', False)
-
 		try:
-			final_method()
+			self.final_method()
 		except:
 			pass
 
@@ -281,11 +303,24 @@ class OSMCSettingClass(object):
 	def method_to_apply_changes_X(self, data):
 
 		'''
-			Method for implementing changes to setting x 
+			Method for implementing changes to setting x.
 
 		'''
 
-		print 'Fuck yeah!'
+		print 'hells yeah!'
+
+	def translate_on_populate_X(self, data, reverse=False):
+
+		'''
+			Method to translate the data before adding to the setting_data_method dict.
+
+			This is useful if you are getting the populating from an external source like the Pi's config.txt.
+			This method could end with a call to another method to populate the settings.xml from that same source.
+		'''
+
+		# this is how you would negate the translateing of the data when the settings window closes.
+		if reverse:
+			return data
 
 	#																															 #
 	##############################################################################################################################
