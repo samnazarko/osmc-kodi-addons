@@ -84,8 +84,6 @@
 '''
 
 
-
-
 # XBMC Modules
 import xbmcaddon
 
@@ -107,6 +105,11 @@ class OSMCSettingClass(object):
 
 		self.addonid = "script.module.osmcsetting.template"
 		self.me = xbmcaddon.Addon(self.addonid)
+
+		self.description = 	"""
+								This is the text that is shown on the OSG. It should describe what the settings module is for,
+								the settings it controls, and anything else you want, I suppose.
+							"""
 
 		self.setting_data_method = 	{
 

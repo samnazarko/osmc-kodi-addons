@@ -96,6 +96,8 @@ class walkthru_gui(xbmcgui.WindowXMLDialog):
 
 	def onAction(self, action):
 
+		log(action)
+
 		actionID = action.getId()
 
 		if (actionID in (10, 92)):

@@ -28,10 +28,10 @@
 </category>
 
 <category label="MEMORY">
-
-<setting id="is256" type="bool" default="false" visible="false"/>
-<setting id="gpu_mem_256" label="gpu_mem_256" type="slider" default="0" range="16,1,192" option="int" visible="eq(-1,true)"/>
-<setting id="gpu_mem_512" label="gpu_mem_512" type="slider" default="0" range="16,1,448" option="int" visible="eq(-2,false)"/>
+<setting id="gpu_memory" label="GPU Memory (max 192MB for 256MB Pi)" type="slider" default="64" range="16,1,448" option="int" />
+<setting id="gpu_mem_256" type="number" visible='false'/>
+<setting id="gpu_mem_512" type="number" visible='false'/>
+<setting id="gpu_mem" type="number" visible='false'/>
 
 </category>
 
