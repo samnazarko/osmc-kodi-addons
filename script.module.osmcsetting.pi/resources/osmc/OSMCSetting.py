@@ -122,6 +122,16 @@ class OSMCSettingClass(object):
 								the settings it controls, and anything else you want, I suppose.
 							"""
 
+		self.not_going_to_config = [	'store_hdmi_to_file',
+										'gpu_memory',
+										]
+
+		self.values_set_elsewhere = [	'hdmi_edid_file',
+										'hdmi_force_hotplug',
+										'gpu_mem_256',
+										'gpu_mem_512',
+										]
+
 		# The setting_value in this dict is what is used in the settings.xml. The need to be translated from any external source,
 		# line the config.txt, and then translated again for writing back.
 		# I have added a translate method to translate the data recieved from an external source before adding it to the setting dict
@@ -138,7 +148,7 @@ class OSMCSettingClass(object):
 																		'translate': self.translate_bool
 																		},
 									'store_hdmi_to_file':		{'setting_value' : '',
-																	'default': 'configignore',
+																	'default': 'false',
 																		'translate': self.translate_store_hdmi,
 																			'apply' : self.apply_store_hdmi,
 																			},
@@ -158,29 +168,25 @@ class OSMCSettingClass(object):
 																	'default': '0',
 																	},
 									'hdmi_group': 				{'setting_value' : '',
-																	'default': 'off',
+																	'default': '0',
 																	},
 									'hdmi_mode': 				{'setting_value' : '',
-																	'default': 'off',
+																	'default': '0',
 																	},
 									'display_rotate': 			{'setting_value' : '',
 																	'default': '0',
 																	},
 									'gpu_memory':				{'setting_value' : '',
-																	'default': 'configignore',
+																	'default': 'false',
 																		'apply': self.apply_gpu_memory,
-																			'translate': self.translate_gpu_mem_xxx
-																	},
-									'gpu_mem':	 				{'setting_value' : '',
-																	'default': 'configignore',
-																		'translate': self.translate_gpu_mem
+																			'translate': self.translate_gpu_mem
 																	},
 									'gpu_mem_256': 				{'setting_value' : '',
 																	'default': '64',
-																		'translate': self.translate_gpu_mem_xxx},
+																	},
 									'gpu_mem_512': 				{'setting_value' : '',
 																	'default': '64',
-																		'translate': self.translate_gpu_mem_xxx},
+																	},
 									'decode_MPG2': 				{'setting_value' : '',
 																	'default': '',
 																	},
@@ -209,6 +215,8 @@ class OSMCSettingClass(object):
 		self.reboot_required = False
 
 		print 'START'
+		for x, k in self.setting_data_method.iteritems():
+			print "%s = %s" % (x, k.get('setting_value','farts'))
 
 
 	def populate_setting_data_method(self):
@@ -255,7 +263,12 @@ class OSMCSettingClass(object):
 				if translate_method:
 					setting_value = translate_method(setting_value)
 
-				self.setting_data_method[key]['setting_value'] = setting_value
+				# if default is setting_value, then the setting has been set in the translation so ignore it
+				if setting_value not in self.not_going_to_config:
+					self.setting_data_method[key]['setting_value'] = setting_value
+
+				# also set the value in the settings.xml
+				self.me.setSetting(key, setting_value)
 
 
 	def open_settings_window(self):
@@ -270,6 +283,10 @@ class OSMCSettingClass(object):
 		# read the config.txt file everytime the settings are opened. This is unavoidable because it is possible for
 		# the user to have made manual changes to the config.txt while OSG is active.
 		self.populate_setting_data_method()
+
+		for x, k in self.setting_data_method.iteritems():
+			print "%s = %s" % (x, k.get('setting_value','farts'))
+
 
 		self.me.openSettings()
 
@@ -323,7 +340,7 @@ class OSMCSettingClass(object):
 
 				# change stored setting_value to the new value
 				self.setting_data_method[k]['setting_value'] = new_settings[k]
-
+		
 				# add it to the changed settings dict
 				self.changed_settings[k] = new_settings[k]
 
@@ -385,8 +402,8 @@ class OSMCSettingClass(object):
 		for k, v in self.changed_settings.iteritems():
 
 			# ignore the setting if it is not to be added to the config.txt
-			if self.setting_data_method.get('default',False) == 'configignore':
-				translated_settings[k] = 'remove'
+			if k in self.not_going_to_config:
+				# translated_settings[k] = 'remove'
 				continue
 
 			# translate the setting if needed
@@ -440,8 +457,14 @@ class OSMCSettingClass(object):
 			Method for implementing changes to setting store_hdmi_to_file. If the setting is on, then change two dependent
 			settings and run something in the command line. If it is off, then disable those two settings.
 		'''
-
+		print '============================'
+		print data
+		print type(data)
+		print '============================'
+		
 		if data == 'true':
+
+			print "store hdmi true"
 
 			# change the dependent settings to 1
 			self.setting_data_method['hdmi_edid_file']['setting_value'] = 'true'
@@ -455,25 +478,33 @@ class OSMCSettingClass(object):
 			subprocess.call(["tvservice", "-d", "/boot/edid.dat"])
 
 		else:
+
+			print "store hdmi false"
+
 			self.setting_data_method['hdmi_edid_file']['setting_value'] = 'false'
 			self.setting_data_method['hdmi_force_hotplug']['setting_value'] = 'false'
 
 			# add it to the changed settings dict
 			self.changed_settings['hdmi_edid_file'] = 'false'
-			self.changed_settings['hdmi_force_hotplug'] = 'flase'
+			self.changed_settings['hdmi_force_hotplug'] = 'false'
 
 
 	def apply_gpu_memory(self, data):
 
 		''' Takes the value for gpu_memory and applies it to both gpu_mem_256 and gpu_mem_512 '''
 
+		try:
+			cdata = int(data)
+		except:
+			cdata = 64
+
 		# change stored setting_value to the new value
-		self.setting_data_method['gpu_mem_512']['setting_value'] = min(448,data)
-		self.setting_data_method['gpu_mem_256']['setting_value'] = min(192,data)
+		self.setting_data_method['gpu_mem_512']['setting_value'] = min(448,cdata)
+		self.setting_data_method['gpu_mem_256']['setting_value'] = min(192,cdata)
 
 		# add it to the changed settings dict
-		self.changed_settings['gpu_mem_512'] = min(448,data)
-		self.changed_settings['gpu_mem_256'] = min(192,data)
+		self.changed_settings['gpu_mem_512'] = min(448,cdata)
+		self.changed_settings['gpu_mem_256'] = min(192,cdata)
 
 
 	def translate_bool(self, data, reverse=False):
@@ -487,11 +518,11 @@ class OSMCSettingClass(object):
 				return 'false'
 
 		else:
-			if data == 'true':
+			if data in [1, '1', 'true']:
 				return '1'
 			else:
 				# any boolean that is set to 0 in the settings.xml should be removed from the config.txt
-				return 'remove'
+				return '0'
 
 
 	def translate_other_string(self, data='', reverse=False):
@@ -549,12 +580,22 @@ class OSMCSettingClass(object):
 
 		if not reverse:
 			if all([self.config_settings.get('hdmi_edid_file', 0), self.config_settings.get('hdmi_force_hotplug', 0)]):
+				
+				print 'translate_store_hdmi'
+				print self.config_settings.get('hdmi_edid_file', 'farts')
+				print self.config_settings.get('hdmi_force_hotplug', 'farts')
+
+
 				return 'true'
 			else:
+				
+				self.me.setSetting('hdmi_edid_file', 'false')
+				self.me.setSetting('hdmi_force_hotplug', 'false')
+
 				return 'false'
 
 		else:
-			pass
+			return 'remove'
 			# this setting will never be sent for reversed translation
 
 
@@ -581,33 +622,20 @@ class OSMCSettingClass(object):
 				return self.config_settings['gpu_mem_256']
 
 			# if neither of those are present, then take the gpu_mem figure and overwrite the other ones.
+			gpu_data = self.config_settings.get('gpu_mem', 64)
 
 			# change the settings in the dict
-			self.setting_data_method['gpu_mem_256']['setting_value'] = min(192, data)
-			self.setting_data_method['gpu_mem_512']['setting_value'] = min(448, data)
-
-			# change the settings in the setting.xml
-			self.me.setSetting('gpu_mem_256', str(min(192, data)))
-			self.me.setSetting('gpu_mem_512', str(min(448, data)))
+			self.setting_data_method['gpu_mem_256']['setting_value'] = min(192, int(gpu_data))
+			self.setting_data_method['gpu_mem_512']['setting_value'] = min(448, int(gpu_data))
+			self.setting_data_method['gpu_memory']['setting_value'] = gpu_data
 
 			# set gpu_mem for removal from the config.txt
 			self.remove_list.append('gpu_mem')
 
 		else:
-			pass
+			return 'remove'
 			# this setting will never be sent for reversed translation
 
-
-	def translate_gpu_mem_xxx(self, data, reverse=False):
-
-		''' Sets the value of the gpu_memory setting. Uses 512 version if available, then 256 version, and finally gpu_mem. '''
-
-		if not reverse:
-
-			return data
-
-		else:
-			return
 
 	#																															 #
 	##############################################################################################################################
