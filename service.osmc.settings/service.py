@@ -46,6 +46,8 @@ import comms
 __addon__        = xbmcaddon.Addon()
 __addonid__      = __addon__.getAddonInfo('id')
 __setting__      = __addon__.getSetting
+DIALOG           = xbmcgui.dialog
+
 
 def log(message):
 	xbmc.log(str(message))
@@ -92,11 +94,72 @@ class Main(object):
 
 				elif response == 'refresh_gui':
 
+					''' This may need to be moved to a separate thread, so that it doesnt hold up the other functions. '''
+
 					# if the gui calls for its own refresh, then delete the existing one and open a new instance
 
 					del self.stored_gui
 
 					self.open_gui()
+
+				elif 'new_device:' in response:
+
+					# a usb device is attached to the hardware
+					
+					# get the device id					
+					device_id = response[len(new_device):]
+
+					# proceed only if the device_id is not null
+					if device_id:
+
+					# get ignore list
+					ignore_list_raw = __setting__('ignored_devices')
+					ignore_list = ignore_list_raw.split('|')
+
+					# get sources list
+					query = {"jsonrpc": "2.0","id": 1, "method": "Files.GetSources", "params": {}}
+					xbmc_request = json.dumps(query)
+					result_raw = xbmc.executeJSONRPC(xbmc_request)
+					result = json.loads(result)
+					media_dict_raw = result.get('result', {}).get('sources', {})
+					media_list_raw = [v.get('file', '') for k, v in media_dict_raw.iteritems()]
+					media_string = ''.join(media_list_raw)
+
+					# post dialogs to ask the user if they want to add the source, or ignore the device
+					if device_id not in ignore_list and device_id not in media_string:
+
+						d1 = DIALOG.yesno('OSMC', 'A new device has been detected.','Would you like to add it as a library source?')
+
+						if d1:
+
+							xbmc.executebuiltin("ActivateWindow(mediasource)")
+
+						else:
+
+							d2 = DIALOG.yesno('OSMC', 'Would you like to ignore this device in the future?')
+
+							if d2:
+								ignore_list.append(str(device_id))
+								ignore_string = '|'.join(ignore_list)
+								__addon__.setSetting('ignored_devices', ignore_string)
+
+
+
+
+''' Would you like to add it as a source? YES. NO
+if YES --> add sources window
+if NO --> ask, Prevent this dialog for this device in the future? YES. NO
+if YES --> add ??? to settings.xml for addon
+All new device notifications first check if the device is in the IGNORE list in the settings.xml
+'''
+
+
+
+
+
+
+
+
 
 			xbmc.sleep(1000)
 
