@@ -142,18 +142,22 @@ msgid "16:9"
 msgstr ""
 
 msgctxt "#32030"
-msgid "GPU Memory Split"
+msgid "GPU Memory Split, 256mb Pi (ignored otherwise)"
 msgstr ""
 
 msgctxt "#32031"
-msgid "Enter MPG2 Licence"
+msgid "GPU Memory Split, 512mb Pi (ignored otherwise)"
 msgstr ""
 
 msgctxt "#32032"
-msgid "Enter WVC1 Licence"
+msgid "Enter MPG2 Licence"
 msgstr ""
 
 msgctxt "#32033"
+msgid "Enter WVC1 Licence"
+msgstr ""
+
+msgctxt "#32034"
 msgid "Click here to edit the other settings found in the config.txt"
 msgstr ""
 

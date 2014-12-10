@@ -8,28 +8,27 @@
 <setting id="hdmi_ignore_edid" label="32011" type="bool" default="false"/>
 <setting id="store_hdmi_to_file" label="32012" type="bool" default="false"/>
 <setting label="32013" enable="false" visible="eq(-1,true)"/>
-<setting id="hdmi_edid_file" type="bool" default="false" visible='false'/>
-<setting id="hdmi_force_hotplug" type="bool" default="false" visible='false'/>
+<!-- <setting id="hdmi_edid_file" type="bool" default="false" visible='false'/>
+<setting id="hdmi_force_hotplug" type="bool" default="false" visible='false'/> -->
 <setting id="hdmi_ignore_cec" label="32014" type="bool" default="false"/>
 <setting id="hdmi_boost" label="32015" type="slider" default="0" range="0,1,7" option="int"/>
 <setting id="hdmi_group" label="32016" type="enum"  lvalues="32017|32018|32019" default="0" />
 <setting id="hdmi_mode" label="32020" type="slider" default="0" range="0,1,86" option="int" />
 <setting id="sdtv_mode" label="32021" type="enum" default="0" lvalues="32022|32023|32024|32025" />
 <setting id="sdtv_aspect" label="32026" type="enum" default="0" lvalues="32027|32028|32029" />
+<setting id="hdmi_ignore_cec_init" label="hdmi_ignore_cec_init" type="bool" default="false" visible="false"/>
 
 </category>
 
 <category label="32002">
-<setting id="gpu_memory" label="32030" type="slider" default="64" range="16,1,448" option="int" />
-<setting id="gpu_mem_256" type="number" visible='false'/>
-<setting id="gpu_mem_512" type="number" visible='false'/>
-<setting id="gpu_mem" type="number" visible='false'/>
+<setting id="gpu_mem_256" label="32030" type="slider" default="64" range="16,1,192" option="int" />
+<setting id="gpu_mem_512" label="32031" type="slider" default="64" range="16,1,448" option="int" />
 
-<setting id="decode_MPG2" label="32031" type="text"  />
-<setting id="decode_WVC1" label="32032" type="text"  />
+<setting id="decode_MPG2" label="32032" type="text"  />
+<setting id="decode_WVC1" label="32033" type="text"  />
 
-<setting id="non_addon_settings" label="32033" type="action" option="close" action="RunScript($CWD/resources/lib/other_settings_window.py)"/>
-<setting id="other_settings_string" type="text" visible="false" default=''/>
+<!-- <setting id="non_addon_settings" label="32034" type="action" option="close" action="RunScript($CWD/resources/lib/other_settings_window.py)"/> -->
+<!-- <setting id="other_settings_string" type="text" visible="false" default=''/> -->
 </category>
 
 </settings>

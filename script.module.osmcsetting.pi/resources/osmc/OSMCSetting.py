@@ -32,12 +32,12 @@
 		reboot_required					: A boolean to declare if the OS needs to be rebooted. If a change in a specific setting 
 									 	  requires an OS reboot to take affect, this is flag that will let the OSG know.
 
-		setting_data_method 			: This dictionary contains:
+		pi_settings_dict 			: This dictionary contains:
 												- the name of all settings in the module
 												- the current value of those settings
 												- [optional] a method to call for each setting when the value changes
 												- [optional] translate - a method to call to translate the data before adding it to the 
-												  setting_data_method dict. The translate method must have a 'reverse' argument which 
+												  pi_settings_dict dict. The translate method must have a 'reverse' argument which 
 												  when set to True, reverses the transformation.  
 
 
@@ -56,10 +56,10 @@
 
 		apply_settings					: This is called by the OSG to apply the changes to any settings that have changed.
 										  It calls the first setting method, if it exists. 
-										  Then it calls the method listed in setting_data_method for each setting. Then it 
+										  Then it calls the method listed in pi_settings_dict for each setting. Then it 
 										  calls the final method, again, if it exists.
 
-		populate_setting_data_method	: This method is used to populate the setting_data_method with the current settings data.
+		populate_pi_settings_dict	: This method is used to populate the pi_settings_dict with the current settings data.
 										  Usually this will be from the addons setting data stored in settings.xml and retrieved
 										  using the settings_retriever_xml method.
 
@@ -72,7 +72,7 @@
 
 
 		settings_retriever_xml			: This method is used to retrieve all the data for the settings listed in the 
-										  setting_data_method from the addons settings.xml.
+										  pi_settings_dict from the addons settings.xml.
 
 	The developer is free to create any methods they see fit, but the ones listed above are specifically used by the OSA.
 
@@ -110,7 +110,7 @@ class OSMCSettingClass(object):
 	def __init__(self):
 
 		''' 
-			The setting_data_method contains all the settings in the settings group, as well as the methods to call when a
+			The pi_settings_dict contains all the settings in the settings group, as well as the methods to call when a
 			setting_value has changed and the existing setting_value. 
 		'''
 
@@ -123,13 +123,11 @@ class OSMCSettingClass(object):
 							"""
 
 		self.not_going_to_config = [	'store_hdmi_to_file',
-										'gpu_memory',
+										'gpu_mem',
 										]
 
 		self.values_set_elsewhere = [	'hdmi_edid_file',
 										'hdmi_force_hotplug',
-										'gpu_mem_256',
-										'gpu_mem_512',
 										]
 
 		# The setting_value in this dict is what is used in the settings.xml. The need to be translated from any external source,
@@ -138,7 +136,7 @@ class OSMCSettingClass(object):
 		# I have also added a default setting here, because the settings stored in the settings.xml cannot be relied upon,
 		# because if the user adds a setting, then deletes it offline, the settings.xml will add it back in when the addon exits.
 		# A default value of configignore means that the setting should never be passed to the config parser.
-		self.setting_data_method = 	{
+		self.pi_settings_dict = 	{
 									'hdmi_safe': 				{'setting_value' : '',
 																	'default': 'false',
 																		'translate': self.translate_bool
@@ -150,7 +148,6 @@ class OSMCSettingClass(object):
 									'store_hdmi_to_file':		{'setting_value' : '',
 																	'default': 'false',
 																		'translate': self.translate_store_hdmi,
-																			'apply' : self.apply_store_hdmi,
 																			},
 									'hdmi_edid_file': 			{'setting_value' : '',
 																	'default': 'false',
@@ -164,6 +161,10 @@ class OSMCSettingClass(object):
 																	'default': 'false',
 																		'translate': self.translate_bool
 																		},
+									'hdmi_ignore_cec_init ': 	{'setting_value' : '',
+																	'default': 'true',
+																		'translate': self.translate_bool
+																		},																		
 									'hdmi_boost': 				{'setting_value' : '',
 																	'default': '0',
 																	},
@@ -176,10 +177,9 @@ class OSMCSettingClass(object):
 									'display_rotate': 			{'setting_value' : '',
 																	'default': '0',
 																	},
-									'gpu_memory':				{'setting_value' : '',
+									'gpu_mem':					{'setting_value' : '',
 																	'default': 'false',
-																		'apply': self.apply_gpu_memory,
-																			'translate': self.translate_gpu_mem
+																		'translate': self.translate_gpu_mem
 																	},
 									'gpu_mem_256': 				{'setting_value' : '',
 																	'default': '64',
@@ -193,9 +193,9 @@ class OSMCSettingClass(object):
 									'decode_WVC1': 				{'setting_value' : '',
 																	'default': '',
 																	},
-									'other_settings_string': 	{'setting_value' : '',
-																	'default': '',
-																		'translate': self.translate_other_string
+									# 'other_settings_string': 	{'setting_value' : '',
+									# 								'default': '',
+									# 									'translate': self.translate_other_string
 																		},								
 									}
 
@@ -208,21 +208,21 @@ class OSMCSettingClass(object):
 		# the location of the config file FOR TESTING ONLY									
 		self.test_config = '/home/kubkev/Documents/config.txt'
 
-		# populate the settings data in the setting_data_method
-		# self.populate_setting_data_method()
+		# populate the settings data in the pi_settings_dict
+		# self.populate_pi_settings_dict()
 
 		# a flag to determine whether a setting change requires a reboot to take effect
 		self.reboot_required = False
 
 		print 'START'
-		for x, k in self.setting_data_method.iteritems():
+		for x, k in self.pi_settings_dict.iteritems():
 			print "%s = %s" % (x, k.get('setting_value','farts'))
 
 
-	def populate_setting_data_method(self):
+	def populate_pi_settings_dict(self):
 
 		'''
-			Populates the setting_value in the setting_data_method.
+			Populates the setting_value in the pi_settings_dict.
 		'''
 
 		# this is the method to use if you are populating the dict from the settings.xml
@@ -232,43 +232,38 @@ class OSMCSettingClass(object):
 		# settings from the config.txt, and getting the rest from the settings.xml
 		self.config_settings = ct.read_config(self.test_config)
 
-		# cycle through the setting_data_method dict, and populate with the settings values
-		for key in self.setting_data_method.keys():
+		# cycle through the pi_settings_dict dict, and populate with the settings values
+		for key in self.pi_settings_dict.keys():
+
+			# if the value of the setting is to be assigned by another setting, then just ignore it here
+			# note: this will mean that the other setting will have to populate both the settings_dict and the settings.xml
+			if key in self.values_set_elsewhere:
+				continue
 
 			# grab the translate method (if there is one)
-			translate_method = self.setting_data_method.get(key,{}).get('translate',{})
+			translate_method = self.pi_settings_dict.get(key,{}).get('translate',{})
 
 			# if the key is in the config.txt
 			if key in self.config_settings:
 
-				# get the setting value, translate it if needed
-				if translate_method:
-					setting_value = translate_method(self.config_settings[key])
-				else:
-					setting_value = self.config_settings[key]
-
-				# set the value in the setting_data_method
-				self.setting_data_method[key]['setting_value'] = setting_value
-				
-				# also set the value in the settings.xml
-				self.me.setSetting(key, setting_value)
+				setting_value = self.config_settings[key]
 
 			else:
 				# if the key ISNT in the config.txt then set the value from the default stored in 
-				# the setting_data_method dict
+				# the pi_settings_dict dict
 
-				setting_value = self.setting_data_method[key].get('default','')
+				setting_value = self.pi_settings_dict[key].get('default','')
 
-				# get the setting value, translate it if needed
-				if translate_method:
-					setting_value = translate_method(setting_value)
+			# get the setting value, translate it if needed
+			if translate_method:
+				setting_value = translate_method(setting_value)
 
-				# if default is setting_value, then the setting has been set in the translation so ignore it
-				if setting_value not in self.not_going_to_config:
-					self.setting_data_method[key]['setting_value'] = setting_value
+			# if default is setting_value, then the setting has been set in the translation so ignore it
+			if setting_value not in self.not_going_to_config:
+				self.pi_settings_dict[key]['setting_value'] = setting_value
 
-				# also set the value in the settings.xml
-				self.me.setSetting(key, setting_value)
+			# also set the value in the settings.xml
+			self.me.setSetting(key, setting_value)
 
 
 	def open_settings_window(self):
@@ -282,14 +277,13 @@ class OSMCSettingClass(object):
 
 		# read the config.txt file everytime the settings are opened. This is unavoidable because it is possible for
 		# the user to have made manual changes to the config.txt while OSG is active.
-		self.populate_setting_data_method()
+		self.populate_pi_settings_dict()
 
-		for x, k in self.setting_data_method.iteritems():
+		for x, k in self.pi_settings_dict.iteritems():
 			print "%s = %s" % (x, k.get('setting_value','farts'))
 
 
 		self.me.openSettings()
-
 
 		# code placed here will run when the modules settings window is closed
 		self.apply_permitted = True
@@ -301,8 +295,9 @@ class OSMCSettingClass(object):
 		# apply_permitted will prevent the apply function being called by anything other than this method.
 		# This stops it from being called twice, once when the settings are closed and another when the OSG is closed
 
+		''' FOR TESTING ONLY '''
 		print 'END'
-		for x, k in self.setting_data_method.iteritems():
+		for x, k in self.pi_settings_dict.iteritems():
 			print "%s = %s" % (x, k.get('setting_value','farts'))
 
 
@@ -310,10 +305,12 @@ class OSMCSettingClass(object):
 
 		'''
 			This method will apply all of the settings. It calls the first_method, if it exists. 
-			Then it calls the method listed in setting_data_method for each setting. Then it calls the
+			Then it calls the method listed in pi_settings_dict for each setting. Then it calls the
 			final_method, again, if it exists.
 		'''
 
+		# this prevents the method running when called by the OSG. Rather, the method is only being run when the settings
+		# window is closed.
 		if not self.apply_permitted:
 			return
 
@@ -323,13 +320,16 @@ class OSMCSettingClass(object):
 		# dict to hold the keys of the changed settings
 		self.changed_settings = {}
 
-		# list to hold the keys of the settings that need to be removed from the 
-
 		# call the first method, if there is one
 		self.first_method()
 
 		# apply the individual settings changes
-		for k, v in self.setting_data_method.iteritems():
+		for k, v in self.pi_settings_dict.iteritems():
+
+			# if the value of the setting is set elsewhere, then the adding of the settings to changed settings will also
+			# have to be handled by the apply method of that other setting.
+			if k in self.values_set_elsewhere:
+				continue
 
 			# get the application method and stored setting value from the dictionary
 			method = v.get('apply', False)
@@ -339,7 +339,7 @@ class OSMCSettingClass(object):
 			if new_settings[k] != value:
 
 				# change stored setting_value to the new value
-				self.setting_data_method[k]['setting_value'] = new_settings[k]
+				self.pi_settings_dict[k]['setting_value'] = new_settings[k]
 		
 				# add it to the changed settings dict
 				self.changed_settings[k] = new_settings[k]
@@ -365,7 +365,7 @@ class OSMCSettingClass(object):
 
 		addon = xbmcaddon.Addon(self.addonid)
 
-		for key in self.setting_data_method.keys():
+		for key in self.pi_settings_dict.keys():
 
 			latest_settings[key] = addon.getSetting(key)
 
@@ -391,44 +391,49 @@ class OSMCSettingClass(object):
 			The method to call after all the other setting methods have been called.
 
 			For example, in the case of the Raspberry Pi's settings module, the final writing to the config.txt can be delayed
-			until all the settings have been updated in the setting_data_method. 
+			until all the settings have been updated in the pi_settings_dict. 
 
 		'''
 
 		''' This method will write the changed settings to the config.txt file. '''
 
 		# translate the changed settings into values that can be used in the config.txt
-		translated_settings = {}
+		self.translated_changed_settings = {}
 		for k, v in self.changed_settings.iteritems():
 
-			# ignore the setting if it is not to be added to the config.txt
-			if k in self.not_going_to_config:
-				# translated_settings[k] = 'remove'
-				continue
-
 			# translate the setting if needed
-			translate_method = self.setting_data_method.get(k,{}).get('translate', False)
+			# in some cases this translation can be used to set the values for other settings and have them added
+			# to the translated_changed_settings dict
+			translate_method = self.pi_settings_dict.get(k,{}).get('translate', False)
 
 			if translate_method:
 				value = translate_method(v, reverse=True)
 			else:
 				value = v #.get('setting_value','')
 
-			# if this is the other_settings_string then break up into the individual settings
-			if k == 'other_settings_string':
-				for key, svalue in value.iteritems():
-					translated_settings[key] = svalue
+			# if the setting is not to be added to the config.txt, then dont add it to the self.translated_changed_settings dict
+			if k in self.not_going_to_config:
+				continue
+
+			# # if this is the other_settings_string then break up into the individual settings
+			# elif k == 'other_settings_string':
+			# 	for key, svalue in value.iteritems():
+			# 		self.translated_changed_settings[key] = svalue
+
+			# add the setting to the translated settings dict, this is now ready to send to the config.txt writer	
 			else:
-				translated_settings[k] = value
+				self.translated_changed_settings[k] = value
 
 		# transfer the remove list into the changes dict
+		# this will make sure that existing settings in the config.txt that need to be removed, will be removed
 		for remove_key in self.remove_list:
-			translated_settings[remove_key] = 'remove'
+			self.translated_changed_settings[remove_key] = 'remove'
 
+		# reset the remove list
 		self.remove_list = []
 
 		# write the settings to the config.txt
-		ct.write_config(self.test_config, translated_settings)
+		ct.write_config(self.test_config, self.translated_changed_settings)
 
 
 	def boot_method(self):
@@ -451,61 +456,6 @@ class OSMCSettingClass(object):
 		Methods beyond this point are for specific settings. 
 	'''
 
-	def apply_store_hdmi(self, data):
-
-		'''
-			Method for implementing changes to setting store_hdmi_to_file. If the setting is on, then change two dependent
-			settings and run something in the command line. If it is off, then disable those two settings.
-		'''
-		print '============================'
-		print data
-		print type(data)
-		print '============================'
-		
-		if data == 'true':
-
-			print "store hdmi true"
-
-			# change the dependent settings to 1
-			self.setting_data_method['hdmi_edid_file']['setting_value'] = 'true'
-			self.setting_data_method['hdmi_force_hotplug']['setting_value'] = 'true'
-
-			# add it to the changed settings dict
-			self.changed_settings['hdmi_edid_file'] = 'true'
-			self.changed_settings['hdmi_force_hotplug'] = 'true'
-
-			# run the sub_process : "tvservice -d /boot/edid.dat"
-			subprocess.call(["tvservice", "-d", "/boot/edid.dat"])
-
-		else:
-
-			print "store hdmi false"
-
-			self.setting_data_method['hdmi_edid_file']['setting_value'] = 'false'
-			self.setting_data_method['hdmi_force_hotplug']['setting_value'] = 'false'
-
-			# add it to the changed settings dict
-			self.changed_settings['hdmi_edid_file'] = 'false'
-			self.changed_settings['hdmi_force_hotplug'] = 'false'
-
-
-	def apply_gpu_memory(self, data):
-
-		''' Takes the value for gpu_memory and applies it to both gpu_mem_256 and gpu_mem_512 '''
-
-		try:
-			cdata = int(data)
-		except:
-			cdata = 64
-
-		# change stored setting_value to the new value
-		self.setting_data_method['gpu_mem_512']['setting_value'] = min(448,cdata)
-		self.setting_data_method['gpu_mem_256']['setting_value'] = min(192,cdata)
-
-		# add it to the changed settings dict
-		self.changed_settings['gpu_mem_512'] = min(448,cdata)
-		self.changed_settings['gpu_mem_256'] = min(192,cdata)
-
 
 	def translate_bool(self, data, reverse=False):
 
@@ -521,83 +471,101 @@ class OSMCSettingClass(object):
 			if data in [1, '1', 'true']:
 				return '1'
 			else:
-				# any boolean that is set to 0 in the settings.xml should be removed from the config.txt
 				return '0'
 
 
-	def translate_other_string(self, data='', reverse=False):
+	# def translate_other_string(self, data='', reverse=False):
 
-		''' 
-			Method to collate all the unknown settings from the config.txt into a single string, delimited by |:-:|.
-			The reverse function returns a dictionary with {setting_name: setting_value, ... }
-		'''
+	# 	''' 
+	# 		Method to collate all the unknown settings from the config.txt into a single string, delimited by |:-:|.
+	# 		The reverse function returns a dictionary with {setting_name: setting_value, ... }
+	# 	'''
 
-		if not reverse:
-			config_keys = set(self.config_settings.keys())
-			xml_keys    = set(self.setting_data_method.keys())
+	# 	if not reverse:
+	# 		config_keys = set(self.config_settings.keys())
+	# 		xml_keys    = set(self.pi_settings_dict.keys())
 
-			self.unknown_setting_keys = list(config_keys.difference(xml_keys))
+	# 		self.unknown_setting_keys = list(config_keys.difference(xml_keys))
 
-			unknown_settings = [str(x) + '=' + str(self.config_settings[x]) for x in self.unknown_setting_keys]
+	# 		unknown_settings = [str(x) + '=' + str(self.config_settings[x]) for x in self.unknown_setting_keys]
 
-			return "|:-:|".join(unknown_settings)
+	# 		return "|:-:|".join(unknown_settings)
 
-		else:
+	# 	else:
 
-			no_space_data = data.replace(" ",'')
-			setting_pairs = no_space_data.split("|:-:|")
+	# 		no_space_data = data.replace(" ",'')
+	# 		setting_pairs = no_space_data.split("|:-:|")
 
-			other_settings = []
+	# 		other_settings = []
 
-			for setting in setting_pairs:
-				set_list = setting.split('=')
+	# 		for setting in setting_pairs:
+	# 			set_list = setting.split('=')
 
-				if len(set_list) == 2:
-					other_settings.append(tuple(set_list))
+	# 			if len(set_list) == 2:
+	# 				other_settings.append(tuple(set_list))
 
-			new_unknown_settings = dict(other_settings)
+	# 		new_unknown_settings = dict(other_settings)
 
-			# construct a list of keys that are in self.unknown_setting_keys but not in new_unknown_settings_keys
-			new_unknown_settings_keys = set(new_unknown_settings.keys())
-			unknown_settings_keys = set(self.unknown_setting_keys)
+	# 		# construct a list of keys that are in self.unknown_setting_keys but not in new_unknown_settings_keys
+	# 		new_unknown_settings_keys = set(new_unknown_settings.keys())
+	# 		unknown_settings_keys = set(self.unknown_setting_keys)
 
-			removals = list(unknown_settings_keys.difference(new_unknown_settings_keys))
+	# 		removals = list(unknown_settings_keys.difference(new_unknown_settings_keys))
 
-			# setup the removed unknown settings to be removed from the config.txt
-			for rem in removals:
-				new_unknown_settings[rem] = 'remove'
+	# 		# setup the removed unknown settings to be removed from the config.txt
+	# 		for rem in removals:
+	# 			new_unknown_settings[rem] = 'remove'
 
-			# change the self.unknown_setting_keys list to the current list of unknown keys
-			self.unknown_setting_keys = list(new_unknown_settings_keys)
+	# 		# change the self.unknown_setting_keys list to the current list of unknown keys
+	# 		self.unknown_setting_keys = list(new_unknown_settings_keys)
 
-			return new_unknown_settings
+	# 		return new_unknown_settings
 
 
 	def translate_store_hdmi(self, data, reverse=False):
 
-		''' Returns 1 if hdmi_edid_file and hdmi_force_hotplug are set to 1.
-			In reverse,  '''
+		''' 
+			Sets the settings_dict and settings.xml values for hdmi_edid_file and hdmi_force_hotplug.
+		'''
 
 		if not reverse:
-			if all([self.config_settings.get('hdmi_edid_file', 0), self.config_settings.get('hdmi_force_hotplug', 0)]):
-				
-				print 'translate_store_hdmi'
-				print self.config_settings.get('hdmi_edid_file', 'farts')
-				print self.config_settings.get('hdmi_force_hotplug', 'farts')
 
+			# set the pi_settings_dict and settings.xml values for these two settings
+			hdmi_edid_file     = self.translate_bool(self.config_settings.get('hdmi_edid_file', 0))
+			hdmi_force_hotplug = self.translate_bool(self.config_settings.get('hdmi_force_hotplug', 0))
 
-				return 'true'
-			else:
-				
-				self.me.setSetting('hdmi_edid_file', 'false')
-				self.me.setSetting('hdmi_force_hotplug', 'false')
+			# popcornmix says that if either of these settings are active, then both should be active
+			tethered_settings = all([hdmi_edid_file , hdmi_force_hotplug])
 
-				return 'false'
+			self.pi_settings_dict['hdmi_edid_file']['setting_value']     = tethered_settings
+			self.pi_settings_dict['hdmi_force_hotplug']['setting_value'] = tethered_settings
+
+			# return the appropriate value for the parent setting
+			if tethered_settings: return 'true'
+
+			return 'false'
+
 
 		else:
-			return 'remove'
-			# this setting will never be sent for reversed translation
 
+			# if the parent setting is true, then the child settings should be set to one
+			# if it isnt true, then both settings should be removed from the config.txt
+			if data == 'true':
+
+				self.translated_changed_settings['hdmi_edid_file'] = '1'
+				self.translated_changed_settings['hdmi_force_hotplug'] = '1'
+
+				# run the sub_process : "tvservice -d /boot/edid.dat"
+				subprocess.call(["tvservice", "-d", "/boot/edid.dat"])
+
+			else:
+
+				# if the parent setting is false, then remove these two child settings from the config.xml			
+				self.remove_list.append('hdmi_edid_file')
+				self.remove_list.append('hdmi_force_hotplug')
+
+				return 'remove'
+			
 
 	def translate_gpu_mem(self, data, reverse=False):
 
@@ -608,33 +576,50 @@ class OSMCSettingClass(object):
 
 		if not reverse:
 
-			# if either 256 or 512 is present, then use that figure instead
-			if 'gpu_mem_512' in self.config_settings:
-				
-				# set gpu_mem for removal from the config.txt
-				self.remove_list.append('gpu_mem')
-				return self.config_settings['gpu_mem_512']
+			memgpu = self.config_settings.get('gpu_mem', False)
 
-			elif 'gpu_mem_256' in self.config_settings:
-				
-				# set gpu_mem for removal from the config.txt
-				self.remove_list.append('gpu_mem')
-				return self.config_settings['gpu_mem_256']
+			# if gpu_mem is not in the config.txt then just return
+			if not memgpu:
 
-			# if neither of those are present, then take the gpu_mem figure and overwrite the other ones.
-			gpu_data = self.config_settings.get('gpu_mem', 64)
-
-			# change the settings in the dict
-			self.setting_data_method['gpu_mem_256']['setting_value'] = min(192, int(gpu_data))
-			self.setting_data_method['gpu_mem_512']['setting_value'] = min(448, int(gpu_data))
-			self.setting_data_method['gpu_memory']['setting_value'] = gpu_data
+				return 'remove'
 
 			# set gpu_mem for removal from the config.txt
 			self.remove_list.append('gpu_mem')
 
-		else:
+			# get the values for the other memory setting variants
+			mem512 = self.config_settings.get('gpu_mem_512', False)
+			mem256 = self.config_settings.get('gpu_mem_256', False)
+
+			# if gpu_mem_512 is in the config, then use that, otherwise use gpu_mem, otherwise use default
+			if mem512:
+
+				return 'remove'
+
+			elif memgpu:
+
+				# set the value in the pi_settings_dict and the settings.xml for display
+				val512 = min(448, int(memgpu))
+				self.me.setSetting('gpu_mem_512', val512)
+				self.pi_settings_dict['gpu_mem_512']['setting_value'] = val512
+
+			# if gpu_mem_256 is in the config, then use that, otherwise use gpu_mem, otherwise use default
+			if mem256:
+
+				return 'remove'
+
+			elif memgpu:
+
+				# set the value in the pi_settings_dict and the settings.xml for display
+				val256 = min(192, int(memgpu))
+				self.me.setSetting('gpu_mem_256', val256)
+				self.pi_settings_dict['gpu_mem_256']['setting_value'] = val256
+
 			return 'remove'
-			# this setting will never be sent for reversed translation
+
+		else:
+
+			return 'remove'
+			
 
 
 	#																															 #
