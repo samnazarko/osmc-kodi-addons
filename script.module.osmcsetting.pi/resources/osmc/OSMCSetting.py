@@ -196,7 +196,7 @@ class OSMCSettingClass(object):
 									# 'other_settings_string': 	{'setting_value' : '',
 									# 								'default': '',
 									# 									'translate': self.translate_other_string
-																		},								
+																		# },								
 									}
 
 		# list to hold the keys for the other string settings
