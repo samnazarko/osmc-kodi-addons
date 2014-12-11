@@ -177,6 +177,12 @@ class OSMCSettingClass(object):
 									'display_rotate': 			{'setting_value' : '',
 																	'default': '0',
 																	},
+									'sdtv_mode': 				{'setting_value' : '',
+																	'default': '0',
+																	},
+									'sdtv_aspect': 				{'setting_value' : '',
+																	'default': '0',
+																	},																																		
 									'gpu_mem':					{'setting_value' : '',
 																	'default': 'false',
 																		'translate': self.translate_gpu_mem
@@ -263,7 +269,7 @@ class OSMCSettingClass(object):
 				self.pi_settings_dict[key]['setting_value'] = setting_value
 
 			# also set the value in the settings.xml
-			self.me.setSetting(key, setting_value)
+			self.me.setSetting(key, str(setting_value))
 
 
 	def open_settings_window(self):
@@ -534,8 +540,13 @@ class OSMCSettingClass(object):
 			hdmi_edid_file     = self.translate_bool(self.config_settings.get('hdmi_edid_file', 0))
 			hdmi_force_hotplug = self.translate_bool(self.config_settings.get('hdmi_force_hotplug', 0))
 
+			print '=========================================================================='
+			print hdmi_edid_file
+			print hdmi_force_hotplug
+
+
 			# popcornmix says that if either of these settings are active, then both should be active
-			tethered_settings = all([hdmi_edid_file , hdmi_force_hotplug])
+			tethered_settings = all([hdmi_edid_file=='true' , hdmi_force_hotplug=='true'])
 
 			self.pi_settings_dict['hdmi_edid_file']['setting_value']     = tethered_settings
 			self.pi_settings_dict['hdmi_force_hotplug']['setting_value'] = tethered_settings
@@ -599,7 +610,7 @@ class OSMCSettingClass(object):
 
 				# set the value in the pi_settings_dict and the settings.xml for display
 				val512 = min(448, int(memgpu))
-				self.me.setSetting('gpu_mem_512', val512)
+				self.me.setSetting('gpu_mem_512', str(val512))
 				self.pi_settings_dict['gpu_mem_512']['setting_value'] = val512
 
 			# if gpu_mem_256 is in the config, then use that, otherwise use gpu_mem, otherwise use default
@@ -611,7 +622,7 @@ class OSMCSettingClass(object):
 
 				# set the value in the pi_settings_dict and the settings.xml for display
 				val256 = min(192, int(memgpu))
-				self.me.setSetting('gpu_mem_256', val256)
+				self.me.setSetting('gpu_mem_256', str(val256))
 				self.pi_settings_dict['gpu_mem_256']['setting_value'] = val256
 
 			return 'remove'

@@ -23,6 +23,9 @@ def grab_configtxt(config_location):
     # instantiate a config parser
     parser = ConfigParser.RawConfigParser()
 
+    # force all data to be written as a string
+    parser.optionxform = str
+
     # read the stringIO into the config parser, file_config represents the previous config data
     parser.readfp(long_string_file)
 
@@ -68,10 +71,10 @@ def write_config(config_location,  changes={}):
     print 's'
     print 's'
     print 's'
-    print 's'
-    print 's'
-    print 's'
     print changes
+    print 's'
+    print 's'
+    print 's'
 
     # grab the parser if it isnt provided
     blotter = grab_configtxt(config_location)

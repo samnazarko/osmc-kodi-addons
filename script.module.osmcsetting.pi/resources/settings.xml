@@ -14,8 +14,8 @@
 <setting id="hdmi_boost" label="32015" type="slider" default="0" range="0,1,7" option="int"/>
 <setting id="hdmi_group" label="32016" type="enum"  lvalues="32017|32018|32019" default="0" />
 <setting id="hdmi_mode" label="32020" type="slider" default="0" range="0,1,86" option="int" />
-<setting id="sdtv_mode" label="32021" type="enum" default="0" lvalues="32022|32023|32024|32025" />
-<setting id="sdtv_aspect" label="32026" type="enum" default="0" lvalues="32027|32028|32029" />
+<setting id="sdtv_mode" label="32021" type="enum" default="0" lvalues="32035|32022|32023|32024|32025" />
+<setting id="sdtv_aspect" label="32026" type="enum" default="0" lvalues="32035|32027|32028|32029" />
 <setting id="hdmi_ignore_cec_init" label="hdmi_ignore_cec_init" type="bool" default="false" visible="false"/>
 
 </category>
