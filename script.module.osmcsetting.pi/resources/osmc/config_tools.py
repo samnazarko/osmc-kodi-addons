@@ -2,7 +2,7 @@
 # Standard Modules
 import StringIO
 import ConfigParser
-import random
+import subprocess
 
 
 def grab_configtxt(config_location):
@@ -22,6 +22,9 @@ def grab_configtxt(config_location):
     
     # instantiate a config parser
     parser = ConfigParser.RawConfigParser()
+
+    # force all data to be written as a string
+    parser.optionxform = str
 
     # read the stringIO into the config parser, file_config represents the previous config data
     parser.readfp(long_string_file)
@@ -68,10 +71,10 @@ def write_config(config_location,  changes={}):
     print 's'
     print 's'
     print 's'
-    print 's'
-    print 's'
-    print 's'
     print changes
+    print 's'
+    print 's'
+    print 's'
 
     # grab the parser if it isnt provided
     blotter = grab_configtxt(config_location)
@@ -101,10 +104,16 @@ def write_config(config_location,  changes={}):
     # skip the first seven characters to ignore "[osmc]\n" at the start of the file
     long_string_file.seek(7)
 
+    # temporary location for the config.txt
+    tmp_loc = '/var/tmp/config.txt'
+
     # write the long_string_file to the config.txt
-    with open(config_location,'w') as f:
+    with open(tmp_loc,'w') as f:
         for line in long_string_file.readlines():
             f.write(line.replace(" = ","="))
+
+    # copy over the temp config.txt to /boot/ as superuser
+    subprocess.call(["sudo", "mv",  tmp_loc, "/boot/config.txt"])
 
 
 if ( __name__ == "__main__" ):

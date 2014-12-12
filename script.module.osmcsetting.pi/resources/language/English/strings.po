@@ -161,8 +161,8 @@ msgctxt "#32034"
 msgid "Click here to edit the other settings found in the config.txt"
 msgstr ""
 
-msgctxt "#320"
-msgid ""
+msgctxt "#32035"
+msgid "Default"
 msgstr ""
 
 msgctxt "#320"
