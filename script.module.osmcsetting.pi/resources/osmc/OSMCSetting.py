@@ -212,7 +212,8 @@ class OSMCSettingClass(object):
 		self.remove_list = []
 
 		# the location of the config file FOR TESTING ONLY									
-		self.test_config = '/home/kubkev/Documents/config.txt'
+		# self.test_config = '/home/kubkev/Documents/config.txt'
+		self.test_config = '/boot/config.txt'
 
 		# populate the settings data in the pi_settings_dict
 		# self.populate_pi_settings_dict()
@@ -567,7 +568,7 @@ class OSMCSettingClass(object):
 				self.translated_changed_settings['hdmi_force_hotplug'] = '1'
 
 				# run the sub_process : "tvservice -d /boot/edid.dat"
-				subprocess.call(["tvservice", "-d", "/boot/edid.dat"])
+				subprocess.call(["sudo", "tvservice", "-d", "/boot/edid.dat"])
 
 			else:
 
