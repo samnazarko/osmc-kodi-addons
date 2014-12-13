@@ -27,7 +27,7 @@
 <setting id="decode_MPG2" label="32032" type="text"  />
 <setting id="decode_WVC1" label="32033" type="text"  />
 
-<!-- <setting id="non_addon_settings" label="32034" type="action" option="close" action="RunScript($CWD/resources/lib/other_settings_window.py)"/> -->
+<setting id="non_addon_settings" label="32034" type="action" option="close" action="RunScript($CWD/resources/osmc/config_editor.py)"/>
 <!-- <setting id="other_settings_string" type="text" visible="false" default=''/> -->
 </category>
 
