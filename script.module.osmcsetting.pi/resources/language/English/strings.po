@@ -158,43 +158,71 @@ msgid "Enter WVC1 Licence"
 msgstr ""
 
 msgctxt "#32034"
-msgid "Click here to edit the other settings found in the config.txt"
+msgid "Open Config.txt Editor"
 msgstr ""
 
 msgctxt "#32035"
 msgid "Default"
 msgstr ""
 
-msgctxt "#320"
-msgid ""
+msgctxt "#32050"
+msgid "Done"
 msgstr ""
 
-msgctxt "#320"
-msgid ""
+msgctxt "#32051"
+msgid "OSMC Pi Config Editor"
 msgstr ""
 
-msgctxt "#320"
-msgid ""
+msgctxt "#32052"
+msgid "New Entry"
 msgstr ""
 
-msgctxt "#320"
-msgid ""
+msgctxt "#32053"
+msgid "Would you like to write these changes to the config file?"
 msgstr ""
 
-msgctxt "#320"
-msgid ""
+msgctxt "#32054"
+msgid "Discard"
 msgstr ""
 
-msgctxt "#320"
-msgid ""
+msgctxt "#32055"
+msgid "Write"
 msgstr ""
 
-msgctxt "#320"
-msgid ""
+msgctxt "#32056"
+msgid "DELETE"
 msgstr ""
 
-msgctxt "#320"
-msgid ""
+msgctxt "#32057"
+msgid "Would you like to EDIT or DELETE this entry?"
+msgstr ""
+
+msgctxt "#32058"
+msgid "Edit"
+msgstr ""
+
+msgctxt "#32059"
+msgid "Delete"
+msgstr ""
+
+msgctxt "#32060"
+msgid "Edit the config entry"
+msgstr ""
+
+msgctxt "#32061"
+msgid "Would you like to EDIT or UNDELETE this entry?"
+msgstr ""
+
+msgctxt "#32062"
+msgid "Undelete"
+msgstr ""
+
+msgctxt "#32063"
+msgid "Edit the config entry"
+msgstr ""
+
+msgctxt "#32064"
+msgid "Add a new config entry"
 msgstr ""
 
 msgctxt "#320"

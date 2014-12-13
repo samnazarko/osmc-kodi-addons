@@ -14,8 +14,20 @@ def grab_configtxt(config_location):
     # open the config file read the contents into a long string
     with open(config_location,'r') as f:
 
+        lines = f.readlines()
+
+        # santise the text
+        sanitised_lines = []
+        for line in lines:
+            if line.startswith('#'):
+                sanitised_lines.append(line)
+            elif '=' in line:
+                sanitised_lines.append(line)
+
         # add [root] to the front to create a root section for the parser to read
-        long_string = '[osmc]\n' + f.read()
+        long_string = '[osmc]\n' + ''.join(sanitised_lines)
+
+    # sanitise the string
 
     # put the string into a stringIO to allow the parser to read it like a file
     long_string_file = StringIO.StringIO(long_string)
