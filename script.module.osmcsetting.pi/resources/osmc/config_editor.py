@@ -34,7 +34,7 @@ class ConfigEditor(xbmcgui.WindowXMLDialog):
 		self.config = '/boot/config.txt'
 
 		# FOR TESTINGS
-		self.config = '/home/kubkev/Documents/config.txt'
+		# self.config = '/home/kubkev/Documents/config.txt'
 
 		with open(self.config, 'r') as f:
 			self.lines = f.readlines()
