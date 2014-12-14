@@ -54,11 +54,12 @@ class ConfigEditor(xbmcgui.WindowXMLDialog):
 		self.hdg.setVisible(True)
 
 		# Hide unused list frame
-		self.x = self.getControl(3)
+		self.x = self.getControl(6)
 		self.x.setVisible(False)
 
 		# Populate the list frame
-		self.list_control      = self.getControl(6)
+		self.list_control      = self.getControl(3)
+		self.list_control.setEnabled(True)
 
 		self.items = [lang(32052)]
 		self.items.extend(self.lines)
@@ -73,7 +74,7 @@ class ConfigEditor(xbmcgui.WindowXMLDialog):
 
 		for i in self.items:
 			# populate the random list
-			self.tmp = xbmcgui.ListItem(i, thumbnailImage=IMAGE)
+			self.tmp = xbmcgui.ListItem(i)#, thumbnailImage=IMAGE)
 			self.list_control.addItem(self.tmp)
 
 		self.changed = False

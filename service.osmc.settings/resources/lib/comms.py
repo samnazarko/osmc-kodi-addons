@@ -31,6 +31,11 @@ class communicator(threading.Thread):
 
 		if os.path.exists(self.address):
 			subprocess.call(['sudo', 'rm', self.address])
+			try:
+				# I need this for testing on my laptop
+				os.remove(self.address)
+			except:
+				pass
 
 		self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
 
