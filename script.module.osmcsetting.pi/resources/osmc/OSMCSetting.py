@@ -118,10 +118,26 @@ class OSMCSettingClass(object):
 		self.addonid = addonid
 		self.me = xbmcaddon.Addon(self.addonid)
 
-		self.description = 	"""
-								This is the text that is shown on the OSG. It should describe what the settings module is for,
-								the settings it controls, and anything else you want, I suppose.
-							"""
+		self.description = 	"""This is the text that is shown on the OSG. [CR][CR]It should describe:[CR]   - what the settings module is for,[CR]   - the settings it controls,[CR]   - and anything else you want, I suppose."""
+
+		self.description = 	"""The Raspberry Pi doesn't have a conventional BIOS. System configuration parameters are stored in a "config.txt" file. For more detail, visit http://elinux.org/RPiconfig[CR]
+This settings module allows you to edit your config.txt from within OSMC using a graphical interface.
+
+The module includes:
+- display rotation
+- hdmi_safe & hdmi_boost
+- hdmi_group & hdmi_mode
+- function to save edid to file
+- sdtv_mode & sdtv_aspect
+- GPU memory split
+- MPG2 & WVC1 licences (including status)
+- your Pi's serial number
+
+Finally, there is a Config Editor that will allow you to quickly add, edit, or delete lines in your config.txt.
+
+Overclock settings are set using the Pi Overclock module."""
+
+
 
 		self.not_going_to_config = [	'store_hdmi_to_file',
 										'gpu_mem',
@@ -213,7 +229,7 @@ class OSMCSettingClass(object):
 		self.remove_list = []
 
 		# the location of the config file FOR TESTING ONLY									
-		# self.test_config = '/home/kubkev/Documents/config.txt'
+		self.test_config = '/home/kubkev/Documents/config.txt'
 		self.test_config = '/boot/config.txt'
 
 		# populate the settings data in the pi_settings_dict

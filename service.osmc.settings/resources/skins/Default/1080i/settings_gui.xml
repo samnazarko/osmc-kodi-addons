@@ -17,12 +17,12 @@
         <control id="2" type="textbox">
             <description>Explanatory Text Box</description>
             <posx>55</posx>
-            <posy>160</posy>
+            <posy>175</posy>
             <width>563</width>
             <height>800</height>
             <visible>true</visible>
             <!-- <colordiffuse>FFFFFFFF</colordiffuse> -->
-            <font>font13</font>
+            <font>font16</font>
             <textcolor>FFFFFFFF</textcolor>
             <!-- <pulseonselect>false</pulseonselect> -->
             <!-- <pagecontrol>13</pagecontrol> -->
