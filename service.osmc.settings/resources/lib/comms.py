@@ -2,6 +2,7 @@
 import socket
 import threading
 import os
+import subprocess
 
 # XBMC modules
 import xbmc
@@ -29,7 +30,7 @@ class communicator(threading.Thread):
 		self.address = '/var/tmp/osmc.settings.sockfile'
 
 		if os.path.exists(self.address):
-			os.remove(self.address)
+			subprocess.call(['sudo', 'rm', self.address])
 
 		self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
 

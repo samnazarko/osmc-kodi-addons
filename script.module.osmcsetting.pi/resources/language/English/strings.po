@@ -22,11 +22,11 @@ msgstr ""
 
 
 msgctxt "#32001"
-msgid "Display Settings"
+msgid "Display"
 msgstr ""
 
 msgctxt "#32002"
-msgid "Other Settings"
+msgid "GPU Mem & Codec"
 msgstr ""
 
 msgctxt "#32003"
@@ -142,19 +142,19 @@ msgid "16:9"
 msgstr ""
 
 msgctxt "#32030"
-msgid "GPU Memory Split, 256mb Pi (ignored otherwise)"
+msgid "Set for 256mb Pi"
 msgstr ""
 
 msgctxt "#32031"
-msgid "GPU Memory Split, 512mb Pi (ignored otherwise)"
+msgid "Set for 256mb Pi"
 msgstr ""
 
 msgctxt "#32032"
-msgid "Enter MPG2 Licence"
+msgid "Enter MPG2 Licence:"
 msgstr ""
 
 msgctxt "#32033"
-msgid "Enter WVC1 Licence"
+msgid "Enter WVC1 Licence:"
 msgstr ""
 
 msgctxt "#32034"
@@ -225,6 +225,38 @@ msgctxt "#32064"
 msgid "Add a new config entry"
 msgstr ""
 
+msgctxt "#32065"
+msgid "Your config.txt contains duplicate entries."
+msgstr ""
+
+msgctxt "#32066"
+msgid "Please consider deleting the obsolete entry."
+msgstr ""
+
+msgctxt "#32067"
+msgid "This setting already exists in your config.txt."
+msgstr ""
+
+msgctxt "#32068"
+msgid "Pi Serial:"
+msgstr ""
+
+msgctxt "#32069"
+msgid "Codec status:"
+msgstr ""
+
+msgctxt "#32070"
+msgid "Config Editor"
+msgstr ""
+
+msgctxt "#32071"
+msgid "GPU Memory Allocation"
+msgstr ""
+
+msgctxt "#320"
+msgid ""
+msgstr ""
+
 msgctxt "#320"
 msgid ""
 msgstr ""
@@ -236,4 +268,23 @@ msgstr ""
 msgctxt "#320"
 msgid ""
 msgstr ""
+
+msgctxt "#320"
+msgid ""
+msgstr ""
+
+msgctxt "#320"
+msgid ""
+msgstr ""
+
+msgctxt "#320"
+msgid ""
+msgstr ""
+
+msgctxt "#320"
+msgid ""
+msgstr ""
+
+
+
 

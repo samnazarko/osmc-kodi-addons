@@ -4,6 +4,7 @@ import xbmcaddon
 import xbmcgui
 import subprocess
 import sys
+import time
 
 ACTION_PREVIOUS_MENU = 10
 ACTION_NAV_BACK      = 92
@@ -42,7 +43,7 @@ class ConfigEditor(xbmcgui.WindowXMLDialog):
 		print 'coooooooooooooonfigeditor: ', self.lines
 
 		self.lines = [line.replace('\n','') for line in self.lines if line not in ['\n', '', '\t']]
-
+		
 		# Save button
 		self.ok = self.getControl(SAVE)
 		self.ok.setLabel(lang(32050))
@@ -75,7 +76,16 @@ class ConfigEditor(xbmcgui.WindowXMLDialog):
 			self.tmp = xbmcgui.ListItem(i, thumbnailImage=IMAGE)
 			self.list_control.addItem(self.tmp)
 
+		self.changed = False
+
 		self.setFocus(self.list_control)
+
+		# check for duplications, warn the user if there are duplicates
+		dup_check = [x.split('=')[0] for x in self.grab_item_strings() if '=' in x]
+		if len(dup_check) != len(set(dup_check)):
+			ok = DIALOG.ok(lang(32051), lang(32065), lang(32066))
+
+
 
 	def onAction(self, action):
 		actionID = action.getId()
@@ -89,45 +99,40 @@ class ConfigEditor(xbmcgui.WindowXMLDialog):
 		if controlID == SAVE:
 			print 'coooooooooooooonfigeditor: SAVE'
 
-			final_action = DIALOG.yesno(lang(32052), lang(32053), nolabel=lang(32054), yeslabel=lang(32055))
+			if self.changed:
 
-			if final_action:
+				final_action = DIALOG.yesno(lang(32052), lang(32053), nolabel=lang(32054), yeslabel=lang(32055))
 
-				print 'coooooooooooooonfigeditor: final action'
+				if final_action:
 
-				new_config = []
+					print 'coooooooooooooonfigeditor: final action'
 
-				for i in range(self.item_count):
-					if i == 0: continue
+					new_config = self.grab_item_strings()
 
-					item = self.list_control.getListItem(i)
+					# temporary location for the config.txt
+					tmp_loc = '/var/tmp/config.txt'
 
-					currentlabel = item.getLabel()
+					# write the long_string_file to the config.txt
+					with open(tmp_loc,'w') as f:
+						for line in new_config:
+							f.write(line.replace(" = ","=") + '\n')
+							print 'coooooooooooooonfigeditor: ' + line
 
-					print currentlabel
+					# backup existing config
+					suffix = '_' + str(time.time()).split('.')[0]
+					subprocess.call(["sudo", "cp", self.config, '/home/pi/' ])
+					subprocess.call(["sudo", "mv", '/home/pi/config.txt', '/home/pi/config' + suffix + '.txt' ])
 
-					if self.del_string not in currentlabel:
-						new_config.append(currentlabel)
+					# copy over the temp config.txt to /boot/ as superuser
+					subprocess.call(["sudo", "mv", tmp_loc, self.config ])
 
-				# temporary location for the config.txt
-				tmp_loc = '/var/tmp/config.txt'
+					# THIS IS JUST FOR TESTING, LAPTOP DOESNT LIKE SUDO HERE
+					try:
+						subprocess.call(["mv", tmp_loc, self.config ])
+					except:
+						pass
 
-				# write the long_string_file to the config.txt
-				with open(tmp_loc,'w') as f:
-					for line in new_config:
-						f.write(line.replace(" = ","=") + '\n')
-						print 'coooooooooooooonfigeditor: ' + line
-
-				# copy over the temp config.txt to /boot/ as superuser
-				subprocess.call(["sudo", "mv", tmp_loc, self.config ])
-
-				# THIS IS JUST FOR TESTING, LAPTOP DOESNT LIKE SUDO HERE
-				try:
-					subprocess.call(["mv", tmp_loc, self.config ])
-				except:
-					pass
-
-				print 'coooooooooooooonfigeditor: writing ended'
+					print 'coooooooooooooonfigeditor: writing ended'
 
 			self.close()
 
@@ -144,13 +149,18 @@ class ConfigEditor(xbmcgui.WindowXMLDialog):
 					if action:
 						# delete
 						item.setLabel(currentlabel + self.del_string)
+						self.changed = True
 
 					else:
 						# edit
 						d = DIALOG.input(lang(32060), currentlabel, type=xbmcgui.INPUT_ALPHANUM)
 
 						if d:
+
+							self.check_for_duplicates(d)
+
 							item.setLabel(d)
+							self.changed = True
 
 				else:
 					action = DIALOG.yesno(lang(32051), lang(32061), nolabel=lang(32058), yeslabel=lang(32062))
@@ -158,22 +168,56 @@ class ConfigEditor(xbmcgui.WindowXMLDialog):
 					if action:
 						# delete
 						item.setLabel(currentlabel[:len(currentlabel) - len(self.del_string)])
+						self.changed = True
 
 					else:
 						# edit
 						d = DIALOG.input(lang(32063), currentlabel, type=xbmcgui.INPUT_ALPHANUM)
 
 						if d:
+							self.check_for_duplicates(d)
+
 							item.setLabel(d)
+							self.changed = True
 
 			else:
 				d = DIALOG.input(lang(32064), type=xbmcgui.INPUT_ALPHANUM)
 
-				self.list_control.addItem(xbmcgui.ListItem(d))
+				if d:
+					self.check_for_duplicates(d)
+					self.changed = True
 
-				self.item_count += 1
+					self.item_count += 1
+
+	def check_for_duplicates(self, d):
+
+		if '=' in d:
+			dupe_check_raw = self.grab_item_strings()
+			dupe_check = [x.split('=')[0] for x in dupe_check_raw]
+
+			dupe = d.split('=')[0]
+
+			if dupe in dupe_check:
+				ok = DIALOG.ok(lang(32051), lang(32067), lang(32066))
 
 
+	def grab_item_strings(self):
+
+		new_config = []
+
+		for i in range(self.item_count):
+			if i == 0: continue
+
+			item = self.list_control.getListItem(i)
+
+			currentlabel = item.getLabel()
+
+			print currentlabel
+
+			if self.del_string not in currentlabel:
+				new_config.append(currentlabel)
+
+		return new_config
 
 
 if __name__ == "__main__":

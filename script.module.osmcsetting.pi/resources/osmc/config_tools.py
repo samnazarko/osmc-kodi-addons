@@ -19,10 +19,9 @@ def grab_configtxt(config_location):
         # santise the text
         sanitised_lines = []
         for line in lines:
-            if line.startswith('#'):
-                sanitised_lines.append(line)
-            elif '=' in line:
-                sanitised_lines.append(line)
+            if line:
+                if '=' in line[1:] and not line.startswith('#'):
+                    sanitised_lines.append(line)
 
         # add [root] to the front to create a root section for the parser to read
         long_string = '[osmc]\n' + ''.join(sanitised_lines)

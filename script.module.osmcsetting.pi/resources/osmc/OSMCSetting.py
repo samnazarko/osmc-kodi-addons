@@ -91,6 +91,7 @@ import sys
 import os
 
 addonid = "script.module.osmcsetting.pi"
+__addon__  = xbmcaddon.Addon(addonid)
 
 # Custom modules
 sys.path.append(xbmc.translatePath(os.path.join(xbmcaddon.Addon(addonid).getAddonInfo('path'), 'resources','osmc')))
@@ -188,10 +189,10 @@ class OSMCSettingClass(object):
 																		'translate': self.translate_gpu_mem
 																	},
 									'gpu_mem_256': 				{'setting_value' : '',
-																	'default': '64',
+																	'default': '112',
 																	},
 									'gpu_mem_512': 				{'setting_value' : '',
-																	'default': '64',
+																	'default': '128',
 																	},
 									'decode_MPG2': 				{'setting_value' : '',
 																	'default': '',
@@ -212,7 +213,7 @@ class OSMCSettingClass(object):
 		self.remove_list = []
 
 		# the location of the config file FOR TESTING ONLY									
-		# self.test_config = '/home/kubkev/Documents/config.txt'
+		self.test_config = '/home/kubkev/Documents/config.txt'
 		self.test_config = '/boot/config.txt'
 
 		# populate the settings data in the pi_settings_dict
@@ -220,6 +221,22 @@ class OSMCSettingClass(object):
 
 		# a flag to determine whether a setting change requires a reboot to take effect
 		self.reboot_required = False
+
+		# grab the Pi serial number and check to see whether the codec licences are enabled
+		mpg = subprocess.check_output(["/opt/vc/bin/vcgencmd", "codec_enabled", "MPG2"])
+		wvc = subprocess.check_output(["/opt/vc/bin/vcgencmd", "codec_enabled", "WVC1"])
+		serial_raw = subprocess.check_output(["cat", "/proc/cpuinfo"])
+
+		print mpg
+		print wvc
+		print serial_raw
+
+		# grab just the serial number
+		serial = serial_raw[serial_raw.index('Serial') + len('Serial'):].replace('\n','').replace(':','').replace(' ','')
+
+		# load the values into the settings gui
+		__addon__.setSetting('codec_check', mpg.replace('\n','') + ', ' + wvc.replace('\n',''))
+		__addon__.setSetting('serial', serial)
 
 		print 'START'
 		for x, k in self.pi_settings_dict.iteritems():
