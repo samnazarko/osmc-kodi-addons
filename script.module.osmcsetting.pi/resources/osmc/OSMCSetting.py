@@ -213,7 +213,7 @@ class OSMCSettingClass(object):
 		self.remove_list = []
 
 		# the location of the config file FOR TESTING ONLY									
-		self.test_config = '/home/kubkev/Documents/config.txt'
+		# self.test_config = '/home/kubkev/Documents/config.txt'
 		self.test_config = '/boot/config.txt'
 
 		# populate the settings data in the pi_settings_dict
