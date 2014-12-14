@@ -77,6 +77,15 @@ class walkthru_gui(xbmcgui.WindowXMLDialog):
 				list_item = xbmcgui.ListItem(label=module['id'], label2='', thumbnailImage = module['FX_Icon'])
 				list_item.setProperty('FO_ICON', module['FO_Icon'])
 
+				# grab the modules description for display in the textbox
+				# this is a TRY just in case the module doesnt have a self.decription
+				try:
+					desc = module['SET'].description
+				except:
+					desc = ''
+
+				list_item.setProperty('description', str(desc))
+
 				controlID = self.order_of_fill[i]
 
 				self.getControl(controlID).addItem(list_item)
@@ -120,6 +129,12 @@ class walkthru_gui(xbmcgui.WindowXMLDialog):
 			instance.open_settings_window()
 			# except:
 			# log('Settings window for __ %s __ failed to open' % module.get('id', "Unknown"))
+
+	def onFocus(self, controlID):
+
+		# update the textbox 'description'
+		self.getControl(2).setText(self.getControl(controlID).getSelectedItem().getProperty('description'))
+
 
 
 class OSMCGui(object):
