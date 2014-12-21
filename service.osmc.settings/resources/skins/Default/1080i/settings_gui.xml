@@ -43,8 +43,38 @@
             <!-- <aspectratio>scale</aspectratio> -->
         </control>
 
+        <control id="4444" type="button">
+            <description>previous menu</description>
+            <posx>700</posx>
+            <posy>340</posy>
+            <width>50</width>
+            <height>400</height>
+            <texturefocus>prev_FO.png</texturefocus>
+            <texturenofocus>prev_FX.png</texturenofocus>
+            <onup>999</onup>
+            <ondown>999</ondown>
+            <onleft>999</onleft>
+            <onright>999</onright>            
+        </control>
+
+        <control id="6666" type="button">
+            <description>next menu</description>
+            <posx>1840</posx>
+            <posy>340</posy>
+            <width>50</width>
+            <height>400</height>
+            <texturefocus>next_FO.png</texturefocus>
+            <texturenofocus>next_FX.png</texturenofocus>
+            <onup>999</onup>
+            <ondown>999</ondown>
+            <onleft>999</onleft>
+            <onright>999</onright>
+        </control>
+
+        <control id="999" type="group">
         <control id="100" type="group">
             <description>Nine Box Grid Group</description>
+            <animation effect="fade" time="5000">VisibleChange</animation>
             <posx>780</posx>
             <posy>0</posy>
             <width>1080</width>
@@ -181,7 +211,7 @@
                 <height>180</height>
                 <onup>101</onup>
                 <ondown>107</ondown>
-                <onleft>106</onleft>
+                <onleft>4444</onleft>
                 <onright>105</onright>
                 <viewtype label="1041">icon</viewtype>
                 <animation type="Unfocus">
@@ -259,7 +289,7 @@
                 <onup>103</onup>
                 <ondown>109</ondown>
                 <onleft>105</onleft>
-                <onright>104</onright>
+                <onright>6666</onright>
                 <animation type="Focus">
                     <effect end="50,0" time="200" type="slide" delay="50" />
                     <effect center="auto" end="200" time="200" type="zoom"/>
@@ -406,5 +436,365 @@
                 </focusedlayout>
             </control>
         </control>
+
+
+        <control id="200" type="group">
+            <description>Nine Box Grid Group</description>
+            <animation effect="fade" time="5000">VisibleChange</animation>
+            <posx>780</posx>
+            <posy>0</posy>
+            <width>1080</width>
+            <height>1080</height>
+            <defaultcontrol>105</defaultcontrol>
+            <visible>true</visible>
+            <onup>200</onup>
+            <ondown>200</ondown>
+            <onleft>200</onleft>
+            <onright>200</onright>
+            <control id="201" type="panel">
+                <posx>190</posx>
+                <posy>190</posy>
+                <width>180</width>
+                <height>180</height>
+                <onup>207</onup>
+                <ondown>204</ondown>
+                <onleft>203</onleft>
+                <onright>202</onright>
+                <animation type="Focus">
+                    <effect end="-50,-50" time="200" type="slide" delay="50"/>
+                    <effect center="auto" end="200" time="200" type="zoom"/>
+                </animation>
+                <animation type="Unfocus">
+                    <effect end="0,0" start="-50,-50" time="200" type="slide"/>
+                    <effect center="auto" end="100" start="200" time="200" type="zoom"  delay="50" />
+                </animation>
+                <viewtype label="2011">icon</viewtype>
+                <itemlayout height="180" width="180">
+                    <control type="image">
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>180</width>
+                        <height>180</height>
+                        <info>ListItem.Icon</info>
+                    </control>
+                </itemlayout>
+                <focusedlayout height="180" width="180">
+                    <control type="image">
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>180</width>
+                        <height>180</height>
+                        <texture>$INFO[ListItem.Property(FO_ICON)]</texture>
+                    </control>
+                </focusedlayout>
+            </control>
+             <control id="202" type="panel">
+                <posx>450</posx>
+                <posy>140</posy>
+                <width>180</width>
+                <height>180</height>
+                <onup>208</onup>
+                <ondown>205</ondown>
+                <onleft>201</onleft>
+                <onright>203</onright>
+                <animation type="Focus">
+                    <effect end="0,-50" time="200" type="slide" delay="50" />
+                    <effect center="auto" end="200" time="200" type="zoom"/>
+                </animation>
+                <animation type="Unfocus">
+                    <effect end="0,0" start="0,-50" time="200" type="slide"/>
+                    <effect center="auto" end="100" start="200" time="200" type="zoom" delay="50" />
+                </animation>
+                <viewtype label="2021">icon</viewtype>
+                <itemlayout height="180" width="180">
+                    <control type="image">
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>180</width>
+                        <height>180</height>
+                        <info>ListItem.Icon</info>
+                    </control>
+                </itemlayout>
+                <focusedlayout height="180" width="180">
+                    <control type="image">
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>180</width>
+                        <height>180</height>
+                        <texture>$INFO[ListItem.Property(FO_ICON)]</texture>
+                    </control>
+                </focusedlayout>
+            </control>
+
+            <control id="203" type="panel">
+                <posx>710</posx>
+                <posy>190</posy>
+                <width>180</width>
+                <height>180</height>
+                <onup>209</onup>
+                <ondown>206</ondown>
+                <onleft>202</onleft>
+                <onright>201</onright>
+                <animation type="Focus">
+                    <effect end="50,-50" time="200" type="slide" delay="50" />
+                    <effect center="auto" end="200" time="200" type="zoom"/>
+                </animation>
+                <animation type="Unfocus">
+                    <effect end="0,0" start="50,-50" time="200" type="slide"/>
+                    <effect center="auto" end="100" start="200" time="200" type="zoom" delay="50" />
+                </animation>
+                <viewtype label="2031">icon</viewtype>
+                <itemlayout height="180" width="180">
+                    <control type="image">
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>180</width>
+                        <height>180</height>
+                        <info>ListItem.Icon</info>
+                    </control>
+                </itemlayout>
+                <focusedlayout height="180" width="180">
+                    <control type="image">
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>180</width>
+                        <height>180</height>
+                        <texture>$INFO[ListItem.Property(FO_ICON)]</texture>
+                    </control>
+                </focusedlayout>
+            </control>
+
+            <control id="204" type="panel">
+                <posx>140</posx>
+                <posy>450</posy>
+                <width>180</width>
+                <height>180</height>
+                <onup>201</onup>
+                <ondown>207</ondown>
+                <onleft>4444</onleft>
+                <onright>205</onright>
+                <viewtype label="2041">icon</viewtype>
+                <animation type="Unfocus">
+                    <effect end="0,0" start="-50,0" time="200" type="slide"/>
+                    <effect center="auto" end="100" start="200" time="200" type="zoom" delay="50"/>
+                </animation>
+                <animation type="Focus">
+                    <effect end="-50,0" time="200" type="slide" delay="50" />
+                    <effect center="auto" end="200" time="200" type="zoom"/>
+                </animation>
+                <itemlayout height="180" width="180">
+                    <control type="image">
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>180</width>
+                        <height>180</height>
+                        <info>ListItem.Icon</info>
+                    </control>
+                </itemlayout>
+                <focusedlayout height="180" width="180">
+                    <control type="image">
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>180</width>
+                        <height>180</height>
+                        <texture>$INFO[ListItem.Property(FO_ICON)]</texture>
+                    </control>
+                </focusedlayout>
+            </control>
+
+            <control id="205" type="panel">
+                <posx>450</posx>
+                <posy>450</posy>
+                <width>180</width>
+                <height>180</height>
+                <onup>202</onup>
+                <ondown>208</ondown>
+                <onleft>204</onleft>
+                <onright>206</onright>
+
+                <viewtype label="2051">icon</viewtype>
+                <itemlayout height="180" width="180">
+                    <control type="image">
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>180</width>
+                        <height>180</height>
+                        <texture>OSMC_icon_line.png</texture>
+                    </control>
+                </itemlayout>
+                <focusedlayout height="180" width="180">               
+                    <control type="image">
+                        <animation type="Focus">
+                            <effect start="140, 5" end="140, 140" time="100" type="zoom" center="auto"/>
+                        </animation>
+                        <animation type="Unfocus">
+                            <effect start="140, 140" end="140, 5" time="100" type="zoom" center="auto"/>
+                        </animation>                        
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>180</width>
+                        <height>180</height>
+                        <texture>OSMC_icon_white.png</texture>
+                    </control>
+                </focusedlayout>
+            </control>
+
+            <control id="206" type="panel">
+                <posx>760</posx>
+                <posy>450</posy>
+                <width>180</width>
+                <height>180</height>
+                <onup>203</onup>
+                <ondown>209</ondown>
+                <onleft>205</onleft>
+                <onright>6666</onright>
+                <animation type="Focus">
+                    <effect end="50,0" time="200" type="slide" delay="50" />
+                    <effect center="auto" end="200" time="200" type="zoom"/>
+                </animation>
+                <animation type="Unfocus">
+                    <effect end="0,0" start="50,0" time="200" type="slide"/>
+                    <effect center="auto" end="100" start="200" time="200" type="zoom" delay="50" />
+                </animation>
+                <viewtype label="2061">icon</viewtype>
+                <itemlayout height="180" width="180">
+                    <control type="image">
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>180</width>
+                        <height>180</height>
+                        <info>ListItem.Icon</info>
+                    </control>
+                </itemlayout>
+                <focusedlayout height="180" width="180">
+                    <control type="image">
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>180</width>
+                        <height>180</height>
+                        <texture>$INFO[ListItem.Property(FO_ICON)]</texture>
+                    </control>
+                </focusedlayout>
+            </control>
+
+            <control id="207" type="panel">
+                <posx>190</posx>
+                <posy>710</posy>
+                <width>180</width>
+                <height>180</height>
+                <onup>204</onup>
+                <ondown>201</ondown>
+                <onleft>209</onleft>
+                <onright>208</onright>
+                <animation type="Focus">
+                    <effect end="-50,50" time="200" type="slide" delay="50" />
+                    <effect center="auto" end="200" time="200" type="zoom"/>
+                </animation>
+                <animation type="Unfocus">
+                    <effect end="0,0" start="-50,50" time="200" type="slide"/>
+                    <effect center="auto" end="100" start="200" time="200" type="zoom" delay="50" />
+                </animation>
+                <viewtype label="2071">icon</viewtype>
+                <itemlayout height="180" width="180">
+                    <control type="image">
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>180</width>
+                        <height>180</height>
+                        <info>ListItem.Icon</info>
+                    </control>
+                </itemlayout>
+                <focusedlayout height="180" width="180">
+                    <control type="image">
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>180</width>
+                        <height>180</height>
+                        <texture>$INFO[ListItem.Property(FO_ICON)]</texture>
+                    </control>
+                </focusedlayout>
+            </control>
+
+            <control id="208" type="panel">
+                <posx>450</posx>
+                <posy>760</posy>
+                <width>180</width>
+                <height>180</height>
+                <onup>205</onup>
+                <ondown>202</ondown>
+                <onleft>207</onleft>
+                <onright>209</onright>
+                <animation type="Focus">
+                    <effect end="0,50" time="200" type="slide" delay="50" />
+                    <effect center="auto" end="200" time="200" type="zoom"/>
+                </animation>
+                <animation type="Unfocus">
+                    <effect end="0,0" start="0,50" time="200" type="slide"/>
+                    <effect center="auto" end="100" start="200" time="200" type="zoom" delay="50" />
+                </animation>
+                <viewtype label="2081">icon</viewtype>
+                <itemlayout height="180" width="180">
+                    <control type="image">
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>180</width>
+                        <height>180</height>
+                        <info>ListItem.Icon</info>
+                    </control>
+                </itemlayout>
+                <focusedlayout height="180" width="180">
+                    <control type="image">
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>180</width>
+                        <height>180</height>
+                        <texture>$INFO[ListItem.Property(FO_ICON)]</texture>
+                    </control>
+                </focusedlayout>
+            </control>
+
+            <control id="209" type="panel">
+                <posx>710</posx>
+                <posy>710</posy>
+                <width>180</width>
+                <height>180</height>
+                <onup>206</onup>
+                <ondown>203</ondown>
+                <onleft>208</onleft>
+                <onright>207</onright>
+                <animation type="Focus">
+                    <effect end="50,50" time="200" type="slide" delay="50" />
+                    <effect center="auto" end="200" time="200" type="zoom"/>
+                </animation>
+                <animation type="Unfocus">
+                    <effect end="0,0" start="50,50" time="200" type="slide"/>
+                    <effect center="auto" end="100" start="200" time="200" type="zoom" delay="50" />
+                </animation>
+                <viewtype label="2091">icon</viewtype>
+                <itemlayout height="180" width="180">
+                    <control type="image">
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>180</width>
+                        <height>180</height>
+                        <info>ListItem.Icon</info>
+                    </control>
+                </itemlayout>
+                <focusedlayout height="180" width="180">
+                    <control type="image">
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>180</width>
+                        <height>180</height>
+                        <texture>$INFO[ListItem.Property(FO_ICON)]</texture>
+                    </control>
+                </focusedlayout>
+            </control>
+
+
+        </control>
+
+        </control>
+
     </controls>
 </window>

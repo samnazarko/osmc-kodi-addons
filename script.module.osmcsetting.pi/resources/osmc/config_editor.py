@@ -32,10 +32,12 @@ class ConfigEditor(xbmcgui.WindowXMLDialog):
 
 		self.del_string = ' [' + lang(32056) + ']'
 
-		self.config = '/boot/config.txt'
+		try:
+			self.config = '/boot/config.txt'
+		except:
 
-		# FOR TESTINGS
-		# self.config = '/home/kubkev/Documents/config.txt'
+			# FOR TESTINGS
+			self.config = '/home/kubkev/Documents/config.txt'
 
 		with open(self.config, 'r') as f:
 			self.lines = f.readlines()
@@ -234,5 +236,5 @@ if __name__ == "__main__":
 	
 	xbmc.sleep(150)
 
-	__addon__.openSettings()
+	# __addon__.openSettings()
 

@@ -31,7 +31,7 @@ def log(message):
 	xbmc.log(str(message))
 
 
-class walkthru_gui(xbmcgui.WindowXMLDialog):
+class OSMC_gui(xbmcgui.WindowXMLDialog):
 
 	def __init__(self, strXMLname, strFallbackPath, strDefaultName, **kwargs):
 
@@ -45,22 +45,10 @@ class walkthru_gui(xbmcgui.WindowXMLDialog):
 
 		self.module_holder  = {}
 
-		self.nine_icons = [ 'square.png',
-							'up.png',
-							'circle.png',
-							'left.png',
-							'sub.png',
-							'right.png',
-							'lock.png',
-							'down.png',
-							'key.png'
-							]
-
 		self.first_run = True
 
-		# these are for testing only
-		self.APPLY_ICON_IMAGE = 'up.png'
-		self.APPLY_ICON_IMAGE_FO = 'down.png'
+		self.number_of_pages = len(self.apply_buttons)
+		self.active_page = 1
 
 
 	def onInit(self):
@@ -68,7 +56,19 @@ class walkthru_gui(xbmcgui.WindowXMLDialog):
 		if self.first_run:
 			self.first_run = False
 
-			
+			# hide the unneeded control groups
+			contr = 200
+			while True:
+				try:
+					self.getControl(contr).setVisible(False)
+					contr += 100
+				except:
+					break
+
+			# hide next and prev if they arent needed
+			if self.number_of_pages < 2:
+				self.getControl(4444).setVisible(False)
+				self.getControl(6666).setVisible(False)
 
 			# place the items into the gui
 			for i, module in enumerate(self.live_modules):
@@ -78,7 +78,7 @@ class walkthru_gui(xbmcgui.WindowXMLDialog):
 				list_item.setProperty('FO_ICON', module['FO_Icon'])
 
 				# grab the modules description for display in the textbox
-				# this is a TRY just in case the module doesnt have a self.decription
+				# this is a TRY just in case the module doesnt have a self.description
 				try:
 					desc = module['SET'].description
 				except:
@@ -96,11 +96,12 @@ class walkthru_gui(xbmcgui.WindowXMLDialog):
 			for apply_button in self.apply_buttons:
 
 				# set the image
-				list_item = xbmcgui.ListItem(label='', label2='', thumbnailImage = self.APPLY_ICON_IMAGE)
-				list_item.setProperty('FO_ICON', self.APPLY_ICON_IMAGE_FO)
+				list_item = xbmcgui.ListItem(label='', label2='')
 				list_item.setProperty('Action', "Apply")
 
 				self.getControl(apply_button).addItem(list_item)
+
+			self.setFocusId(105)
 
 
 	def onAction(self, action):
@@ -118,6 +119,30 @@ class walkthru_gui(xbmcgui.WindowXMLDialog):
 		if not (controlID - 5) % 100:
 			self.close()
 
+		elif controlID == 4444:
+			# previous menu
+			if self.active_page - 1 == 0:
+				new_page = self.number_of_pages
+			else:
+				new_page = self.active_page - 1
+
+			self.getControl(self.active_page * 100).setVisible(False)
+			self.getControl(new_page * 100).setVisible(True)
+
+			self.active_page = new_page
+
+		elif controlID == 6666:
+			# next menu
+			if ( self.active_page + 1 ) > self.number_of_pages:
+				new_page = 1
+			else:
+				new_page = self.active_page + 1
+
+			self.getControl(self.active_page * 100).setVisible(False)
+			self.getControl(new_page * 100).setVisible(True)
+
+			self.active_page = new_page
+
 		else:
 
 			module = self.module_holder.get(controlID, {})
@@ -133,7 +158,10 @@ class walkthru_gui(xbmcgui.WindowXMLDialog):
 	def onFocus(self, controlID):
 
 		# update the textbox 'description'
-		self.getControl(2).setText(self.getControl(controlID).getSelectedItem().getProperty('description'))
+		try:
+			self.getControl(2).setText(self.getControl(controlID).getSelectedItem().getProperty('description'))
+		except:
+			pass
 
 
 
@@ -147,11 +175,11 @@ class OSMCGui(object):
 
 	def create_gui(self):
 		# known modules is a list of tuples detailing all the known and permissable modules and services
-		# (order, module name, icon): the order is the hierarchy of addons (which is used to 
-		# determine the positions of addon in the gui), the icon is the image that will be used in the
-		# gui (they need to be stored in resources/skins/Default/media/)
+		# (module name, order): the order is the hierarchy of addons (which is used to 
+		# determine the positions of addon in the gui)
 		self.known_modules_order = 	{
-									"script.module.osmcsetting.dummy":			0
+									"script.module.osmcsetting.pi":						0,
+									"script.module.osmcsetting.pioverclock":			1
 									}
 
 		# order of addon hierarchy
@@ -179,7 +207,7 @@ class OSMCGui(object):
 
 
 		# instantiate the window
-		self.GUI = walkthru_gui(self.xmlfile, scriptPath, 'Default', order_of_fill=self.order_of_fill,
+		self.GUI = OSMC_gui(self.xmlfile, scriptPath, 'Default', order_of_fill=self.order_of_fill,
 			apply_buttons=self.apply_buttons, live_modules=self.live_modules)
 
 	
