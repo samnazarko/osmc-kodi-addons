@@ -268,7 +268,7 @@ Overclock settings are set using the Pi Overclock module."""
 			Populates the setting_value in the pi_settings_dict.
 		'''
 
-		# this is the method to use if you are populating the dict from the settings.xml
+		# # this is the method to use if you are populating the dict from the settings.xml
 		# latest_settings = self.settings_retriever_xml()
 
 		# but I am going to set up my own process in addition to the xml one, I will be reading some

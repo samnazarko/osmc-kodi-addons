@@ -274,6 +274,7 @@ class OSMCGui(object):
 
 		log('Exiting GUI')
 
+		# set the GUI back to the default first page view
 		self.GUI.getControl(self.GUI.active_page * 100).setVisible(False)
 		self.GUI.getControl(100).setVisible(True)
 
