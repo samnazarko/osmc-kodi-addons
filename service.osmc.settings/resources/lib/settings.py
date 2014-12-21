@@ -103,6 +103,8 @@ class OSMC_gui(xbmcgui.WindowXMLDialog):
 
 			self.setFocusId(105)
 
+			self.next_prev_direction_changer()
+
 
 	def onAction(self, action):
 
@@ -117,6 +119,7 @@ class OSMC_gui(xbmcgui.WindowXMLDialog):
 	def onClick(self, controlID):
 
 		if not (controlID - 5) % 100:
+
 			self.close()
 
 		elif controlID == 4444:
@@ -131,6 +134,8 @@ class OSMC_gui(xbmcgui.WindowXMLDialog):
 
 			self.active_page = new_page
 
+			self.next_prev_direction_changer()
+
 		elif controlID == 6666:
 			# next menu
 			if ( self.active_page + 1 ) > self.number_of_pages:
@@ -142,6 +147,8 @@ class OSMC_gui(xbmcgui.WindowXMLDialog):
 			self.getControl(new_page * 100).setVisible(True)
 
 			self.active_page = new_page
+
+			self.next_prev_direction_changer()
 
 		else:
 
@@ -163,6 +170,26 @@ class OSMC_gui(xbmcgui.WindowXMLDialog):
 		except:
 			pass
 
+	def next_prev_direction_changer(self):
+		''' Sets the direction (onLeft, onRight, etc) for the previous and next buttons in the gui '''
+
+		prev_button = self.getControl(4444)
+		next_button = self.getControl(6666)
+
+		pos5 = self.getControl((self.active_page * 100 ) + 5)
+
+		try:
+			pos4 = self.getControl((self.active_page * 100 ) + 4)
+		except:
+			pos4 = pos5
+
+		try:
+			pos6 = self.getControl((self.active_page * 100 ) + 6)
+		except:
+			pos6 = pos5
+
+		prev_button.setNavigation(pos5, pos5, next_button, pos4)
+		next_button.setNavigation(pos5, pos5, pos6, prev_button)
 
 
 class OSMCGui(object):
@@ -246,6 +273,13 @@ class OSMCGui(object):
 
 
 		log('Exiting GUI')
+
+		self.GUI.getControl(self.GUI.active_page * 100).setVisible(False)
+		self.GUI.getControl(100).setVisible(True)
+
+		self.GUI.active_page = 1
+		self.GUI.next_prev_direction_changer()
+		self.GUI.setFocusId(105)		
 
 		# del self.GUI
 

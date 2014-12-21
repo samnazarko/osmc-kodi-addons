@@ -34,13 +34,17 @@ class ConfigEditor(xbmcgui.WindowXMLDialog):
 
 		try:
 			self.config = '/boot/config.txt'
+
+			with open(self.config, 'r') as f:
+				self.lines = f.readlines()			
+
 		except:
 
 			# FOR TESTINGS
 			self.config = '/home/kubkev/Documents/config.txt'
 
-		with open(self.config, 'r') as f:
-			self.lines = f.readlines()
+			with open(self.config, 'r') as f:
+				self.lines = f.readlines()
 
 		print 'coooooooooooooonfigeditor: ', self.lines
 
@@ -56,11 +60,11 @@ class ConfigEditor(xbmcgui.WindowXMLDialog):
 		self.hdg.setVisible(True)
 
 		# Hide unused list frame
-		self.x = self.getControl(6)
+		self.x = self.getControl(3)
 		self.x.setVisible(False)
 
 		# Populate the list frame
-		self.list_control      = self.getControl(3)
+		self.list_control      = self.getControl(6)
 		self.list_control.setEnabled(True)
 
 		self.items = [lang(32052)]
@@ -91,6 +95,7 @@ class ConfigEditor(xbmcgui.WindowXMLDialog):
 
 
 	def onAction(self, action):
+
 		actionID = action.getId()
 		if (actionID in (ACTION_PREVIOUS_MENU, ACTION_NAV_BACK)):
 			print 'coooooooooooooonfigeditor: CLOSE'
@@ -187,7 +192,13 @@ class ConfigEditor(xbmcgui.WindowXMLDialog):
 				d = DIALOG.input(lang(32064), type=xbmcgui.INPUT_ALPHANUM)
 
 				if d:
+
 					self.check_for_duplicates(d)
+
+					# add the new item to the list
+					tmp = xbmcgui.ListItem(d)#, thumbnailImage=IMAGE)
+					self.list_control.addItem(tmp)
+					
 					self.changed = True
 
 					self.item_count += 1

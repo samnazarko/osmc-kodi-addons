@@ -51,10 +51,10 @@
             <height>400</height>
             <texturefocus>prev_FO.png</texturefocus>
             <texturenofocus>prev_FX.png</texturenofocus>
-            <onup>999</onup>
+  <!--           <onup>999</onup>
             <ondown>999</ondown>
             <onleft>999</onleft>
-            <onright>999</onright>            
+            <onright>999</onright>   -->          
         </control>
 
         <control id="6666" type="button">
@@ -65,10 +65,10 @@
             <height>400</height>
             <texturefocus>next_FO.png</texturefocus>
             <texturenofocus>next_FX.png</texturenofocus>
-            <onup>999</onup>
+<!--             <onup>999</onup>
             <ondown>999</ondown>
             <onleft>999</onleft>
-            <onright>999</onright>
+            <onright>999</onright> -->
         </control>
 
         <control id="999" type="group">
