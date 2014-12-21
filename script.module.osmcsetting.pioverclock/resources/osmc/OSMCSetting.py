@@ -83,6 +83,16 @@
 
 # XBMC Modules
 import xbmcaddon
+import xbmcgui
+
+class overclock_gui(xbmcgui.WindowXMLDialog):
+
+	def onClick(self, controlID):
+
+		if controlID == 201:
+			self.close()
+
+		
 
 
 class OSMCSettingClass(object):
@@ -154,9 +164,15 @@ class OSMCSettingClass(object):
 		'''
 
 		print xbmcaddon.Addon("script.module.osmcsetting.pioverclock").getAddonInfo('id')
-		me = xbmcaddon.Addon(self.addonid)
 
-		me.openSettings()
+		me = xbmcaddon.Addon(self.addonid)
+		scriptPath = me.getAddonInfo('path')
+
+		self.GUI = overclock_gui("settings_gui.xml", scriptPath, 'Default')
+
+		self.GUI.doModal()
+
+		# me.openSettings()
 
 		# code placed here will run when the modules settings window is closed
 		self.apply_settings()

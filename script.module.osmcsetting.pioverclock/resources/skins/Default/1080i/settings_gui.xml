@@ -4,6 +4,7 @@
     <animation effect="fade" time="250">WindowOpen</animation>
     <animation effect="fade" time="500">WindowClose</animation>
     <controls>
+
         <!-- background -->
         <control description="BG" type="image">
             <posx>0</posx>
@@ -13,6 +14,7 @@
             <texture>blueBG.png</texture>
             <aspectratio>scale</aspectratio>
         </control>
+
         <!-- explanatory text window -->
         <control id="2" type="textbox">
             <description>Explanatory Text Box</description>
@@ -39,7 +41,6 @@
             <texture>osmclight100.png</texture>
         </control>
         
-
         <control description="osmc icon" type="image">
             <posx>70</posx>
             <posy>45</posy>
@@ -52,7 +53,7 @@
             <description>Controls Group</description>
             <posx>780</posx>
             <posy>0</posy>
-            <width>1080</width>
+            <width>1140</width>
             <height>1080</height>
             <defaultcontrol>200</defaultcontrol>
             <visible>true</visible>
@@ -63,9 +64,9 @@
 
             <control id="200" type="group">
                 <description>Exit and turbos</description>
-                <posx>780</posx>
+                <posx>0</posx>
                 <posy>0</posy>
-                <width>1080</width>
+                <width>240</width>
                 <height>1080</height>
                 <defaultcontrol>201</defaultcontrol>
                 <visible>true</visible>
@@ -74,158 +75,210 @@
                 <onleft>200</onleft>
                 <onright>300</onright>
 
-            group with 
-                - exit button top
-                - force turbo
-                - turbo int buttons
-                <control id="201" type-"button">
+                <control id="201" type="button">
                     <description>exit button</description>
-                    <posx>780</posx>
-                    <posy>0</posy>
-                    <width>1080</width>
-                    <height>1080</height>
+                    <posx>20</posx>
+                    <posy>40</posy>
+                    <width>200</width>
+                    <height>100</height>
                     <visible>true</visible>
                     <onup>201</onup>
                     <ondown>202</ondown>
                     <onleft>300</onleft>
                     <onright>300</onright>
-
                 </control>
 
-                <control id="202" type-"button">
+                <control id="202" type="button">
                     <description>turbo toggle</description>
-                    <posx>780</posx>
-                    <posy>0</posy>
-                    <width>1080</width>
-                    <height>1080</height>
+                    <posx>20</posx>
+                    <posy>240</posy>
+                    <width>200</width>
+                    <height>100</height>
                     <visible>true</visible>
                     <onup>201</onup>
                     <ondown>203</ondown>
                     <onleft>300</onleft>
                     <onright>300</onright>
-
                 </control>
 
-                <control id="203" type-"button">
+                <control id="203" type="button">
                     <description>turbo init toggle</description>
-                    <posx>780</posx>
-                    <posy>0</posy>
-                    <width>1080</width>
-                    <height>1080</height>
+                    <posx>20</posx>
+                    <posy>400</posy>
+                    <width>200</width>
+                    <height>100</height>
                     <visible>true</visible>
                     <onup>202</onup>
                     <ondown>201</ondown>
                     <onleft>300</onleft>
                     <onright>300</onright>
-
                 </control>                
 
             </control>
 
             <control id="300" type="group">
                 <description>Profiles</description>
-                <posx>780</posx>
+                <posx>240</posx>
                 <posy>0</posy>
-                <width>1080</width>
-                <height>1080</height>
-                <defaultcontrol>200</defaultcontrol>
+                <width>900</width>
+                <height>180</height>
                 <visible>true</visible>
                 <onup>400</onup>
                 <ondown>400</ondown>
                 <onleft>200</onleft>
                 <onright>300</onright>
 
-
-            group with 4 profiles
-                - p1
-                - p2
-                - p3
-                - custom
-
-
-                <control id="301" type-"button">
+                <control id="301" type="button">
                     <description>profile 1</description>
-                    <posx>780</posx>
-                    <posy>0</posy>
-                    <width>1080</width>
-                    <height>1080</height>
+                    <posx>40</posx>
+                    <posy>30</posy>
+                    <width>175</width>
+                    <height>90</height>
                     <visible>true</visible>
                     <onup>200</onup>
                     <ondown>400</ondown>
                     <onleft>200</onleft>
-                    <onright>301</onright>
-
+                    <onright>302</onright>
                 </control>                
 
-                <control id="302" type-"button">
+                <control id="302" type="button">
                     <description>profile 2</description>
-                    <posx>780</posx>
-                    <posy>0</posy>
-                    <width>1080</width>
-                    <height>1080</height>
+                    <posx>255</posx>
+                    <posy>30</posy>
+                    <width>175</width>
+                    <height>90</height>
                     <visible>true</visible>
                     <onup>200</onup>
                     <ondown>400</ondown>
                     <onleft>301</onleft>
                     <onright>303</onright>
-
                 </control>                
 
-                <control id="303" type-"button">
+                <control id="303" type="button">
                     <description>profile 3</description>
-                    <posx>780</posx>
-                    <posy>0</posy>
-                    <width>1080</width>
-                    <height>1080</height>
+                    <posx>470</posx>
+                    <posy>30</posy>
+                    <width>175</width>
+                    <height>90</height>>
                     <visible>true</visible>
                     <onup>200</onup>
                     <ondown>400</ondown>
                     <onleft>302</onleft>
                     <onright>304</onright>
-
                 </control>                
 
-                <control id="304" type-"button">
+                <control id="304" type="button">
                     <description>profile custom</description>
-                    <posx>780</posx>
-                    <posy>0</posy>
-                    <width>1080</width>
-                    <height>1080</height>
+                    <posx>685</posx>
+                    <posy>30</posy>
+                    <width>175</width>
+                    <height>90</height>
                     <visible>true</visible>
                     <onup>200</onup>
                     <ondown>400</ondown>
                     <onleft>303</onleft>
                     <onright>301</onright>
-
                 </control>                
-
 
             </control>
 
             <control id="400" type="group">
                 <description>Sliders</description>
-                <posx>780</posx>
-                <posy>0</posy>
-                <width>1080</width>
-                <height>1080</height>
-                <defaultcontrol>200</defaultcontrol>
+                <posx>240</posx>
+                <posy>180</posy>
+                <width>900</width>
+                <height>900</height>
                 <visible>true</visible>
                 <onup>300</onup>
                 <ondown>300</ondown>
                 <onleft>400</onleft>
                 <onright>400</onright>
 
-            group with sliders
-                - core
-                - arm
-                - sdram
-                - gpu
-                - overvolt
-                - sdram overvolt
+                <control type="slider" id="401">
+                      <description>core slider control</description>
+                      <posx>200</posx>
+                      <posy>100</posy>
+                      <width>660</width>
+                      <height>80</height>
+                      <visible>true</visible>
+                      <texturesliderbar>slider_bar.png</texturesliderbar>
+                      <textureslidernib>pi_nib_FX.png</textureslidernib>
+                      <textureslidernibfocus>pi_nib_FO.png</textureslidernibfocus>
+                      <onup>300</onup>
+                      <ondown>402</ondown>
+                </control>
+
+                <control type="slider" id="402">
+                      <description>arm slider control</description>
+                      <posx>200</posx>
+                      <posy>220</posy>
+                      <width>660</width>
+                      <height>80</height>
+                      <visible>true</visible>
+                      <texturesliderbar>slider_bar.png</texturesliderbar>
+                      <textureslidernib>pi_nib_FX.png</textureslidernib>
+                      <textureslidernibfocus>pi_nib_FO.png</textureslidernibfocus>
+                      <onup>401</onup>
+                      <ondown>403</ondown>
+                </control>
+
+                <control type="slider" id="403">
+                      <description>sdram slider control</description>
+                      <posx>200</posx>
+                      <posy>340</posy>
+                      <width>660</width>
+                      <height>80</height>
+                      <visible>true</visible>
+                      <texturesliderbar>slider_bar.png</texturesliderbar>
+                      <textureslidernib>pi_nib_FX.png</textureslidernib>
+                      <textureslidernibfocus>pi_nib_FO.png</textureslidernibfocus>
+                      <onup>402</onup>
+                      <ondown>404</ondown>
+                </control>                
+
+                <control type="slider" id="404">
+                      <description>gpu slider control</description>
+                      <posx>200</posx>
+                      <posy>460</posy>
+                      <width>660</width>
+                      <height>80</height>
+                      <visible>true</visible>
+                      <texturesliderbar>slider_bar.png</texturesliderbar>
+                      <textureslidernib>pi_nib_FX.png</textureslidernib>
+                      <textureslidernibfocus>pi_nib_FO.png</textureslidernibfocus>
+                      <onup>403</onup>
+                      <ondown>405</ondown>
+                </control>
+
+                <control type="slider" id="405">
+                      <description>overvolt slider control</description>
+                      <posx>200</posx>
+                      <posy>580</posy>
+                      <width>660</width>
+                      <height>80</height>
+                      <visible>true</visible>
+                      <texturesliderbar>slider_bar.png</texturesliderbar>
+                      <textureslidernib>pi_nib_FX.png</textureslidernib>
+                      <textureslidernibfocus>pi_nib_FO.png</textureslidernibfocus>
+                      <onup>404</onup>
+                      <ondown>406</ondown>
+                </control>
+
+                <control type="slider" id="406">
+                      <description>sdram overvolt slider control</description>
+                      <posx>200</posx>
+                      <posy>700</posy>
+                      <width>660</width>
+                      <height>80</height>
+                      <visible>true</visible>
+                      <texturesliderbar>slider_bar.png</texturesliderbar>
+                      <textureslidernib>pi_nib_FX.png</textureslidernib>
+                      <textureslidernibfocus>pi_nib_FO.png</textureslidernibfocus>
+                      <onup>405</onup>
+                      <ondown>300</ondown>
+                </control>
+
             </control>
-
-
-
 
         </control>
     </controls>
