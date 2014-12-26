@@ -79,20 +79,25 @@
 	keep that in mind.
 
 '''
-
+# Standard Modules
+from collections import namedtuple
+import sys
+import os
 
 # XBMC Modules
+import xbmc
 import xbmcaddon
 import xbmcgui
 
-class overclock_gui(xbmcgui.WindowXMLDialog):
+addonid = "script.module.osmcsetting.pioverclock"
+__addon__  = xbmcaddon.Addon(addonid)
 
-	def onClick(self, controlID):
+# Custom modules
+sys.path.append(xbmc.translatePath(os.path.join(xbmcaddon.Addon(addonid).getAddonInfo('path'), 'resources','osmc')))
 
-		if controlID == 201:
-			self.close()
-
-		
+# OSMC SETTING Modules
+import config_tools as ct
+from gui import overclock_gui
 
 
 class OSMCSettingClass(object):
@@ -112,46 +117,10 @@ class OSMCSettingClass(object):
 
 		self.addonid = "script.module.osmcsetting.pioverclock"
 
-		self.setting_data_method = 	{
-
-									'mercury': 	{
-														'setting_value' : '',
-														'method_to_apply_changes': self.method_to_apply_changes_X,
-														},
-
-									'venus': 	{'setting_value' : ''},
-									'earth': 	{'setting_value' : ''},
-									'mars': 	{'setting_value' : ''},
-									'jupiter': 	{'setting_value' : ''},
-									'saturn': 	{'setting_value' : ''},
-									'uranus': 	{'setting_value' : ''},
-									'neptune': 	{'setting_value' : ''},
-									'pluto': 	{'setting_value' : ''},									
-
-									}
-
-		# populate the settings data in the setting_data_method
-		self.populate_setting_data_method()
-
-
 		# a flag to determine whether a setting change requires a reboot to take effect
 		self.reboot_required = False
 
 		print 'START'
-		print self.setting_data_method
-
-
-	def populate_setting_data_method(self):
-
-		'''
-			Populates the setting_value in the setting_data_method.
-		'''
-
-		latest_settings = self.settings_retriever_xml()
-
-		for key in self.setting_data_method.keys():
-
-			self.setting_data_method[key]['setting_value'] = latest_settings[key]
 
 
 	def open_settings_window(self):
@@ -168,17 +137,45 @@ class OSMCSettingClass(object):
 		me = xbmcaddon.Addon(self.addonid)
 		scriptPath = me.getAddonInfo('path')
 
-		self.GUI = overclock_gui("settings_gui.xml", scriptPath, 'Default')
+		# read config file, take the parts you need
+
+		# the location of the config file FOR TESTING ONLY
+		try:								
+			self.test_config = '/boot/config.txt'
+			self.config_settings = ct.read_config(self.test_config)
+
+		except:
+			self.test_config = '/home/kubkev/Documents/config.txt'
+			self.config_settings = ct.read_config(self.test_config)
+
+		oc_keys = ['arm_freq', 'sdram_freq', 'core_freq', 'initial_turbo', 'over_voltage', 'over_voltage_sdram', 'force_turbo']
+
+		self.setting_values = {}
+		for key in oc_keys:
+			if key in self.config_settings:
+				self.setting_values[key] = self.config_settings[key]
+
+		# setting_values = {'core_freq': 500, 'arm_freq': 800, 'sdram_freq': 700, 'initial_turbo': 60, 'over_voltage': 2, 'over_voltage_sdram': 6, 'force_turbo' : 0}
+
+		self.GUI = overclock_gui("oc_gui.xml", scriptPath, 'Default', setting_values=self.setting_values)
 
 		self.GUI.doModal()
 
-		# me.openSettings()
+		self.new_settings = self.GUI.snapshot()
+		print 'self.new_settings'
+		print self.new_settings
+		print 'self.setting_values'
+		print self.setting_values
 
-		# code placed here will run when the modules settings window is closed
-		self.apply_settings()
+		ct.write_config(self.test_config, self.new_settings)
+
+		del self.GUI
+
+		for k, s in self.new_settings.iteritems():
+			if s != self.setting_values.get(k, 'no setting available'):
+				self.reboot_required
 
 		print 'END'
-		print self.setting_data_method
 
 
 	def apply_settings(self):
@@ -189,124 +186,8 @@ class OSMCSettingClass(object):
 			final_method, again, if it exists.
 		'''
 
-		# retrieve the current settings
-		new_settings = self.settings_retriever_xml()
-
-		# call the first method if there is one
-		first_method = self.setting_data_method.get('first_method', False)
-
-		try:
-			first_method()
-		except:
-			pass
-
-
-		# apply the individual settings changes
-		for k, v in self.setting_data_method.iteritems():
-
-			method = v.get('method_to_apply_changes', False)
-			value  = v['setting_value']
-
-			if new_settings[k] != value:
-
-				# change stored setting_value to the new value
-				self.setting_data_method[k]['setting_value'] = new_settings[k]
-
-				# if a specific apply method exists for the setting, then call that
-				try:
-					method(value)
-				except:
-					pass
-
-
-		# call the final method if there is one
-		final_method = self.setting_data_method.get('final_method', False)
-
-		try:
-			final_method()
-		except:
-			pass
-
-
-
-	def settings_retriever_xml(self):
-
-		''' 
-			Reads the stored settings (in settings.xml) and returns a dictionary with the setting_name: setting_value. This 
-			method cannot be overwritten.
-		'''
-
-		latest_settings = {}
-
-		addon = xbmcaddon.Addon(self.addonid)
-
-		for key in self.setting_data_method.keys():
-
-			latest_settings[key] = addon.getSetting(key)
-
-		return latest_settings
-
-
-	##############################################################################################################################
-	#																															 #
-	def first_method(self):
-
-		''' 
-			The method to call before all the other setting methods are called.
-
-			For example, this could be a call to stop a service. The final method could then restart the service again. 
-			This can be used to apply the setting changes.
-
-		'''	
-
 		pass
 
-
-	def final_method(self):
-
-		''' 
-			The method to call after all the other setting methods have been called.
-
-			For example, in the case of the Raspberry Pi's settings module, the final writing to the config.txt can be delayed
-			until all the settings have been updated in the setting_data_method. 
-
-		'''
-
-		pass
-
-
-	def boot_method(self):
-
-		''' 
-			The method to call when the OSA is first activated (on reboot)
-
-		'''
-
-		pass
-
-	#																															 #
-	##############################################################################################################################
-
-
-	##############################################################################################################################
-	#																															 #
-
-	''' 
-		Methods beyond this point are for specific settings. 
-	'''
-
-	# SETTING METHOD
-	def method_to_apply_changes_X(self, data):
-
-		'''
-			Method for implementing changes to setting x 
-
-		'''
-
-		print 'Fuck yeah!'
-
-	#																															 #
-	##############################################################################################################################
 
 if __name__ == "__main__":
 	pass

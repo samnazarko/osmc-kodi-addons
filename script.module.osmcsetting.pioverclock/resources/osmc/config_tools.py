@@ -79,14 +79,6 @@ def write_config(config_location,  changes={}):
         'changes' can also include a key 'remove', the value of which is a list with the settings to remove from the config file.
     '''
 
-    print 's'
-    print 's'
-    print 's'
-    print changes
-    print 's'
-    print 's'
-    print 's'
-
     # grab the parser if it isnt provided
     blotter = grab_configtxt(config_location)
 
@@ -124,7 +116,7 @@ def write_config(config_location,  changes={}):
             f.write(line.replace(" = ","="))
 
     # copy over the temp config.txt to /boot/ as superuser
-    subprocess.call(["sudo", "mv",  tmp_loc, "/boot/config.txt"])
+    subprocess.call(["sudo", "mv",  tmp_loc, config_location])
 
 
 if ( __name__ == "__main__" ):

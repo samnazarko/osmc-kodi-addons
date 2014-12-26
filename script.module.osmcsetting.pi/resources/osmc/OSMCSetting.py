@@ -243,10 +243,6 @@ Overclock settings are set using the Pi Overclock module."""
 			wvc = subprocess.check_output(["/opt/vc/bin/vcgencmd", "codec_enabled", "WVC1"])
 			serial_raw = subprocess.check_output(["cat", "/proc/cpuinfo"])
 
-			print mpg
-			print wvc
-			print serial_raw
-
 			# grab just the serial number
 			serial = serial_raw[serial_raw.index('Serial') + len('Serial'):].replace('\n','').replace(':','').replace(' ','')
 
@@ -474,6 +470,10 @@ Overclock settings are set using the Pi Overclock module."""
 
 		# reset the remove list
 		self.remove_list = []
+
+		# start_x=1 added by default to every config.txt
+		# popcornmix: I would remove start_file=start_x.elf and fixup_file=fixup_x.dat and use the shortcut start_x=1
+		self.translated_changed_settings['start_x'] = 1
 
 		# write the settings to the config.txt
 		ct.write_config(self.test_config, self.translated_changed_settings)
