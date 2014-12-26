@@ -135,7 +135,7 @@
                     <width>175</width>
                     <height>90</height>
                     <visible>true</visible>
-                    <onup>200</onup>
+                    <onup>400</onup>
                     <ondown>400</ondown>
                     <onleft>200</onleft>
                     <onright>302</onright>
@@ -148,7 +148,7 @@
                     <width>175</width>
                     <height>90</height>
                     <visible>true</visible>
-                    <onup>200</onup>
+                    <onup>400</onup>
                     <ondown>400</ondown>
                     <onleft>301</onleft>
                     <onright>303</onright>
@@ -161,7 +161,7 @@
                     <width>175</width>
                     <height>90</height>>
                     <visible>true</visible>
-                    <onup>200</onup>
+                    <onup>400</onup>
                     <ondown>400</ondown>
                     <onleft>302</onleft>
                     <onright>304</onright>
@@ -174,7 +174,7 @@
                     <width>175</width>
                     <height>90</height>
                     <visible>true</visible>
-                    <onup>200</onup>
+                    <onup>400</onup>
                     <ondown>400</ondown>
                     <onleft>303</onleft>
                     <onright>301</onright>
@@ -183,7 +183,7 @@
             </control>
 
             <control id="400" type="group">
-                <description>Sliders</description>
+                <description>variants</description>
                 <posx>240</posx>
                 <posy>180</posy>
                 <width>900</width>
@@ -194,88 +194,33 @@
                 <onleft>400</onleft>
                 <onright>400</onright>
 
-                <control type="slider" id="401">
-                      <description>core slider control</description>
-                      <posx>200</posx>
-                      <posy>100</posy>
-                      <width>660</width>
-                      <height>80</height>
+                <control type="spincontrolex" id="401">
+                      <description>core</description>
+                      <posx>80</posx>
+                      <posy>60</posy>
+                      <width>250</width>
+                      <height>200</height>
                       <visible>true</visible>
-                      <texturesliderbar>slider_bar.png</texturesliderbar>
-                      <textureslidernib>pi_nib_FX.png</textureslidernib>
-                      <textureslidernibfocus>pi_nib_FO.png</textureslidernibfocus>
+                      <colordiffuse>FFFFFFFF</colordiffuse>
+                      <texturefocus>oc_label_FO.png</texturefocus>
+                      <texturenofocus>oc_label_FX.png</texturenofocus>
+                      <textureup>oc_arrow_up_FX.png</textureup>
+                      <textureupfocus>oc_arrow_up_FO.png</textureupfocus>
+                      <texturedown>oc_arrow_dn_FX.png</texturedown>
+                      <texturedownfocus>oc_arrow_dn_F0.png</texturedownfocus>
+                      <label></label>
+                      <font>font12</font>
+                      <textcolor>FFFFFFFF</textcolor>
+                      <disabledcolor>80FFFFFF</disabledcolor>
+                      <align></align>
+                      <aligny></aligny>
+                      <textoffsetx></textoffsetx>
+                      <textoffsety></textoffsety>
+                      <pulseonselect></pulseonselect>
                       <onup>300</onup>
-                      <ondown>402</ondown>
-                </control>
-
-                <control type="slider" id="402">
-                      <description>arm slider control</description>
-                      <posx>200</posx>
-                      <posy>220</posy>
-                      <width>660</width>
-                      <height>80</height>
-                      <visible>true</visible>
-                      <texturesliderbar>slider_bar.png</texturesliderbar>
-                      <textureslidernib>pi_nib_FX.png</textureslidernib>
-                      <textureslidernibfocus>pi_nib_FO.png</textureslidernibfocus>
-                      <onup>401</onup>
-                      <ondown>403</ondown>
-                </control>
-
-                <control type="slider" id="403">
-                      <description>sdram slider control</description>
-                      <posx>200</posx>
-                      <posy>340</posy>
-                      <width>660</width>
-                      <height>80</height>
-                      <visible>true</visible>
-                      <texturesliderbar>slider_bar.png</texturesliderbar>
-                      <textureslidernib>pi_nib_FX.png</textureslidernib>
-                      <textureslidernibfocus>pi_nib_FO.png</textureslidernibfocus>
-                      <onup>402</onup>
-                      <ondown>404</ondown>
-                </control>                
-
-                <control type="slider" id="404">
-                      <description>gpu slider control</description>
-                      <posx>200</posx>
-                      <posy>460</posy>
-                      <width>660</width>
-                      <height>80</height>
-                      <visible>true</visible>
-                      <texturesliderbar>slider_bar.png</texturesliderbar>
-                      <textureslidernib>pi_nib_FX.png</textureslidernib>
-                      <textureslidernibfocus>pi_nib_FO.png</textureslidernibfocus>
-                      <onup>403</onup>
-                      <ondown>405</ondown>
-                </control>
-
-                <control type="slider" id="405">
-                      <description>overvolt slider control</description>
-                      <posx>200</posx>
-                      <posy>580</posy>
-                      <width>660</width>
-                      <height>80</height>
-                      <visible>true</visible>
-                      <texturesliderbar>slider_bar.png</texturesliderbar>
-                      <textureslidernib>pi_nib_FX.png</textureslidernib>
-                      <textureslidernibfocus>pi_nib_FO.png</textureslidernibfocus>
-                      <onup>404</onup>
-                      <ondown>406</ondown>
-                </control>
-
-                <control type="slider" id="406">
-                      <description>sdram overvolt slider control</description>
-                      <posx>200</posx>
-                      <posy>700</posy>
-                      <width>660</width>
-                      <height>80</height>
-                      <visible>true</visible>
-                      <texturesliderbar>slider_bar.png</texturesliderbar>
-                      <textureslidernib>pi_nib_FX.png</textureslidernib>
-                      <textureslidernibfocus>pi_nib_FO.png</textureslidernibfocus>
-                      <onup>405</onup>
-                      <ondown>300</ondown>
+                      <ondown>400</ondown>
+                      <onleft>200</onleft>
+                      <onright></onright>
                 </control>
 
             </control>
