@@ -295,7 +295,8 @@ class OSMCGui(object):
 
 		self.module_tally = 1000
 
-		addon_folder  = os.path.join(xbmc.translatePath("special://home"), "addons/")
+		# addon_folder  = os.path.join(xbmc.translatePath("special://home"), "addons/")  # FOR TESTING
+		addon_folder  = '/usr/share/kodi/addons'
 
 		folders       = [item for item in os.listdir(addon_folder) if os.path.isdir(os.path.join(addon_folder, item))]
 
