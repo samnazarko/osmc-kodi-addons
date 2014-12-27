@@ -604,7 +604,7 @@ Overclock settings are set using the Pi Overclock module."""
 				self.translated_changed_settings['hdmi_force_hotplug'] = '1'
 
 				# run the sub_process : "tvservice -d /boot/edid.dat"
-				subprocess.call(["sudo", "tvservice", "-d", "/boot/edid.dat"])
+				subprocess.call(["sudo", "/opt/vc/bin/tvservice", "-d", "/boot/edid.dat"])
 
 			else:
 
