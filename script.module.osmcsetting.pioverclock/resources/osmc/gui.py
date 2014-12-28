@@ -18,9 +18,9 @@ class overclock_gui(xbmcgui.WindowXMLDialog):
 
 		self.oc_profile = namedtuple('Profile', 'arm_freq sdram_freq core_freq initial_turbo over_voltage over_voltage_sdram force_turbo')
 
-		self.normal_profile = self.oc_profile(700, 400, 250, 10, 0, 0, 0)
-		self.medium_profile = self.oc_profile(710, 410, 260, 20, 1, 1, 1)
-		self.higher_profile = self.oc_profile(720, 420, 270, 30, 2, 2, 1)
+		self.normal_profile = self.oc_profile(850, 400, 375, 0, 0, 0, 0)
+		self.medium_profile = self.oc_profile(900, 400, 375, 0, 0, 0, 0)
+		self.higher_profile = self.oc_profile(950, 450, 450, 0, 6, 0, 0)
 		self.custom_profile = self.oc_profile(
 			self.setting_values.get('arm_freq', 			self.normal_profile.arm_freq),
 			self.setting_values.get('sdram_freq', 			self.normal_profile.sdram_freq),
