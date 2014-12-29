@@ -22,9 +22,5 @@ msgstr ""
 
 
 msgctxt "#32001"
-msgid "Example1"
-msgstr ""
-
-msgctxt "#32002"
-msgid "Example2"
+msgid "XXXXXXXXXXXXX"
 msgstr ""

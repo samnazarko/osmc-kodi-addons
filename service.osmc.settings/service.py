@@ -145,24 +145,6 @@ class Main(object):
 									ignore_string = '|'.join(ignore_list)
 									__addon__.setSetting('ignored_devices', ignore_string)
 
-
-
-
-			''' Would you like to add it as a source? YES. NO
-			if YES --> add sources window
-			if NO --> ask, Prevent this dialog for this device in the future? YES. NO
-			if YES --> add ??? to settings.xml for addon
-			All new device notifications first check if the device is in the IGNORE list in the settings.xml
-			'''
-
-
-
-
-
-
-
-
-
 			xbmc.sleep(1000)
 
 			log('blip!')
