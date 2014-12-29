@@ -206,7 +206,8 @@ class OSMCGui(object):
 		# determine the positions of addon in the gui)
 		self.known_modules_order = 	{
 									"script.module.osmcsetting.pi":						0,
-									"script.module.osmcsetting.pioverclock":			1
+									"script.module.osmcsetting.pioverclock":			1,
+									"script.module.osmcsetting.updates":				2,
 									}
 
 		# order of addon hierarchy
@@ -295,8 +296,10 @@ class OSMCGui(object):
 
 		self.module_tally = 1000
 
-		# addon_folder  = os.path.join(xbmc.translatePath("special://home"), "addons/")  # FOR TESTING
-		addon_folder  = '/usr/share/kodi/addons'
+		if os.path.isdir('/usr/share/kodi/addons/service.osmc.settings'):
+			addon_folder  = '/usr/share/kodi/addons'
+		else:
+			addon_folder  = os.path.join(xbmc.translatePath("special://home"), "addons/")  # FOR TESTING	
 
 		folders       = [item for item in os.listdir(addon_folder) if os.path.isdir(os.path.join(addon_folder, item))]
 
