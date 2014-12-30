@@ -162,8 +162,6 @@ class Main(object):
 									ignore_string = '|'.join(ignore_list)
 									__addon__.setSetting('ignored_devices', ignore_string)
 
-			log('blip!')
-
 			# THIS PART MAY NOT BE NEEDED, BUT IS INCLUDED HERE ANYWAY FOR TESTING PURPOSES
 			# if the gui was last accessed more than four hours
 			if not self.skip_check and (datetime.datetime.now() - self.gui_last_accessed).total_seconds() > 14400:
