@@ -121,7 +121,7 @@ import os
 # Kodi Modules
 import xbmc
 import xbmcaddon
-import xbmgui
+import xbmcgui
 
 __addon__              = xbmcaddon.Addon()
 __addonid__            = __addon__.getAddonInfo('id')
@@ -129,7 +129,7 @@ __scriptPath__         = __addon__.getAddonInfo('path')
 __setting__            = __addon__.getSetting
 __image_file__         = os.path.join(__scriptPath__,'resources','media','update_available.png')
 
-DIALOG = xbmc.Dialog()
+DIALOG = xbmcgui.Dialog()
 TIME_BETWEEN_CHECKS = 300 # SECONDS
 
 
@@ -183,19 +183,19 @@ class Main(object):
 				self.check_for_updates()
 
 
-    def post_notification(self):
-        log('posting notification')
+	def post_notification(self):
+		log('posting notification')
 
-    	self.displayed = True
-        self.window.addControl(self.update_image)
-        self.update_image.setVisibleCondition('!System.ScreenSaverActive')
+		self.displayed = True
+		self.window.addControl(self.update_image)
+		self.update_image.setVisibleCondition('!System.ScreenSaverActive')
 
 
-    def takedown_notification(self):
-    	log('taking down notification')
+	def takedown_notification(self):
+		log('taking down notification')
 
-    	self.displayed = False
-        self.window.removeControl(self.update_image)
+		self.displayed = False
+		self.window.removeControl(self.update_image)
 
 
 	def check_for_updates(self, do_it_now=False):
@@ -241,11 +241,11 @@ class Main(object):
 				else:
 
 					log("Upgrading!")
-					
+
 					install = DIALOG.yesno('OSMC Update Available', 'There are updates that are available for install.', 'Would you like to install them now?')
 					
 					if install:
-						cache.commit() # Actually installs
+						# cache.commit() # Actually installs
 
 						self.window.setProperty('OSMC_notification', 'false')
 
