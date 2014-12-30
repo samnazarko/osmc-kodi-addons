@@ -216,6 +216,10 @@ Overclock settings are set using the Pi Overclock module."""
 									'decode_WVC1': 				{'setting_value' : '',
 																	'default': '',
 																	},
+									'usb_max_current':			{'setting_value' : '',
+																	'default': 'false',
+																		'translate': self.translate_bool,
+																	},
 									# 'other_settings_string': 	{'setting_value' : '',
 									# 								'default': '',
 									# 									'translate': self.translate_other_string

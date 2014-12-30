@@ -70,6 +70,9 @@ class Main(object):
 		self.gui_last_accessed = datetime.datetime.now()
 		self.skip_check = True
 
+		# monitor created to check for xbmc abort requests
+		self.monitor = xbmc.Monitor()
+
 		# daemon
 		self._daemon()
 
@@ -78,7 +81,21 @@ class Main(object):
 
 		log('daemon started')
 
-		while not xbmc.abortRequested:
+		while True:
+			
+			# if xbmc is aborting
+			if self.monitor.waitForAbort(1):
+				# try to kill the gui and comms
+				try:
+					self.listener.stop()
+					self.stored_gui.close()
+					del self.stored_gui
+					del self.listener
+	
+				except:
+					pass
+
+				break
 
 			if not self.parent_queue.empty():
 
@@ -144,10 +161,6 @@ class Main(object):
 									ignore_list.append(str(device_id))
 									ignore_string = '|'.join(ignore_list)
 									__addon__.setSetting('ignored_devices', ignore_string)
-
-			xbmc.sleep(1000)
-
-			log('blip!')
 
 			# THIS PART MAY NOT BE NEEDED, BUT IS INCLUDED HERE ANYWAY FOR TESTING PURPOSES
 			# if the gui was last accessed more than four hours

@@ -239,8 +239,18 @@ class OSMCGui(object):
 			apply_buttons=self.apply_buttons, live_modules=self.live_modules)
 
 	
-	def open(self):
+	def close(self):
+		'''
+			Closes the gui, and deletes it from memory.
+		'''
 
+		try:
+			self.GUI.close()
+			del self.GUI
+		except:
+			pass
+
+	def open(self):
 		'''
 			Opens the gui window
 		'''

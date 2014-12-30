@@ -31,6 +31,8 @@
 <setting id="mem_free" label="32071" type="text" enable="false" />
 <setting id="gpu_mem_256" label="32030" type="slider" default="64" range="16,1,192" option="int" />
 <setting id="gpu_mem_512" label="32031" type="slider" default="64" range="16,1,448" option="int" />
+<setting id="usb_max_current" label="32072" type="bool" default="false"/>
+<setting id="usb_max_current_warning" label="32073" type="lsep" visible="eq(-1,true)" enable="false" />
 </category>
 
 <category label="32070">

@@ -65,6 +65,11 @@ class communicator(threading.Thread):
 
 			log('Comms error trying to stop: {}'.format(e))
 
+		try:
+			os.remove(self.address)
+		except:
+			log('Comms error trying to delete socket: {}'.format(e))			
+
 
 	def run(self):
 

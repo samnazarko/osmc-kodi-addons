@@ -112,3 +112,144 @@ FUNCTIONS NEEDED
  - check if reboot recquired to continue
  - check to see if the recquired space is available
  - '''
+
+# Standard Modules
+import apt
+from datetime import datetime
+import os
+
+# Kodi Modules
+import xbmc
+import xbmcaddon
+import xbmcgui
+
+__addon__              = xbmcaddon.Addon()
+__addonid__            = __addon__.getAddonInfo('id')
+__scriptPath__         = __addon__.getAddonInfo('path')
+__setting__            = __addon__.getSetting
+__image_file__         = os.path.join(__scriptPath__,'resources','media','update_available.png')
+
+DIALOG = xbmcgui.Dialog()
+TIME_BETWEEN_CHECKS = 300 # SECONDS
+
+
+def log(message, label = ''):
+	logmsg       = '%s : %s - %s ' % (__addonid__ , str(label), str(message))
+	xbmc.log(msg = logmsg)
+
+
+class Main(object):
+	
+
+	def __init__(self):
+
+		self.cache = apt.Cache()
+		self.monitor = xbmc.Monitor()
+		self.last_check = datetime.now()
+
+		self.check_for_updates(do_it_now=True)
+
+		self.window = xbmcgui.Window(10000)
+		self.window.setProperty('OSMC_notification','false')
+
+		# ControlImage(x, y, width, height, filename[, aspectRatio, colorDiffuse])
+		self.update_image = xbmcgui.ControlImage(15, 55, 350, 150, __image_file__)
+
+		self.displayed = False
+
+		self._daemon()
+
+
+	def _daemon(self):
+
+		log('_daemon started')
+
+		while True:
+
+			if self.monitor.waitForAbort(1):
+				log('XBMC Aborting')
+				self.takedown_notification()
+				break
+
+			if self.window.getProperty('OSMC_notification') == 'true' and not self.displayed:
+				#posts notification if update is available and notification is not currently displayed
+				self.post_notification()
+
+			elif self.window.getProperty('OSMC_notification') == 'false' and self.displayed:
+				#removes the notification if a check reveals there is no notification (should not be needed, but just in case)
+				self.takedown_notification()
+
+			else:
+				self.check_for_updates()
+
+
+	def post_notification(self):
+		log('posting notification')
+
+		self.displayed = True
+		self.window.addControl(self.update_image)
+		self.update_image.setVisibleCondition('!System.ScreenSaverActive')
+
+
+	def takedown_notification(self):
+		log('taking down notification')
+
+		self.displayed = False
+		self.window.removeControl(self.update_image)
+
+
+	def check_for_updates(self, do_it_now=False):
+		''' Checks whether the installed packages are upgradeable '''
+	
+		tdelta = datetime.now() - self.last_check
+
+		if tdelta.total_seconds() > TIME_BETWEEN_CHECKS or do_it_now:
+			
+			log('Checking for updates')
+
+			self.last_check = datetime.now()
+
+			self.cache.update()
+			self.cache.open(None)
+			self.cache.upgrade()
+			
+			log("The following packages have newer versions and are upgradable:")
+
+			REBOOT_REQUIRED=0
+
+			available_updates = cache.get_changes()
+
+			if available_updates:
+
+				self.window.setProperty('OSMC_notification', 'true')
+
+				for pkg in available_updates:
+
+					if pkg.is_upgradable:
+
+						log('upgradeable', pkg.shortname)
+
+						if "mediacenter" in pkg.shortname:
+							REBOOT_REQUIRED=1
+
+				if REBOOT_REQUIRED == 1:
+
+					log("We can't upgrade from Kodi as it needs updating itself")
+
+					ok = DIALOG.ok('OSMC Reboot Required','There are updates available.', 'OSMC needs to be rebooted to complete installation.')
+					
+				else:
+
+					log("Upgrading!")
+
+					install = DIALOG.yesno('OSMC Update Available', 'There are updates that are available for install.', 'Would you like to install them now?')
+					
+					if install:
+						# cache.commit() # Actually installs
+
+						self.window.setProperty('OSMC_notification', 'false')
+
+
+if __name__ == "__main__":
+
+	Main()
