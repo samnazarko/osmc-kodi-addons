@@ -112,3 +112,7 @@ FUNCTIONS NEEDED
  - check if reboot recquired to continue
  - check to see if the recquired space is available
  - '''
+
+
+class Main(object):
+	pass
