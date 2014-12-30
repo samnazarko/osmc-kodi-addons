@@ -16,6 +16,7 @@ import threading
 import time
 import sys
 import imp
+import traceback
 
 
 path = xbmcaddon.Addon().getAddonInfo('path')
@@ -342,15 +343,19 @@ class OSMCGui(object):
 		if not os.path.isfile(osmc_setting_FO_icon): return
 
 		# if you got this far then this is almost certainly an OSMC setting
-		# try:
-		new_module_name = sub_folder.replace('.','')
-		log(new_module_name)
-		OSMCSetting = imp.load_source(new_module_name, osmc_setting_file)
-		log(dir(OSMCSetting))
-		setting_instance = OSMCSetting.OSMCSettingClass()
-		# except:
-		# 	log('OSMCSetting __ %s __ failed to import' % sub_folder)
-		# 	return
+		try:
+			new_module_name = sub_folder.replace('.','')
+			log(new_module_name)
+			OSMCSetting = imp.load_source(new_module_name, osmc_setting_file)
+			log(dir(OSMCSetting))
+			setting_instance = OSMCSetting.OSMCSettingClass()
+		except:
+			exc_type, exc_value, exc_traceback = sys.exc_info()
+			log('OSMCSetting __ %s __ failed to import' % sub_folder)
+			log(exc_type)
+			log(exc_value)
+			log(exc_traceback)
+			return
 
 		# success!
 		log('OSMC Setting Module __ %s __ found and imported' % sub_folder)

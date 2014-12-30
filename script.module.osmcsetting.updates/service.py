@@ -245,7 +245,7 @@ class Main(object):
 					install = DIALOG.yesno('OSMC Update Available', 'There are updates that are available for install.', 'Would you like to install them now?')
 					
 					if install:
-						# cache.commit() # Actually installs
+						cache.commit() # Actually installs
 
 						self.window.setProperty('OSMC_notification', 'false')
 
