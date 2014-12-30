@@ -170,7 +170,10 @@ class Main(object):
 
 				del self.stored_gui
 
-		self.listener.stop()
+		try:
+			self.listener.stop()
+		except:
+			pass
 
 
 	def open_gui(self):
