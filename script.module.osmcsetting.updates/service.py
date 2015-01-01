@@ -124,6 +124,7 @@ from datetime import datetime
 import os
 import subprocess
 import Queue
+import random
 
 # Kodi Modules
 import xbmc
@@ -175,6 +176,8 @@ class Main(object):
 		# queue for communication with the comm and Main
 		self.parent_queue = Queue.Queue()
 
+		self.randomid = random.randint(0,1000)
+
 		# create socket, listen for comms
 		self.listener = comms.communicator(self.parent_queue, socket_file='/var/tmp/osmc.settings.update.sockfile')
 		self.listener.start()
@@ -209,17 +212,11 @@ class Main(object):
 
 		log('_daemon started')
 
-		count = 0
+		while not xbmc.abortRequested:
+		# while True:
 
-		# while not xbmc.abortRequested:
-		while True:
+			log('blurp %s' % self.randomid)
 
-			log('blurp')
-
-			if not count % 100:
-				log(count, '_daemon still alive')
-				count += 1
-			
 			# check whether the notification should be posted or removed
 			self.check_notification()
 
@@ -369,9 +366,10 @@ class Main(object):
 		
 		# try:
 		log(action, 'calling child, action ')
-		# subprocess.check_output(['sudo', 'python','/home/kubkev/.kodi/addons/script.module.osmcsetting.updates/resources/lib/apt_cache_action.py', action])
-		subprocess.call(['sudo', 'python','/home/kubkev/.kodi/addons/script.module.osmcsetting.updates/resources/lib/apt_cache_action.py', action])
+		subprocess.Popen(['sudo', 'python','/home/kubkev/.kodi/addons/script.module.osmcsetting.updates/resources/lib/apt_cache_action.py', action])
 		
+		# subprocess.check_output(['sudo', 'python','/home/kubkev/.kodi/addons/script.module.osmcsetting.updates/resources/lib/apt_cache_action.py', action])
+		# os.system('sudo python /home/kubkev/.kodi/addons/script.module.osmcsetting.updates/resources/lib/apt_cache_action.py %s' % action)
 		# except subprocess.CalledProcessError as CPE:  
 
 		# 	log(CPE.returncode, 'subprocess, return code: ')                                                                                                 
