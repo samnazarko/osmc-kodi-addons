@@ -230,7 +230,7 @@ msgid "Revert marked updates"
 msgstr""
 
 msgctxt "#32053"
-msgid "xxxxxxxxx"
+msgid "Install Updates Now"
 msgstr""
 
 msgctxt "#32054"

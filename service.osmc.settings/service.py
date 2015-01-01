@@ -61,7 +61,7 @@ class Main(object):
 		self.parent_queue = Queue.Queue()
 
 		# create socket, listen for comms
-		self.listener = comms.communicator(self.parent_queue)
+		self.listener = comms.communicator(self.parent_queue, socket_file='/var/tmp/osmc.settings.sockfile')
 		self.listener.start()
 
 		# the gui is created and stored in memory for quick access
@@ -76,6 +76,8 @@ class Main(object):
 		# daemon
 		self._daemon()
 
+		log('_daemon exited')
+
 
 	def _daemon(self):
 
@@ -87,13 +89,19 @@ class Main(object):
 			if self.monitor.waitForAbort(1):
 				# try to kill the gui and comms
 				try:
+					log('Stopping listener (in wait)')
 					self.listener.stop()
-					self.stored_gui.close()
-					del self.stored_gui
+					log('Deleting listener (in wait)')
 					del self.listener
-	
+					log('Listener deleted.')
 				except:
-					pass
+					log('Failed to stop/delete listener. (in wait)')	
+				
+				try:		
+					log('Closing gui')
+					self.stored_gui.close()
+				except:
+					log('Failed to stop/delete stored_gui. (in wait)')	
 
 				break
 
@@ -170,10 +178,7 @@ class Main(object):
 
 				del self.stored_gui
 
-		try:
-			self.listener.stop()
-		except:
-			pass
+		log('_daemon exiting')
 
 
 	def open_gui(self):
@@ -207,9 +212,10 @@ class Main(object):
 
 if __name__ == "__main__":
 
-	Main()
+	m = Main()
 
-	del Main
+	log('Deleting Main')
+	# del Main
 
 	log('Exiting OSMC Settings')
 

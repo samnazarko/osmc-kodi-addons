@@ -29,7 +29,7 @@ scriptPath       = __addon__.getAddonInfo('path')
 
 
 def log(message):
-	xbmc.log(str(message))
+	xbmc.log('osmc_settings: ' + str(message))
 
 
 class OSMC_gui(xbmcgui.WindowXMLDialog):
@@ -246,8 +246,12 @@ class OSMCGui(object):
 		'''
 
 		try:
-			self.GUI.close()
-			del self.GUI
+			log('Closing GUI')
+			# self.GUI.close()
+			log('Deleting GUI')
+			# del self.GUI
+			log('GUI Deleted')
+
 		except:
 			pass
 

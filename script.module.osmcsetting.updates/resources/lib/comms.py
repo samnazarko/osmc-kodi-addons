@@ -95,7 +95,7 @@ class communicator(threading.Thread):
 
 			while not xbmc.abortRequested and not passed and total_wait < 500:
 				try:
-					data = conn.recv(8192)
+					data = conn.recv(81920)
 					passed = True
 					log('data = %s' % data)
 				except:

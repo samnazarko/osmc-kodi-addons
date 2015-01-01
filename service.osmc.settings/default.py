@@ -9,7 +9,7 @@ log('default started')
 address = '/var/tmp/osmc.settings.sockfile'
 sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
 sock.connect(address)
-sock.send('open')
+sock.sendall('open')
 # sock.send('new_device:farts')
 sock.close()
 
