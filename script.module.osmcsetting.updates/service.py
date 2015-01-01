@@ -111,17 +111,28 @@ FUNCTIONS NEEDED
  - onscreen progress notification 
  - check if reboot recquired to continue
  - check to see if the recquired space is available
- - '''
+ - 
+
+
+ WHEN THERE IS AN UPDATE THAT CAN ONLY BE INSTALLED WITH KODI CLOSED: 
+ 	- just tell me about it
+ 	- automatically install if between these times '''
 
 # Standard Modules
 import apt
 from datetime import datetime
 import os
+import subprocess
+import Queue
 
 # Kodi Modules
 import xbmc
 import xbmcaddon
 import xbmcgui
+
+# Custom modules
+sys.path.append(xbmc.translatePath(os.path.join(xbmcaddon.Addon().getAddonInfo('path'), 'resources','lib')))
+import comms
 
 __addon__              = xbmcaddon.Addon()
 __addonid__            = __addon__.getAddonInfo('id')
@@ -130,7 +141,7 @@ __setting__            = __addon__.getSetting
 __image_file__         = os.path.join(__scriptPath__,'resources','media','update_available.png')
 
 DIALOG = xbmcgui.Dialog()
-TIME_BETWEEN_CHECKS = 300 # SECONDS
+TIME_BETWEEN_CHECKS = 3600 # SECONDS
 
 
 def log(message, label = ''):
@@ -139,24 +150,58 @@ def log(message, label = ''):
 
 
 class Main(object):
+
+	''' This service checks for new updates, then:
+			- posts a notification on the home screen to say there is an update available, or
+			- downloads the updates
+			- installs the updates 
+			- restarts Kodi to implement changes
+		The check for updates is done using the python-apt module. This module must be run as root, so is being called in
+		external scripts from the command line using sudo. The other script communicates with the update service using a socket file.
+
+		 '''
 	
 
 	def __init__(self):
 
-		self.cache = apt.Cache()
+		# dictionary containing the permissable actions (communicated from the child apt scripts) 
+		# and the corresponding methods in the parent
+		self.action_dict = 	{
+								'apt_cache update complete' : self.apt_update_complete,
+								'apt_cache commit complete' : self.apt_commit_complete,
+							}
+
+
+		# queue for communication with the comm and Main
+		self.parent_queue = Queue.Queue()
+
+		# create socket, listen for comms
+		self.listener = comms.communicator(self.parent_queue, socket_file='/var/tmp/osmc.settings.update.sockfile')
+		self.listener.start()
+
+		# monitor for identifying addon settings updates and kodi abort requests
 		self.monitor = xbmc.Monitor()
-		self.last_check = datetime.now()
 
-		self.check_for_updates(do_it_now=True)
-
+		# window on which to paste the update notification
 		self.window = xbmcgui.Window(10000)
+
+		# property which determines whether the notification should be pasted to the window
 		self.window.setProperty('OSMC_notification','false')
 
 		# ControlImage(x, y, width, height, filename[, aspectRatio, colorDiffuse])
 		self.update_image = xbmcgui.ControlImage(15, 55, 350, 150, __image_file__)
+		self.update_image.setVisibleCondition('!System.ScreenSaverActive')
 
+		# attribute that records whether the image is being displayed or not
 		self.displayed = False
 
+		# the time of the last check for updates
+		self.last_check = datetime.now()
+
+		# a preliminary check for updates (for testing only)
+		self.check_for_updates(do_it_now=True)
+
+		# keep alive method
 		self._daemon()
 
 
@@ -164,23 +209,111 @@ class Main(object):
 
 		log('_daemon started')
 
+		count = 0
+
+		# while not xbmc.abortRequested:
 		while True:
 
+			log('blurp')
+
+			if not count % 100:
+				log(count, '_daemon still alive')
+				count += 1
+			
+			# check whether the notification should be posted or removed
+			self.check_notification()
+
+			# check queue, see if there is any data
+			try:
+				raw_comm_from_script = self.parent_queue.get(False)
+			except:
+				raw_comm_from_script = False 
+
+			if raw_comm_from_script:
+
+				log(raw_comm_from_script, 'raw_comm_from_script')
+
+				# process the information from the child scripts
+				if raw_comm_from_script:
+					method = self.action_dict.get(raw_comm_from_script, False)
+					if method: method()
+
+			# check for updates each second
+			self.check_for_updates()
+
 			if self.monitor.waitForAbort(1):
-				log('XBMC Aborting')
-				self.takedown_notification()
 				break
 
-			if self.window.getProperty('OSMC_notification') == 'true' and not self.displayed:
-				#posts notification if update is available and notification is not currently displayed
-				self.post_notification()
+		log('XBMC Aborting')
+		self.takedown_notification()
+		self.listener.stop()
 
-			elif self.window.getProperty('OSMC_notification') == 'false' and self.displayed:
-				#removes the notification if a check reveals there is no notification (should not be needed, but just in case)
-				self.takedown_notification()
+
+	def apt_commit_complete(self):
+
+		self.window.setProperty('OSMC_notification', 'false')
+
+
+	def apt_update_complete(self):
+
+		self.cache = apt.Cache()
+
+		REBOOT_REQUIRED = 0
+
+		log('apt_update_complete called')
+		log('opening cache')
+
+		self.cache.open(None)
+
+		log('opened, upgrading cache')
+
+		self.cache.upgrade()
+
+		log('upgraded, getting changes')
+
+		available_updates = self.cache.get_changes()
+
+		if not available_updates: 
+			log('There are no packages to upgrade')
+			# DIALOG.ok('OSMC Update', 'There are no packages to upgrade')
+			del self.cache
+			return 		# if there are no updates then just return nothing
+
+		log('The following packages have newer versions and are upgradable: ')
+
+		for pkg in available_updates:
+			if pkg.is_upgradable:
+
+				log('is upgradeable', pkg.shortname)
+
+				if "mediacenter" in pkg.shortname:
+					REBOOT_REQUIRED = 1
+
+		del self.cache
+
+		if REBOOT_REQUIRED == 1:
+
+			log("We can't upgrade from within Kodi as it needs updating itself")
+
+			# okey_dokey = DIALOG.ok('OSMC Reboot Required','There are updates available.', 'OSMC needs to be rebooted to complete installation.')
+			
+		else:
+
+			log("Upgrading!")
+
+			self.window.setProperty('OSMC_notification', 'true')
+
+			install = DIALOG.yesno('OSMC Update Available', 'There are updates that are available for install.', 'Would you like to install them now?')
+
+			if install:
+
+				self.call_child_script('commit') # Actually installs
+
+				self.window.setProperty('OSMC_notification', 'false')
 
 			else:
-				self.check_for_updates()
+
+				okey_dokey = DIALOG.ok('OSMC Update Available', 'Fair enough, then.', 'You can install them from within the OSMC settings later.')
 
 
 	def post_notification(self):
@@ -188,68 +321,67 @@ class Main(object):
 
 		self.displayed = True
 		self.window.addControl(self.update_image)
-		self.update_image.setVisibleCondition('!System.ScreenSaverActive')
 
 
 	def takedown_notification(self):
 		log('taking down notification')
 
 		self.displayed = False
-		self.window.removeControl(self.update_image)
+		try:
+
+			self.window.removeControl(self.update_image)
+		except:
+			pass
+
+
+	def check_notification(self):
+
+		if self.window.getProperty('OSMC_notification') == 'true' and not self.displayed:
+			#posts notification if update is available and notification is not currently displayed
+			self.post_notification()
+
+		elif self.window.getProperty('OSMC_notification') == 'false' and self.displayed:
+			#removes the notification if a check reveals there is no notification (should not be needed, but just in case)
+			self.takedown_notification()
+
+		return
 
 
 	def check_for_updates(self, do_it_now=False):
-		''' Checks whether the installed packages are upgradeable '''
+		''' Checks whether the installed packages are upgradeable. 
+			This is part 1; calls an external script to update the apt cache. '''
 	
 		tdelta = datetime.now() - self.last_check
 
 		if tdelta.total_seconds() > TIME_BETWEEN_CHECKS or do_it_now:
+
+			#this is here for testing
+			self.window.setProperty('OSMC_notification', 'false')
 			
-			log('Checking for updates')
+			log(do_it_now, 'Checking for updates, do_it_now')
 
 			self.last_check = datetime.now()
 
-			self.cache.update()
-			self.cache.open(None)
-			self.cache.upgrade()
-			
-			log("The following packages have newer versions and are upgradable:")
+			self.call_child_script('update')
 
-			REBOOT_REQUIRED=0
+	
+	def call_child_script(self, action):
+		
+		# try:
+		log(action, 'calling child, action ')
+		# subprocess.check_output(['sudo', 'python','/home/kubkev/.kodi/addons/script.module.osmcsetting.updates/resources/lib/apt_cache_action.py', action])
+		subprocess.call(['sudo', 'python','/home/kubkev/.kodi/addons/script.module.osmcsetting.updates/resources/lib/apt_cache_action.py', action])
+		
+		# except subprocess.CalledProcessError as CPE:  
 
-			available_updates = cache.get_changes()
-
-			if available_updates:
-
-				self.window.setProperty('OSMC_notification', 'true')
-
-				for pkg in available_updates:
-
-					if pkg.is_upgradable:
-
-						log('upgradeable', pkg.shortname)
-
-						if "mediacenter" in pkg.shortname:
-							REBOOT_REQUIRED=1
-
-				if REBOOT_REQUIRED == 1:
-
-					log("We can't upgrade from Kodi as it needs updating itself")
-
-					ok = DIALOG.ok('OSMC Reboot Required','There are updates available.', 'OSMC needs to be rebooted to complete installation.')
-					
-				else:
-
-					log("Upgrading!")
-
-					install = DIALOG.yesno('OSMC Update Available', 'There are updates that are available for install.', 'Would you like to install them now?')
-					
-					if install:
-						cache.commit() # Actually installs
-
-						self.window.setProperty('OSMC_notification', 'false')
+		# 	log(CPE.returncode, 'subprocess, return code: ')                                                                                                 
+		# 	log(CPE.output, 'subprocess, output: ')
 
 
 if __name__ == "__main__":
 
-	Main()
+	m = Main()
+	del m.monitor
+	del m.window 
+	del m.update_image
+	del m

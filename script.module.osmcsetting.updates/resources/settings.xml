@@ -12,6 +12,7 @@
 		<setting default="false" id="install_reboot" label="32028" subsetting="true" type="bool" visible="eq(-1,2)+!eq(-8,0)"/>
 		<setting default="false" id="shape_bool" label="32029" type="bool" visible="!eq(-9,0)"/>
 		<setting default="false" id="shape_speed" label="32030" subsetting="true" type="number" visible="eq(-1, true)+!eq(-10,0)"/>
+		<setting id="update_now" label="32053" type="action" option="close" action="RunScript($CWD/resources/lib/setting_commit_call.py)"/>
 	</category>
 	<category label="32031">
 		<setting default="true" id="display_bool" label="32032" type="bool"/>
