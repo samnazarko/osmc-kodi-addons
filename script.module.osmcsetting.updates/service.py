@@ -133,7 +133,8 @@ import xbmcaddon
 import xbmcgui
 
 # Custom modules
-sys.path.append(xbmc.translatePath(os.path.join(xbmcaddon.Addon().getAddonInfo('path'), 'resources','lib')))
+path = xbmc.translatePath(os.path.join(xbmcaddon.Addon().getAddonInfo('path'), 'resources','lib'))
+sys.path.append(path)
 import comms
 import simple_scheduler as sched
 
@@ -568,7 +569,8 @@ class Main(object):
 		
 		# try:
 		log(action, 'calling child, action ')
-		subprocess.Popen(['sudo', 'python','/home/kubkev/.kodi/addons/script.module.osmcsetting.updates/resources/lib/apt_cache_action.py', action])
+		subprocess.Popen(['sudo', 'python','%s/apt_cache_action.py' % path, action])
+		log('%s/apt_cache_action.py' % path)
 		
 		# subprocess.check_output(['sudo', 'python','/home/kubkev/.kodi/addons/script.module.osmcsetting.updates/resources/lib/apt_cache_action.py', action])
 		# os.system('sudo python /home/kubkev/.kodi/addons/script.module.osmcsetting.updates/resources/lib/apt_cache_action.py %s' % action)
