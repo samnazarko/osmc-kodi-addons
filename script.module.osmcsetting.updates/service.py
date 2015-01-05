@@ -124,6 +124,8 @@ from datetime import datetime
 import os
 import subprocess
 import Queue
+import random
+import json
 
 # Kodi Modules
 import xbmc
@@ -133,20 +135,50 @@ import xbmcgui
 # Custom modules
 sys.path.append(xbmc.translatePath(os.path.join(xbmcaddon.Addon().getAddonInfo('path'), 'resources','lib')))
 import comms
+import simple_scheduler as sched
 
-__addon__              = xbmcaddon.Addon()
-__addonid__            = __addon__.getAddonInfo('id')
-__scriptPath__         = __addon__.getAddonInfo('path')
-__setting__            = __addon__.getSetting
-__image_file__         = os.path.join(__scriptPath__,'resources','media','update_available.png')
+__addon__              	= xbmcaddon.Addon()
+__addonid__            	= __addon__.getAddonInfo('id')
+__scriptPath__         	= __addon__.getAddonInfo('path')
+__setting__            	= __addon__.getSetting
+__image_file__         	= os.path.join(__scriptPath__,'resources','media','update_available.png')
+lang 					= __addon__.getLocalizedString
 
-DIALOG = xbmcgui.Dialog()
+DIALOG  = xbmcgui.Dialog()
+
 TIME_BETWEEN_CHECKS = 3600 # SECONDS
 
 
 def log(message, label = ''):
 	logmsg       = '%s : %s - %s ' % (__addonid__ , str(label), str(message))
 	xbmc.log(msg = logmsg)
+
+
+class Monitah(xbmc.Monitor):
+
+	def __init__(self, **kwargs):
+		super(Monitah, self).__init__()
+
+		self.parent_queue = kwargs['parent_queue']
+
+	def onAbortRequested(self):
+
+		log('killing self')
+
+		msg = json.dumps(('kill_yourself', {}))
+
+		self.parent_queue.put(msg)
+
+
+	def onSettingsChanged(self):
+		log('settings changed!!!!!!!!!!!!!!!!!!!!!!!')
+
+		msg = json.dumps(('update_settings', {}))
+
+		self.parent_queue.put(msg)
+
+		log(self.parent_queue, 'self.parent_queue')
+
 
 
 class Main(object):
@@ -158,29 +190,44 @@ class Main(object):
 			- restarts Kodi to implement changes
 		The check for updates is done using the python-apt module. This module must be run as root, so is being called in
 		external scripts from the command line using sudo. The other script communicates with the update service using a socket file.
-
-		 '''
+	'''
 	
 
 	def __init__(self):
+
+		self.first_run = True
 
 		# dictionary containing the permissable actions (communicated from the child apt scripts) 
 		# and the corresponding methods in the parent
 		self.action_dict = 	{
 								'apt_cache update complete' : self.apt_update_complete,
 								'apt_cache commit complete' : self.apt_commit_complete,
-							}
+								'apt_cache fetch complete'  : self.apt_fetch_complete,
+								'progress_bar'				: self.progress_bar,
+								'update_settings'			: self.update_settings,
+								'kill_yourself'				: self.kill_yourself,
 
+							}
 
 		# queue for communication with the comm and Main
 		self.parent_queue = Queue.Queue()
+
+		self.randomid = random.randint(0,1000)
 
 		# create socket, listen for comms
 		self.listener = comms.communicator(self.parent_queue, socket_file='/var/tmp/osmc.settings.update.sockfile')
 		self.listener.start()
 
+		# grab the settings
+		self.update_settings()
+
+		# a class to handle scheduling update checks
+		self.scheduler = sched.SimpleScheduler(self.s)
+		log(self.scheduler.trigger_time, 'trigger_time')
+
+
 		# monitor for identifying addon settings updates and kodi abort requests
-		self.monitor = xbmc.Monitor()
+		self.monitor = Monitah(parent_queue = self.parent_queue)
 
 		# window on which to paste the update notification
 		self.window = xbmcgui.Window(10000)
@@ -192,66 +239,219 @@ class Main(object):
 		self.update_image = xbmcgui.ControlImage(15, 55, 350, 150, __image_file__)
 		self.update_image.setVisibleCondition('!System.ScreenSaverActive')
 
+		# this flag is present when updates have been downloaded but the user wants to reboot themselves manually via the settings
+		# it is deleted using the 'setting_exit_install.py' script.
+		self.block_update_file = '/var/tmp/.dont_install_downloaded_updates'
+		if os.path.isfile(self.block_update_file):
+			self.skip_update_check = True
+		else:
+			self.skip_update_check = False
+
 		# attribute that records whether the image is being displayed or not
 		self.displayed = False
 
-		# the time of the last check for updates
-		self.last_check = datetime.now()
-
 		# a preliminary check for updates (for testing only)
-		self.check_for_updates(do_it_now=True)
+		if self.s['check_onboot']:
+			if not self.skip_update_check or self.s['check_freq'] != lang(32003):
+				self.check_for_updates(do_it_now=True)
 
 		# keep alive method
 		self._daemon()
+
+
+	def progress_bar(self, **kwargs):
+
+		log(kwargs, 'kwargs')
+
+		kill = kwargs.get('kill', False)
+
+		if kill:
+			
+			try:
+				self.pDialog.close()
+				del self.pDialog
+			except:
+				pass
+
+			return
+
+		percent = kwargs.get('percent','nix')
+		heading = kwargs.get('heading','nix')
+		message = kwargs.get('message', 'nix')
+
+		keys = ['percent', 'heading', 'message']
+		args = [percent, heading, message]
+		update_args = {k:v for k, v in zip(keys, args) if v != 'nix'}
+
+		try:
+			log(update_args, 'update_args')
+			self.pDialog.update(**update_args)
+
+		except:
+
+			self.pDialog = xbmcgui.DialogProgressBG()
+			self.pDialog.create('OSMC Update', 'Update Running.')
+
+			self.progress_bar(**update_args)
+
+
+	def update_settings(self):
+
+		log('Updating Settings...')
+
+
+		if self.first_run:
+			self.first_run = False
+
+			self.scheduler_settings = ['check_freq', 'check_weekday', 'check_day', 'check_time', 'check_hour', 'check_minute']
+			
+			self.s = {}
+
+			self.s['check_onboot']		= True if 		__setting__('check_onboot') 	== 'true' else False
+			self.s['check_freq'] 		= 				__setting__('check_freq')
+			self.s['check_weekday'] 	= int(float(	__setting__('check_weekday')	))
+			self.s['check_day'] 		= int(float(	__setting__('check_day')		))
+			self.s['check_time'] 		= int(float(	__setting__('check_time')		))
+			self.s['check_hour'] 		= int(float(	__setting__('check_hour')		))
+			self.s['check_minute'] 		= int(float(	__setting__('check_minute')		))
+
+			log(self.s, 'Initial Settings')
+
+			return
+
+		else:
+
+			tmp_s = {}
+
+			tmp_s['check_onboot']		= True if 		__setting__('check_onboot') 	== 'true' else False
+			tmp_s['check_freq'] 		= 				__setting__('check_freq')
+			tmp_s['check_weekday'] 		= int(float(	__setting__('check_weekday')	))
+			tmp_s['check_day'] 			= int(float(	__setting__('check_day')		))
+			tmp_s['check_time'] 		= int(float(	__setting__('check_time')		))
+			tmp_s['check_hour'] 		= int(float(	__setting__('check_hour')		))
+			tmp_s['check_minute'] 		= int(float(	__setting__('check_minute')		))
+
+
+		update_scheduler = False
+
+		for k, v in tmp_s.iteritems():
+
+			if v == self.s[k]:
+				continue
+			else:
+				self.s[k] = v
+				update_scheduler = True
+
+		if update_scheduler:
+			self.scheduler = sched.SimpleScheduler(self.s)
+
+		log(self.scheduler.trigger_time, 'trigger_time')
+
+
+	def kill_yourself(self):
+		self.keep_alive = False 
 
 
 	def _daemon(self):
 
 		log('_daemon started')
 
-		count = 0
+		self.keep_alive = True
 
-		# while not xbmc.abortRequested:
-		while True:
+		while self.keep_alive:
+		# while True:
 
-			log('blurp')
+			log('blurp %s' % self.randomid)
 
-			if not count % 100:
-				log(count, '_daemon still alive')
-				count += 1
-			
 			# check whether the notification should be posted or removed
 			self.check_notification()
 
 			# check queue, see if there is any data
 			try:
+				# the only thing the script should be sent is a tuple ('instruction as string', data)
 				raw_comm_from_script = self.parent_queue.get(False)
+				comm_from_script = json.loads(raw_comm_from_script)
+				log(comm_from_script, 'comm_from_script')
+
 			except:
-				raw_comm_from_script = False 
+				comm_from_script = False 
 
-			if raw_comm_from_script:
+			if comm_from_script:
 
-				log(raw_comm_from_script, 'raw_comm_from_script')
+				log(comm_from_script, 'comm_from_script')
 
 				# process the information from the child scripts
-				if raw_comm_from_script:
-					method = self.action_dict.get(raw_comm_from_script, False)
-					if method: method()
+				if comm_from_script:
+					method = self.action_dict.get(comm_from_script[0], False)
+					if method: 
+						log(comm_from_script[1],'comm_from_script[1]')
+						method(**comm_from_script[1])
 
 			# check for updates each second
-			self.check_for_updates()
+			if not self.skip_update_check and self.s['check_freq'] != lang(32003):
+				self.check_for_updates()
 
-			if self.monitor.waitForAbort(1):
-				break
+			# check for an early exit
+			if not self.keep_alive: break
+
+			xbmc.sleep(500)
+
+
+		self.listener.stop()
+		# del self.listener
+		# log('del self.listener')
+
+		# del self.monitor
+		# log('del self.monitor')
+
+		self.takedown_notification()
+		log('self.takedown_notification()')
+
+		# del self.update_image
+		# log('del self.update_image')
+
+		# del self.window 
+		# log('del self.window')
 
 		log('XBMC Aborting')
-		self.takedown_notification()
-		self.listener.stop()
 
 
 	def apt_commit_complete(self):
 
 		self.window.setProperty('OSMC_notification', 'false')
+
+
+	def apt_fetch_complete(self):
+
+		log('apt_fetch_complete called')
+
+		exit_install = DIALOG.yesno('OSMC Update Available', 'Updates have been downloaded, but Kodi will need to exit to install them.', 'Would you like to exit and install the updates now?')
+
+		if exit_install:
+			subprocess.Popen('sudo systemctl start update-manual')
+
+		else:
+			okey = DIALOG.yesno('OSMC Update Available', 'Would you like to install the updates automatically on the next reboot,', 'or do you want to manually call the install from the OSMC settings?', yeslabel="Auto", nolabel="Manual")
+
+			if okey: # auto install at next reboot
+
+				try:
+					# remove the file that blocks updates on reboot
+					os.remove(self.block_update_file)
+
+				except:
+					pass
+
+			else: # install the updates only when the user choose to from the settings
+				
+				# create the file that will prevent the installation of downloaded updates untill the user say so
+				with open(self.block_update_file, 'w') as f:
+					f.write('d')
+
+				# trigger the flag to skip update checks
+				self.skip_update_check = True
+
+			self.window.setProperty('OSMC_notification', 'true')
 
 
 	def apt_update_complete(self):
@@ -281,6 +481,8 @@ class Main(object):
 
 		log('The following packages have newer versions and are upgradable: ')
 
+		# non_downloadable_updates = []
+
 		for pkg in available_updates:
 			if pkg.is_upgradable:
 
@@ -291,15 +493,22 @@ class Main(object):
 
 		del self.cache
 
+		# TESTING ONLY
+		# REBOOT_REQUIRED = 1 # TESTING ONLY
+		# TESTING ONLY
+
 		if REBOOT_REQUIRED == 1:
 
 			log("We can't upgrade from within Kodi as it needs updating itself")
 
-			# okey_dokey = DIALOG.ok('OSMC Reboot Required','There are updates available.', 'OSMC needs to be rebooted to complete installation.')
-			
+			# Downloading all the debs at once require su access. So we call an external script to download the updates 
+			# to the default apt_cache. That other script provides a progress update to this parent script, 
+			# which is displayed as a background progress bar
+			self.call_child_script('fetch')
+
 		else:
 
-			log("Upgrading!")
+			log("Updates are available, no reboot is required")
 
 			self.window.setProperty('OSMC_notification', 'true')
 
@@ -327,11 +536,7 @@ class Main(object):
 		log('taking down notification')
 
 		self.displayed = False
-		try:
-
-			self.window.removeControl(self.update_image)
-		except:
-			pass
+		self.window.removeControl(self.update_image)
 
 
 	def check_notification(self):
@@ -351,27 +556,22 @@ class Main(object):
 		''' Checks whether the installed packages are upgradeable. 
 			This is part 1; calls an external script to update the apt cache. '''
 	
-		tdelta = datetime.now() - self.last_check
+		#this is here for testing
+		self.window.setProperty('OSMC_notification', 'false')
+		
+		log(do_it_now, 'Checking for updates, do_it_now')
 
-		if tdelta.total_seconds() > TIME_BETWEEN_CHECKS or do_it_now:
-
-			#this is here for testing
-			self.window.setProperty('OSMC_notification', 'false')
-			
-			log(do_it_now, 'Checking for updates, do_it_now')
-
-			self.last_check = datetime.now()
-
-			self.call_child_script('update')
+		self.call_child_script('update')
 
 	
 	def call_child_script(self, action):
 		
 		# try:
 		log(action, 'calling child, action ')
-		# subprocess.check_output(['sudo', 'python','/home/kubkev/.kodi/addons/script.module.osmcsetting.updates/resources/lib/apt_cache_action.py', action])
-		subprocess.call(['sudo', 'python','/home/kubkev/.kodi/addons/script.module.osmcsetting.updates/resources/lib/apt_cache_action.py', action])
+		subprocess.Popen(['sudo', 'python','/home/kubkev/.kodi/addons/script.module.osmcsetting.updates/resources/lib/apt_cache_action.py', action])
 		
+		# subprocess.check_output(['sudo', 'python','/home/kubkev/.kodi/addons/script.module.osmcsetting.updates/resources/lib/apt_cache_action.py', action])
+		# os.system('sudo python /home/kubkev/.kodi/addons/script.module.osmcsetting.updates/resources/lib/apt_cache_action.py %s' % action)
 		# except subprocess.CalledProcessError as CPE:  
 
 		# 	log(CPE.returncode, 'subprocess, return code: ')                                                                                                 
@@ -381,7 +581,4 @@ class Main(object):
 if __name__ == "__main__":
 
 	m = Main()
-	del m.monitor
-	del m.window 
-	del m.update_image
 	del m

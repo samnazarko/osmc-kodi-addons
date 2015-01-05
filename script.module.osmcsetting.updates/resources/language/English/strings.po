@@ -50,31 +50,31 @@ msgid "Day"
 msgstr""
 
 msgctxt "#32008"
-msgid "Mon"
+msgid "Monday"
 msgstr""
 
 msgctxt "#32009"
-msgid "Tues"
+msgid "Tuesday"
 msgstr""
 
 msgctxt "#32010"
-msgid "Wed"
+msgid "Wednesday"
 msgstr""
 
 msgctxt "#32011"
-msgid "Thur"
+msgid "Thursday"
 msgstr""
 
 msgctxt "#32012"
-msgid "Fri"
+msgid "Friday"
 msgstr""
 
 msgctxt "#32013"
-msgid "Sat"
+msgid "Saturday"
 msgstr""
 
 msgctxt "#32014"
-msgid "Sun"
+msgid "Sunday"
 msgstr""
 
 msgctxt "#32015"
@@ -234,11 +234,11 @@ msgid "Install Updates Now"
 msgstr""
 
 msgctxt "#32054"
-msgid "xxxxxxxxx"
+msgid "Exit and install downloaded updates"
 msgstr""
 
 msgctxt "#32055"
-msgid "xxxxxxxxx"
+msgid "Check for updates on start up"
 msgstr""
 
 msgctxt "#32056"

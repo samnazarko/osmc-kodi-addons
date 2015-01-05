@@ -93,14 +93,14 @@ class communicator(threading.Thread):
 			total_wait = 0
 			wait = 5
 
-			while not xbmc.abortRequested and not passed and total_wait < 500:
+			while not xbmc.abortRequested and not passed and total_wait < 100:
 				try:
 					data = conn.recv(81920)
 					passed = True
 					log('data = %s' % data)
 				except:
 					total_wait += wait
-					xbmc.sleep(5)
+					xbmc.sleep(wait)
 
 			if not passed:
 				log('Connection failed to collect data.')
