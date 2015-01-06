@@ -122,6 +122,7 @@ FUNCTIONS NEEDED
 import apt
 from datetime import datetime
 import os
+import sys
 import subprocess
 import Queue
 import random
@@ -133,8 +134,8 @@ import xbmcaddon
 import xbmcgui
 
 # Custom modules
-path = xbmc.translatePath(os.path.join(xbmcaddon.Addon().getAddonInfo('path'), 'resources','lib'))
-sys.path.append(path)
+__libpath__ = xbmc.translatePath(os.path.join(xbmcaddon.Addon().getAddonInfo('path'), 'resources','lib'))
+sys.path.append(__libpath__)
 import comms
 import simple_scheduler as sched
 
@@ -253,7 +254,7 @@ class Main(object):
 
 		# a preliminary check for updates (for testing only)
 		if self.s['check_onboot']:
-			if not self.skip_update_check or self.s['check_freq'] != lang(32003):
+			if not self.skip_update_check and self.s['check_freq'] != lang(32003):
 				self.check_for_updates(do_it_now=True)
 
 		# keep alive method
@@ -388,9 +389,9 @@ class Main(object):
 						log(comm_from_script[1],'comm_from_script[1]')
 						method(**comm_from_script[1])
 
-			# check for updates each second
-			if not self.skip_update_check and self.s['check_freq'] != lang(32003):
-				self.check_for_updates()
+			# check for updates each second :;: TESTING only (normal updates are only called by the scheduler or by the user)
+			# if not self.skip_update_check and self.s['check_freq'] != lang(32003):
+			# 	self.check_for_updates()
 
 			# check for an early exit
 			if not self.keep_alive: break
@@ -537,7 +538,10 @@ class Main(object):
 		log('taking down notification')
 
 		self.displayed = False
-		self.window.removeControl(self.update_image)
+		try:
+			self.window.removeControl(self.update_image)
+		except Exception as e:
+			log(e, 'an EXCEPTION occurred')
 
 
 	def check_notification(self):
@@ -569,8 +573,7 @@ class Main(object):
 		
 		# try:
 		log(action, 'calling child, action ')
-		subprocess.Popen(['sudo', 'python','%s/apt_cache_action.py' % path, action])
-		log('%s/apt_cache_action.py' % path)
+		subprocess.Popen(['sudo', 'python','%s/apt_cache_action.py' % __libpath__, action])
 		
 		# subprocess.check_output(['sudo', 'python','/home/kubkev/.kodi/addons/script.module.osmcsetting.updates/resources/lib/apt_cache_action.py', action])
 		# os.system('sudo python /home/kubkev/.kodi/addons/script.module.osmcsetting.updates/resources/lib/apt_cache_action.py %s' % action)
