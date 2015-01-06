@@ -33,11 +33,14 @@ def call_parent(raw_message, data={}):
 
 	message = json.dumps(message)
 
-	sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-	sock.connect(address)
+	try:
+		sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+		sock.connect(address)
+		sock.sendall(message) 
+		sock.close()
 
-	sock.sendall(message) 
-	sock.close()
+	except Exception as e:
+		print '%s %s failed to connect to parent - %s' % (t.now(), 'apt_cache_action.py', e)
 
 	print '%s %s response sent' % (t.now(), 'apt_cache_action.py')
 
@@ -87,6 +90,10 @@ class Main(object):
 		print '%s %s updating cache' % (t.now(), 'apt_cache_action.py')
 		dprg = Download_Progress()
 		self.cache.update(fetch_progress=dprg, pulse_interval=1000)
+
+		# call the parent and kill the pDialog
+		call_parent('progress_bar', {'kill': True})
+
 		print '%s %s cache updated' % (t.now(), 'apt_cache_action.py')
 
 
@@ -96,7 +103,9 @@ class Main(object):
 		print '%s %s committing cache' % (t.now(), 'apt_cache_action.py')
 		dprg = Download_Progress()
 		iprg = Install_Progress()
-		self.cache.commit(progress=dprg, install_progress=iprg)
+		self.cache.commit(fetch_progress=dprg, install_progress=iprg)
+		# call the parent and kill the pDialog
+		call_parent('progress_bar', {'kill': True})
 		print '%s %s cache committed' % (t.now(), 'apt_cache_action.py')
 
 
@@ -106,6 +115,10 @@ class Main(object):
 		print '%s %s fetching all packages' % (t.now(), 'apt_cache_action.py')
 		dprg = Download_Progress()
 		self.cache.fetch_archives(progress=dprg)
+
+		# call the parent and kill the pDialog
+		call_parent('progress_bar', {'kill': True})
+
 		print '%s %s all packages fetched' % (t.now(), 'apt_cache_action.py')
 
 
@@ -130,6 +143,7 @@ class Install_Progress(apt.progress.base.InstallProgress):
 
 
 	def error(self, pkg, errormsg):
+
 		''' (Abstract) Called when a error is detected during the install. '''
 
 
@@ -156,17 +170,31 @@ class Install_Progress(apt.progress.base.InstallProgress):
 			describing the overall progress and the parameter status is a string describing the current status 
 			in an human-readable manner. '''
 
-		call_parent('progress_bar', {'percent': percent,  'heading': 'Installing Update', 'message': Status})
+		print 'status_change !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
+
+		diff = t.now() - self.pulse_time
+		if (diff.total_seconds() * 10) < 12:
+			return True
+
+		self.pulse_time = t.now()
+
+		call_parent('progress_bar', {'percent': int(percent),  'heading': 'Installing Update', 'message': status})
+
 
 	def start_update(self):
 		''' This method is called before the installation of any package starts. '''
 
-		call_parent('progress_bar', {'percent': 0,  'heading': 'Installing Update', 'message':'Starting Installation',})
+		self.pulse_time = t.now()
+
+		# call_parent('progress_bar', {'percent': 0,  'heading': 'Installing Update', 'message':'Starting Installation'})
+
+		print 'Start !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
+
 
 	def finish_update(self):
 		''' This method is called when all changes have been applied. '''
 
-		call_parent('progress_bar', {'kill': True})
+		print 'Stop !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
 
 
 
@@ -186,8 +214,6 @@ class Download_Progress(apt.progress.base.AcquireProgress):
 	def stop(self):
 		''' Invoked when the Acquire process stops running. '''
 
-		# call the parent and kill the pDialog
-		call_parent('progress_bar', {'kill': True})
 
 		print 'Stop !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
 

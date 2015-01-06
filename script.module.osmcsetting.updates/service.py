@@ -208,6 +208,7 @@ class Main(object):
 								'progress_bar'				: self.progress_bar,
 								'update_settings'			: self.update_settings,
 								'kill_yourself'				: self.kill_yourself,
+								'call_child_script'			: self.call_child_script,
 
 							}
 
@@ -285,11 +286,16 @@ class Main(object):
 		args = [percent, heading, message]
 		update_args = {k:v for k, v in zip(keys, args) if v != 'nix'}
 
+		if not update_args:
+			return
+
 		try:
 			log(update_args, 'update_args')
 			self.pDialog.update(**update_args)
 
-		except:
+		except Exception as e:
+
+			log(e)
 
 			self.pDialog = xbmcgui.DialogProgressBG()
 			self.pDialog.create('OSMC Update', 'Update Running.')
