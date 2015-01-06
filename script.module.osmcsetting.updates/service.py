@@ -208,6 +208,7 @@ class Main(object):
 								'progress_bar'				: self.progress_bar,
 								'update_settings'			: self.update_settings,
 								'kill_yourself'				: self.kill_yourself,
+								'call_child_script'			: self.call_child_script,
 
 							}
 

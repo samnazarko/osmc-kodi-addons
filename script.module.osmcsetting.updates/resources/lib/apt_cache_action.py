@@ -96,7 +96,7 @@ class Main(object):
 		print '%s %s committing cache' % (t.now(), 'apt_cache_action.py')
 		dprg = Download_Progress()
 		iprg = Install_Progress()
-		self.cache.commit(progress=dprg, install_progress=iprg)
+		self.cache.commit(fetch_progress=dprg, install_progress=iprg)
 		print '%s %s cache committed' % (t.now(), 'apt_cache_action.py')
 
 

@@ -13,8 +13,8 @@
 		<setting default="false" id="install_reboot" label="32028" subsetting="true" type="bool" visible="eq(-1,2)+!eq(-8,0)"/>
 		<!-- <setting default="false" id="shape_bool" label="32029" type="bool" visible="!eq(-9,0)"/>-->
 		<!-- <setting default="false" id="shape_speed" label="32030" subsetting="true" type="number" visible="eq(-1, true)+!eq(-10,0)"/>-->
-				<setting action="RunScript($CWD/resources/lib/setting_update_call.py)" id="update_now" label="32056" option="close" type="action"/>
-		<setting action="RunScript($CWD/resources/lib/setting_commit_call.py)" id="commit_now" label="32053" option="close" type="action"/>
+				<setting action="RunScript($CWD/resources/lib/call_parent.py, update)" id="update_now" label="32056" option="close" type="action"/>
+		<setting action="RunScript($CWD/resources/lib/call_parent.py, commit)" id="commit_now" label="32053" option="close" type="action"/>
 		<setting action="RunScript($CWD/resources/lib/setting_exit_install_call.py)" id="exit_install_now" label="32054" option="close" type="action"/>
 		<setting default="" id="last_update" type="text" visible="false"/>
 	</category>
