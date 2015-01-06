@@ -242,7 +242,7 @@ msgid "Check for updates on start up"
 msgstr""
 
 msgctxt "#32056"
-msgid "xxxxxxxxx"
+msgid "Scan for updates now"
 msgstr""
 
 msgctxt "#32057"
