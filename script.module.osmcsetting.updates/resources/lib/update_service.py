@@ -439,11 +439,11 @@ class Main(object):
 
 		available_updates = self.cache.get_changes()
 
-		if not available_updates: 
-			log('There are no packages to upgrade')
-			# DIALOG.ok('OSMC Update', 'There are no packages to upgrade')
+		# if 'osmc' isnt in the name of any available updates, then return without doing anything
+		if not any(['osmc' in x.shortname.lower() for x in available_updates]):
+			log('There are no osmc packages')
 			del self.cache
-			return 		# if there are no updates then just return nothing
+			return
 
 		log('The following packages have newer versions and are upgradable: ')
 
