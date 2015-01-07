@@ -22,7 +22,7 @@
             <height>800</height>
             <visible>true</visible>
             <!-- <colordiffuse>FFFFFFFF</colordiffuse>-->
-            <font>font16</font>
+            <font>font13</font>
             <textcolor>FFFFFFFF</textcolor>
             <!-- <pulseonselect>false</pulseonselect>-->
             <!-- <pagecontrol>13</pagecontrol>-->
@@ -43,20 +43,36 @@
         <control id="4444" type="button">
             <description>previous menu</description>
             <posx>700</posx>
-            <posy>340</posy>
+            <posy>390</posy>
             <width>50</width>
-            <height>400</height>
-            <texturefocus>prev_FO.png</texturefocus>
-            <texturenofocus>prev_FX.png</texturenofocus>
+            <height>150</height>
+            <texturefocus>back_FO.png</texturefocus>
+            <texturenofocus>back_FX.png</texturenofocus>
+            <animation type="Focus">
+                <effect delay="50" end="-50,0" time="200" type="slide"/>
+                <effect center="auto" end="200" time="200" type="zoom"/>
+            </animation>
+            <animation type="Unfocus">
+                <effect end="0,0" start="-50,0" time="200" type="slide"/>
+                <effect center="auto" delay="50" end="100" start="200" time="200" type="zoom"/>
+            </animation>
         </control>
         <control id="6666" type="button">
             <description>next menu</description>
             <posx>1860</posx>
-            <posy>340</posy>
+            <posy>390</posy>
             <width>50</width>
-            <height>400</height>
-            <texturefocus>next_FO.png</texturefocus>
-            <texturenofocus>next_FX.png</texturenofocus>
+            <height>150</height>
+            <texturefocus>fwrd_FO.png</texturefocus>
+            <texturenofocus>fwrd_FX.png</texturenofocus>
+            <animation type="Focus">
+                <effect delay="50" end="50,0" time="200" type="slide"/>
+                <effect center="auto" end="200" time="200" type="zoom"/>
+            </animation>
+            <animation type="Unfocus">
+                <effect end="0,0" start="50,0" time="200" type="slide"/>
+                <effect center="auto" delay="50" end="100" start="200" time="200" type="zoom"/>
+            </animation>
         </control>
         <control id="999" type="group">
             <control id="100" type="group">

@@ -161,7 +161,7 @@
                     <texturefocus>button_FO.png</texturefocus>
                     <texturenofocus>button_FX.png</texturenofocus>
                     <label>placeholder</label>
-                    <font>font12</font>
+                    <font>font13</font>
                     <textcolor>FFFFFFFF</textcolor>
                     <focusedcolor>FFFFFFFF</focusedcolor>
                     <align>center</align>
@@ -185,7 +185,7 @@
                     <texturefocus>button_FO.png</texturefocus>
                     <texturenofocus>button_FX.png</texturenofocus>
                     <label>placeholder</label>
-                    <font>font12</font>
+                    <font>font13</font>
                     <textcolor>FFFFFFFF</textcolor>
                     <focusedcolor>FFFFFFFF</focusedcolor>
                     <align>center</align>
@@ -209,7 +209,7 @@
                     <texturefocus>button_FO.png</texturefocus>
                     <texturenofocus>button_FX.png</texturenofocus>
                     <label>placeholder</label>
-                    <font>font12</font>
+                    <font>font13</font>
                     <textcolor>FFFFFFFF</textcolor>
                     <focusedcolor>FFFFFFFF</focusedcolor>
                     <align>center</align>
@@ -232,7 +232,7 @@
                     <onright>301</onright>
                     <texturefocus>button_FO.png</texturefocus>
                     <texturenofocus>button_FX.png</texturenofocus>
-                    <font>font12</font>
+                    <font>font13</font>
                     <textcolor>FFFFFFFF</textcolor>
                     <focusedcolor>FFFFFFFF</focusedcolor>
                     <align>center</align>
@@ -263,6 +263,7 @@
                     <visible>true</visible>
                     <align>left</align>
                     <aligny>center</aligny>
+                    <font>font13</font>
                     <onup/>
                     <ondown/>
                     <onleft/>
@@ -292,6 +293,7 @@
                     <visible>true</visible>
                     <align>center</align>
                     <aligny>center</aligny>
+                    <font>font13</font>
                     <onup/>
                     <ondown/>
                     <onleft/>
@@ -333,6 +335,7 @@
                     <visible>true</visible>
                     <align>left</align>
                     <aligny>center</aligny>
+                    <font>font13</font>
                     <onup/>
                     <ondown/>
                     <onleft/>
@@ -362,6 +365,7 @@
                     <visible>true</visible>
                     <align>center</align>
                     <aligny>center</aligny>
+                    <font>font13</font>
                     <onup/>
                     <ondown/>
                     <onleft/>
@@ -403,6 +407,7 @@
                     <visible>true</visible>
                     <align>left</align>
                     <aligny>center</aligny>
+                    <font>font13</font>
                     <onup/>
                     <ondown/>
                     <onleft/>
@@ -432,6 +437,7 @@
                     <visible>true</visible>
                     <align>center</align>
                     <aligny>center</aligny>
+                    <font>font13</font>
                     <onup/>
                     <ondown/>
                     <onleft/>
@@ -473,6 +479,7 @@
                     <visible>true</visible>
                     <align>left</align>
                     <aligny>center</aligny>
+                    <font>font13</font>
                     <onup/>
                     <ondown/>
                     <onleft/>
@@ -502,6 +509,7 @@
                     <visible>true</visible>
                     <align>center</align>
                     <aligny>center</aligny>
+                    <font>font13</font>
                     <onup/>
                     <ondown/>
                     <onleft/>
@@ -543,6 +551,7 @@
                     <visible>true</visible>
                     <align>left</align>
                     <aligny>center</aligny>
+                    <font>font13</font>
                     <onup/>
                     <ondown/>
                     <onleft/>
@@ -572,6 +581,7 @@
                     <visible>true</visible>
                     <align>center</align>
                     <aligny>center</aligny>
+                    <font>font13</font>
                     <onup/>
                     <ondown/>
                     <onleft/>
@@ -613,6 +623,7 @@
                     <visible>true</visible>
                     <align>left</align>
                     <aligny>center</aligny>
+                    <font>font13</font>
                     <onup/>
                     <ondown/>
                     <onleft/>
@@ -642,6 +653,7 @@
                     <visible>true</visible>
                     <align>center</align>
                     <aligny>center</aligny>
+                    <font>font13</font>
                     <onup/>
                     <ondown/>
                     <onleft/>
@@ -681,6 +693,7 @@
                     <height>30</height>
                     <visible>true</visible>
                     <label>force_turbo</label>
+                    <font>font13</font>
                     <texturefocus>blank.png</texturefocus>
                     <texturenofocus>blank.png</texturenofocus>
                     <textureradioonfocus>toggle_on.png</textureradioonfocus>
@@ -707,7 +720,7 @@
                 <onright/>
                 <texturefocus>button_FO.png</texturefocus>
                 <texturenofocus>button_FX.png</texturenofocus>
-                <font>font12</font>
+                <font>font13</font>
                 <textcolor>FFFFFFFF</textcolor>
                 <focusedcolor>FFFFFFFF</focusedcolor>
                 <align>center</align>
@@ -734,6 +747,7 @@
                     <width>740</width>
                     <height>250</height>
                     <visible>true</visible>
+                    <font>font13</font>
                     <onup/>
                     <ondown/>
                     <onleft/>
