@@ -248,7 +248,12 @@ class Download_Progress(apt.progress.base.AcquireProgress):
 
 			pct = int(self.current_bytes / float(self.total_bytes) * 100)
 
-			cps = self.current_cps / 1048576.0
+			cps = self.current_cps / 1024.0
+
+			if cps > 1024:
+				cps = '{0:.2f} MBps'.format(cps / 1024)
+			else:
+				cps = '{0:.0f} kBps'.format(cps)
 
 			cmb = self.current_bytes / 1048576.0
 
@@ -256,7 +261,7 @@ class Download_Progress(apt.progress.base.AcquireProgress):
 
 			msg = self.fetching
 
-			hdg = '{0:d} / {1:d} items  --  {2:.2f}MBps  --  {3:.1f} / {4:.1f}MB'.format(self.current_items, self.total_items, cps, cmb, tmb)
+			hdg = '{0:d} / {1:d} items  --  {2:}  --  {3:.1f} / {4:.1f}MB'.format(self.current_items, self.total_items, cps, cmb, tmb)
 
 			call_parent('progress_bar', {'percent': pct, 'heading': hdg, 'message': msg})
 

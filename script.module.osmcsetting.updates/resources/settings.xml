@@ -2,7 +2,7 @@
 <settings>
 	<category label="32001">
 		<setting default="32004" id="check_freq" label="32002" lvalues="32003|32004|32005|32006" type="labelenum"/>
-		<setting default="false" id="check_onboot" label="32055" type="bool" visible="!eq(-1,0)" />
+		<setting default="false" id="check_onboot" label="32055" type="bool" visible="!eq(-1,0)"/>
 		<setting default="1" id="check_weekday" label="32007" lvalues="32008|32009|32010|32011|32012|32013|32014" subsetting="true" type="enum" visible="eq(-2,2)"/>
 		<setting default="0" id="check_day" label="32015" option="int" range="-16,1,16" subsetting="true" type="slider" visible="eq(-3,3)"/>
 		<setting default="0" id="check_time" label="32016" lvalues="32017|32018" subsetting="true" type="enum" visible="!eq(-4,0)"/>
@@ -13,10 +13,9 @@
 		<setting default="false" id="install_reboot" label="32028" subsetting="true" type="bool" visible="eq(-1,2)+!eq(-8,0)"/>
 		<!-- <setting default="false" id="shape_bool" label="32029" type="bool" visible="!eq(-9,0)"/>-->
 		<!-- <setting default="false" id="shape_speed" label="32030" subsetting="true" type="number" visible="eq(-1, true)+!eq(-10,0)"/>-->
-				<setting action="RunScript($CWD/resources/lib/call_parent.py, update)" id="update_now" label="32056" option="close" type="action"/>
+		<setting action="RunScript($CWD/resources/lib/call_parent.py, update)" id="update_now" label="32056" option="close" type="action"/>
 		<setting action="RunScript($CWD/resources/lib/call_parent.py, commit)" id="commit_now" label="32053" option="close" type="action"/>
 		<setting action="RunScript($CWD/resources/lib/setting_exit_install_call.py)" id="exit_install_now" label="32054" option="close" type="action"/>
-		<setting default="" id="last_update" type="text" visible="false"/>
 	</category>
 	<category label="32031">
 		<setting default="true" id="display_bool" label="32032" type="bool"/>
