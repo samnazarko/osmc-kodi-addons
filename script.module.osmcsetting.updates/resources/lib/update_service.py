@@ -42,6 +42,7 @@ class Monitah(xbmc.Monitor):
 
 		self.parent_queue = kwargs['parent_queue']
 
+
 	def onAbortRequested(self):
 
 		log('killing self')
@@ -73,7 +74,7 @@ class Main(object):
 		external scripts from the command line using sudo. The other script communicates with the update service using a socket file.
 	'''
 	
-
+	# MAIN METHOD
 	def __init__(self):
 
 		self.first_run = True
@@ -119,9 +120,11 @@ class Main(object):
 
 		# ControlImage(x, y, width, height, filename[, aspectRatio, colorDiffuse])
 		self.update_image = xbmcgui.ControlImage(15, 55, 175, 75, __image_file__)
-		self.update_image.setVisibleCondition('!System.ScreenSaverActive + StringCompare(Window(10000).Property(OSMC_notification), true)')
 		self.window.addControl(self.update_image)
+		self.update_image.setVisibleCondition('[SubString(Window(Home).Property(OSMC_notification), true, left)]')
 
+		log(xbmc.getCondVisibility('SubString(Window(Home).Property(OSMC_notification), false, left)'), 'getCondVisibility')
+		log(xbmc.getCondVisibility('SubString(Window(Home).Property(OSMC_notification), true, left)'), 'getCondVisibility')
 
 		# this flag is present when updates have been downloaded but the user wants to reboot themselves manually via the settings
 		# it is deleted using the 'setting_exit_install.py' script.
@@ -140,6 +143,7 @@ class Main(object):
 		self._daemon()
 
 
+	# MAIN METHOD
 	def _daemon(self):
 
 		log('_daemon started')
@@ -201,16 +205,16 @@ class Main(object):
 		# del self.listener
 		# log('listener cleaned up')
 
-		# del self.monitor
-		# log('del self.monitor')
-		# del self.update_image
-		# log('del self.update_image')
+		del self.monitor
+		log('del self.monitor')
+		del self.update_image
+		log('del self.update_image')
 
-		# del self.window 
-		# log('del self.window')
+		del self.window 
+		log('del self.window')
 
-		self.takedown_notification()
-		log('notification control removed from window(10000)')
+		# self.takedown_notification()
+		# log('notification control removed from window(10000)')
 
 		log('XBMC Aborting')
 
@@ -232,75 +236,7 @@ class Main(object):
 		subprocess.Popen(['sudo', 'python','%s/apt_cache_action.py' % __libpath__, action])
 
 
-	# ACTION METHOD
-	def progress_bar(self, **kwargs):
-
-		''' Controls the creation and updating of the background prgress bar in kodi.
-			The data gets sent from the apt_cache_action script via the socket
-			percent, 	must be an integer
-			heading,	string containing the running total of items, bytes and speed
-			message, 	string containing the name of the package or the active process.
-		 '''
-
-		# return immediately if the user has suppressed on-screen progress updates or kwargs is empty
-		if self.s['suppress_progress'] or not kwargs: return
-
-		log(kwargs, 'kwargs')
-
-		# check for kill order in kwargs
-		kill = kwargs.get('kill', False)
-
-		if kill:
-			# if it is present, kill the dialog and delete it
-			
-			try:
-				self.pDialog.close()
-				del self.pDialog
-			except:
-				pass
-
-			return
-
-		# retrieve the necessary data for the progress dialog, if the data isnt supplied, then use 'nix' in its place
-		# the progress dialog update has 3 optional arguments
-		percent = kwargs.get('percent','nix')
-		heading = kwargs.get('heading','nix')
-		message = kwargs.get('message', 'nix')
-
-		# create a dict of the actionable arguments
-		keys = ['percent', 'heading', 'message']
-		args = [percent, heading, message]
-		update_args = {k:v for k, v in zip(keys, args) if v != 'nix'}
-
-		# try to update the progress dialog
-		try:
-			log(update_args, 'update_args')
-			self.pDialog.update(**update_args)
-
-		except NameError:
-
-			# on a NameError create the dialog and start showing it, the name error will be raised if pDialog doesnt exist
-
-			self.pDialog = xbmcgui.DialogProgressBG()
-			self.pDialog.create('OSMC Update', 'Update Running.')
-
-			self.pDialog.update(**update_args)
-
-		except Exception as e:
-
-			# on any other error, just log it and try to remove the dialog from the screen 
-
-			log(e, 'pDialog has encountered and error')
-
-			try:
-				self.pDialog.close()
-				del self.pDialog
-			except:
-				# a name error here is not interesting
-				pass
-
-
-	# ACTION METHOD
+	# MAIN METHOD
 	def update_settings(self):
 
 		''' Updates the settings for the service while the service is still running '''
@@ -365,6 +301,74 @@ class Main(object):
 			self.scheduler = sched.SimpleScheduler(self.s)
 
 		log(self.scheduler.trigger_time, 'trigger_time')
+
+
+	# ACTION METHOD
+	def progress_bar(self, **kwargs):
+
+		''' Controls the creation and updating of the background prgress bar in kodi.
+			The data gets sent from the apt_cache_action script via the socket
+			percent, 	must be an integer
+			heading,	string containing the running total of items, bytes and speed
+			message, 	string containing the name of the package or the active process.
+		 '''
+
+		# return immediately if the user has suppressed on-screen progress updates or kwargs is empty
+		if self.s['suppress_progress'] or not kwargs: return
+
+		log(kwargs, 'kwargs')
+
+		# check for kill order in kwargs
+		kill = kwargs.get('kill', False)
+
+		if kill:
+			# if it is present, kill the dialog and delete it
+			
+			try:
+				self.pDialog.close()
+				del self.pDialog
+			except:
+				pass
+
+			return
+
+		# retrieve the necessary data for the progress dialog, if the data isnt supplied, then use 'nix' in its place
+		# the progress dialog update has 3 optional arguments
+		percent = kwargs.get('percent','nix')
+		heading = kwargs.get('heading','nix')
+		message = kwargs.get('message', 'nix')
+
+		# create a dict of the actionable arguments
+		keys = ['percent', 'heading', 'message']
+		args = [percent, heading, message]
+		update_args = {k:v for k, v in zip(keys, args) if v != 'nix'}
+
+		# try to update the progress dialog
+		try:
+			log(update_args, 'update_args')
+			self.pDialog.update(**update_args)
+
+		except AttributeError:
+
+			# on a AttributeError create the dialog and start showing it, the name error will be raised if pDialog doesnt exist
+
+			self.pDialog = xbmcgui.DialogProgressBG()
+			self.pDialog.create('OSMC Update', 'Update Running.')
+
+			self.pDialog.update(**update_args)
+
+		except Exception as e:
+
+			# on any other error, just log it and try to remove the dialog from the screen 
+
+			log(e, 'pDialog has encountered and error')
+
+			try:
+				self.pDialog.close()
+				del self.pDialog
+			except:
+				# a name error here is not interesting
+				pass
 
 
 	# ACTION METHOD
@@ -442,8 +446,6 @@ class Main(object):
 			return 		# if there are no updates then just return nothing
 
 		log('The following packages have newer versions and are upgradable: ')
-
-		# non_downloadable_updates = []
 
 		for pkg in available_updates:
 			if pkg.is_upgradable:

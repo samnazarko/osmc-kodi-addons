@@ -20,6 +20,7 @@
 
 # Standard Modules
 import sys
+import os
 
 # Kodi Modules
 import xbmc
