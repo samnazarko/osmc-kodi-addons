@@ -16,7 +16,6 @@
 		<setting action="RunScript($CWD/resources/lib/call_parent.py, update)" id="update_now" label="32056" option="close" type="action"/>
 		<setting action="RunScript($CWD/resources/lib/call_parent.py, commit)" id="commit_now" label="32053" option="close" type="action"/>
 		<setting action="RunScript($CWD/resources/lib/setting_exit_install_call.py)" id="exit_install_now" label="32054" option="close" type="action"/>
-		<setting default="" id="last_update" type="text" visible="false"/>
 	</category>
 	<category label="32031">
 		<setting default="true" id="display_bool" label="32032" type="bool"/>
