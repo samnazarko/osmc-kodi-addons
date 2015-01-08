@@ -106,10 +106,9 @@ class OSMCSettingClass(object):
 		self.addonid = "script.module.osmcsetting.updates"
 		self.me = xbmcaddon.Addon(self.addonid)
 
-		self.description = 	"""
-								This is the text that is shown on the OSG. It should describe what the settings module is for,
-								the settings it controls, and anything else you want, I suppose.
-							"""
+		self.description = 	"""OSMC is contantly in development, with new features and up-stream bug fixes becoming available periodically. Keep an eye out for the 'Update Available' icon on the Home screen of Kodi.
+	The primary purpose of this module is to allow you to set the time at which OSMC will check for updates. If your device is on all the time, you may want to set this to be very early in the morning.
+	"""
 
 		self.setting_data_method = 	{}
 
