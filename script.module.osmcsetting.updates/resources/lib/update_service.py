@@ -79,6 +79,9 @@ class Main(object):
 
 		self.first_run = True
 
+		# the time that the service started
+		self.service_start = datetime.now()
+
 		# dictionary containing the permissable actions (communicated from the child apt scripts) 
 		# and the corresponding methods in the parent
 		self.action_dict = 	{
@@ -87,6 +90,8 @@ class Main(object):
 								'apt_cache fetch complete'  : self.apt_fetch_complete,
 								'progress_bar'				: self.progress_bar,
 								'update_settings'			: self.update_settings,
+								'update_now'				: self.update_now,
+								'user_update_now'			: self.user_update_now,
 								'kill_yourself'				: self.kill_yourself,
 								'call_child_script'			: self.call_child_script,
 
@@ -108,6 +113,11 @@ class Main(object):
 		self.scheduler = sched.SimpleScheduler(self.s)
 		log(self.scheduler.trigger_time, 'trigger_time')
 
+		# flag to put the update request into a holding pattern waiting for either media play to stop, or system idle
+		self.update_holding_pattern = False
+
+		# a flag to put the boot update request into its own holding pattern
+		self.boot_update_holding_pattern = False
 
 		# monitor for identifying addon settings updates and kodi abort requests
 		self.monitor = Monitah(parent_queue = self.parent_queue)
@@ -120,11 +130,9 @@ class Main(object):
 
 		# ControlImage(x, y, width, height, filename[, aspectRatio, colorDiffuse])
 		self.update_image = xbmcgui.ControlImage(15, 55, 175, 75, __image_file__)
-		self.window.addControl(self.update_image)
+		self.position_icon()
 		self.update_image.setVisibleCondition('[SubString(Window(Home).Property(OSMC_notification), true, left)]')
-
-		log(xbmc.getCondVisibility('SubString(Window(Home).Property(OSMC_notification), false, left)'), 'getCondVisibility')
-		log(xbmc.getCondVisibility('SubString(Window(Home).Property(OSMC_notification), true, left)'), 'getCondVisibility')
+		self.window.addControl(self.update_image)
 
 		# this flag is present when updates have been downloaded but the user wants to reboot themselves manually via the settings
 		# it is deleted using the 'setting_exit_install.py' script.
@@ -137,6 +145,7 @@ class Main(object):
 		# a preliminary check for updates (for testing only)
 		if self.s['check_onboot']:
 			if not self.skip_update_check and self.s['check_freq'] != lang(32003):
+				self.boot_update_holding_pattern = True
 				self.call_child_script('update')
 
 		# keep alive method
@@ -161,37 +170,21 @@ class Main(object):
 			count += 1 											# FOR TESTING ONLY
 			# FOR TESTING ONLY
 
-			# check queue for data
-			try:
-				# the only thing the script should be sent is a tuple ('instruction as string', data as dict),
-				# everything else is ignored
-				raw_comm_from_script = self.parent_queue.get(False)
-				
-				# tell the queue that we are done with the task at hand
-				self.parent_queue.task_done()
+			# check the aciton queue
+			self.check_action_queue()
 
-				# de-serialise the message into its original tuple
-				comm_from_script = json.loads(raw_comm_from_script)
+			# check the holding pattern, if item in holdings pattern AND conditions met, then run the update
+			if self.update_holding_pattern:
+				if self.check_update_conditions():
+					self.update_holding_pattern = False
+					self.user_update_now()
 
-				log(comm_from_script, 'comm_from_script')
-
-				# process the information from the child scripts
-				if comm_from_script:
-
-					# retrieve the relevant method
-					method = self.action_dict.get(comm_from_script[0], False)
-					if method: 
-
-						# call the appropriate method with the data
-						method(**comm_from_script[1])
-
-					else:
-
-						log(comm_from_script, 'instruction has no assigned method')
-
-			except Queue.Empty:
-				# the only exception that should be handled is when the queue is empty
-				pass
+			# check the self.boot_update_holding_pattern, check time since system start and force if it exceeds the 
+			# user specified dealy
+			if self.boot_update_holding_pattern:
+				if (datetime.now() - self.service_start).total_seconds() > (self.s['check_boot_delay'] * 60):
+					self.boot_update_holding_pattern = False
+					self.call_child_script('update')
 
 			# check for an early exit
 			if not self.keep_alive: break
@@ -199,6 +192,12 @@ class Main(object):
 			# this controls the frequency of the instruction processing
 			xbmc.sleep(500)
 
+
+		self.exit_procedure()
+
+
+	# MAIN METHOD
+	def exit_procedure(self):
 
 		# stop the listener
 		self.listener.stop()
@@ -220,6 +219,60 @@ class Main(object):
 
 
 	# MAIN METHOD
+	def check_action_queue(self):
+		''' Checks the queue for data, if present it calls the appropriate method and supplies the data ''' 
+		
+		try:
+			# the only thing the script should be sent is a tuple ('instruction as string', data as dict),
+			# everything else is ignored
+			raw_comm_from_script = self.parent_queue.get(False)
+			
+			# tell the queue that we are done with the task at hand
+			self.parent_queue.task_done()
+
+			# de-serialise the message into its original tuple
+			comm_from_script = json.loads(raw_comm_from_script)
+
+			log(comm_from_script, 'comm_from_script')
+
+			# process the information from the child scripts
+			if comm_from_script:
+
+				# retrieve the relevant method
+				method = self.action_dict.get(comm_from_script[0], False)
+				if method: 
+
+					# call the appropriate method with the data
+					method(**comm_from_script[1])
+
+				else:
+
+					log(comm_from_script, 'instruction has no assigned method')
+
+		except Queue.Empty:
+			# the only exception that should be handled is when the queue is empty
+			pass
+
+
+	# MAIN METHOD
+	def check_update_conditions(self):
+		''' Checks the users update conditions are met. '''
+
+		if self.s['ban_update_media']:
+			result = xbmc.executeJSONRPC('{ "jsonrpc": "2.0", "method": "Player.GetActivePlayers", "id": 1 }')
+			
+			log(result, 'result of Player.GetActivePlayers')
+			players = result.get('result', False)
+			if players:
+				return False
+
+		if self.s['update_on_idle'] and xbmc.getGlobalIdleTime() < 60:
+			return False
+
+		return True
+
+
+	# MAIN METHOD
 	def takedown_notification(self):
 		log('taking down notification')
 
@@ -234,6 +287,16 @@ class Main(object):
 		
 		log(action, 'calling child, action ')
 		subprocess.Popen(['sudo', 'python','%s/apt_cache_action.py' % __libpath__, action])
+
+
+	# MAIN METHOD
+	def position_icon(self):
+		''' sets the position of the icon '''
+
+		x_pct = self.s['pos_x'] / 100.0 * xbmc.getInfoLabel('System.ScreenWidth')
+		y_pct = self.s['pos_y'] / 100.0 * xbmc.getInfoLabel('System.ScreenHeight')
+
+		self.update_image.setPosition(x_pct, y_pct)
 
 
 	# MAIN METHOD
@@ -261,7 +324,12 @@ class Main(object):
 			self.s['check_time'] 		= int(float(	__setting__('check_time')			))
 			self.s['check_hour'] 		= int(float(	__setting__('check_hour')			))
 			self.s['check_minute'] 		= int(float(	__setting__('check_minute')			))
+			self.s['check_boot_delay']	= int(float(	__setting__('check_boot_delay')		))
 			self.s['suppress_progress']	= True if 		__setting__('suppress_progress') 	== 'true' else False
+			self.s['suppress_icon']		= True if 		__setting__('suppress_icon') 		== 'true' else False
+			self.s['ban_update_media']	= True if 		__setting__('ban_update_media') 	== 'true' else False
+			self.s['update_on_idle']	= True if 		__setting__('update_on_idle') 		== 'true' else False
+			self.s['home_prompts_only']	= True if 		__setting__('home_prompts_only') 	== 'true' else False
 
 			log(self.s, 'Initial Settings')
 
@@ -280,11 +348,16 @@ class Main(object):
 			tmp_s['check_time'] 		= int(float(	__setting__('check_time')		))
 			tmp_s['check_hour'] 		= int(float(	__setting__('check_hour')		))
 			tmp_s['check_minute'] 		= int(float(	__setting__('check_minute')		))
+			tmp_s['check_boot_delay']	= int(float(	__setting__('check_boot_delay')		))
 			tmp_s['suppress_progress']	= True if 		__setting__('suppress_progress') 	== 'true' else False
+			tmp_s['suppress_icon']		= True if 		__setting__('suppress_icon') 		== 'true' else False
+			tmp_s['ban_update_media']	= True if 		__setting__('ban_update_media') 	== 'true' else False
+			tmp_s['update_on_idle']		= True if 		__setting__('update_on_idle') 		== 'true' else False
+			tmp_s['home_prompts_only']	= True if 		__setting__('home_prompts_only') 	== 'true' else False
 
-
-		# flag to determine whether the update scheduler needs to be reconstructed
+		# flags to determine whether the update scheduler needs to be reconstructed or icon repositioned
 		update_scheduler = False
+		reposition_icon  = False
 
 		# check the items in the temp dict and if they are differenct from the current settings, change the current settings,
 		# prompt action if certain settings are changed (like the scheduler settings)
@@ -294,11 +367,18 @@ class Main(object):
 				continue
 			else:
 				self.s[k] = v
-				update_scheduler = True
+				if k in self.scheduler_settings:
+					update_scheduler = True
+				elif k in self.icon_settings:
+					reposition_icon = True
 
 		# reconstruct the scheduler if needed
 		if update_scheduler:
 			self.scheduler = sched.SimpleScheduler(self.s)
+
+		# reposition the icon on the home screen
+		if reposition_icon:
+			self.position_icon()
 
 		log(self.scheduler.trigger_time, 'trigger_time')
 
@@ -373,7 +453,31 @@ class Main(object):
 
 	# ACTION METHOD
 	def kill_yourself(self):
+
 		self.keep_alive = False 
+
+
+	# ACTION METHOD
+	def update_now(self):
+		''' Calls for an update check via the external script. This method checks if media is playing or whether the system has 
+			been idle for two minutes before allowing the update. If an update is requested, but media is playing or the system
+			isnt idle, then the update request is put into a loop, with the daemon checking periodically to see if the situation 
+			has changed. '''
+
+		if self.check_update_conditions():
+
+			self.call_child_script('update')
+		
+		else:
+
+			self.update_holding_pattern = True
+
+
+	# ACTION METHOD
+	def user_update_now(self):
+		''' Similar to update_now, but as this is a users request, forego all the player and idle checks. '''
+
+		self.call_child_script('update')
 
 
 	# ACTION METHOD
@@ -416,11 +520,13 @@ class Main(object):
 				# trigger the flag to skip update checks
 				self.skip_update_check = True
 
-			self.window.setProperty('OSMC_notification', 'true')
+			if not self.s['suppress_icon']:
+				self.window.setProperty('OSMC_notification', 'true')
 
 
 	# ACTION METHOD
 	def apt_update_complete(self):
+
 
 		self.cache = apt.Cache()
 
@@ -438,11 +544,11 @@ class Main(object):
 		log('upgraded, getting changes')
 
 		available_updates = self.cache.get_changes()
+		del self.cache
 
 		# if 'osmc' isnt in the name of any available updates, then return without doing anything
 		if not any(['osmc' in x.shortname.lower() for x in available_updates]):
 			log('There are no osmc packages')
-			del self.cache
 			return
 
 		log('The following packages have newer versions and are upgradable: ')
@@ -455,7 +561,25 @@ class Main(object):
 				if "mediacenter" in pkg.shortname:
 					REBOOT_REQUIRED = 1
 
-		del self.cache
+		# display update available notification
+		if not self.s['suppress_icon']:
+			self.window.setProperty('OSMC_notification', 'true')
+
+		# Display icon on home screen only
+		if self.s['on_update_detected'] == 1: 
+			return
+
+		# Download updates, then prompt
+		# Download and display icon
+		if self.s['on_update_detected'] in [2, 3]:
+			self.call_child_script('fetch')
+			return
+
+		# Download, install, prompt if restart needed
+		if (self.s['on_update_detected'] == 4 and not REBOOT_REQUIRED) or self.s['on_update_detected'] == 4:
+			self.call_child_script('commit')
+			return
+
 
 		# TESTING ONLY
 		# REBOOT_REQUIRED = 1 # TESTING ONLY
@@ -474,7 +598,6 @@ class Main(object):
 
 			log("Updates are available, no reboot is required")
 
-			self.window.setProperty('OSMC_notification', 'true')
 
 			install = DIALOG.yesno('OSMC Update Available', 'There are updates that are available for install.', 'Would you like to install them now?')
 
@@ -487,5 +610,3 @@ class Main(object):
 			else:
 
 				okey_dokey = DIALOG.ok('OSMC Update Available', 'Fair enough, then.', 'You can install them from within the OSMC settings later.')
-
-
