@@ -22,7 +22,7 @@ msgstr ""
 
 
 msgctxt "#32001"
-msgid "Updates"
+msgid "Update Schedule"
 msgstr ""
 
 msgctxt "#32002"
@@ -230,7 +230,7 @@ msgid "Revert marked updates"
 msgstr""
 
 msgctxt "#32053"
-msgid "Install Updates Now"
+msgid "Install available updates Now"
 msgstr""
 
 msgctxt "#32054"
@@ -246,63 +246,63 @@ msgid "Scan for updates now"
 msgstr""
 
 msgctxt "#32057"
-msgid "xxxxxxxxx"
+msgid "Prompt for all actions"
 msgstr""
 
 msgctxt "#32058"
-msgid "xxxxxxxxx"
+msgid "Display icon on home screen only"
 msgstr""
 
 msgctxt "#32059"
-msgid "xxxxxxxxx"
+msgid "Download updates, then prompt"
 msgstr""
 
 msgctxt "#32060"
-msgid "xxxxxxxxx"
+msgid "Download and display icon"
 msgstr""
 
 msgctxt "#32061"
-msgid "xxxxxxxxx"
+msgid "Download and install,  prompt if restart needed"
 msgstr""
 
 msgctxt "#32062"
-msgid "xxxxxxxxx"
+msgid "Download, install, auto-restart if needed"
 msgstr""
 
 msgctxt "#32063"
-msgid "xxxxxxxxx"
+msgid "Do not prompt, display icon, or take any action"
 msgstr""
 
 msgctxt "#32064"
-msgid "xxxxxxxxx"
+msgid "Action when updates are found"
 msgstr""
 
 msgctxt "#32065"
-msgid "xxxxxxxxx"
+msgid "Only show prompts on the Home screen"
 msgstr""
 
 msgctxt "#32066"
-msgid "xxxxxxxxx"
+msgid "Icon Position X (% of screen)"
 msgstr""
 
 msgctxt "#32067"
-msgid "xxxxxxxxx"
+msgid "Icon Position Y (% of screen)"
 msgstr""
 
 msgctxt "#32068"
-msgid "xxxxxxxxx"
+msgid "Do not show icon on home screen"
 msgstr""
 
 msgctxt "#32069"
-msgid "xxxxxxxxx"
+msgid "Only check for updates if system is idle for 1 minute"
 msgstr""
 
 msgctxt "#32070"
-msgid "xxxxxxxxx"
+msgid "Do not check for updates while media is playing"
 msgstr""
 
 msgctxt "#32071"
-msgid "xxxxxxxxx"
+msgid "Delay (minutes)"
 msgstr""
 
 msgctxt "#32072"
