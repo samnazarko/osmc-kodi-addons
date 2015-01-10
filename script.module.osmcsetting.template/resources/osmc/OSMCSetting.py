@@ -4,15 +4,20 @@
 
 	In order to more easily accomodate future changes and enhancements, each OSMC settings bundle (module) is a separate addon.
 	The module can take the form of an xbmc service, an xbmc script, or an xbmc module, but it must be installed into the users'
-	userdata/addons folder.
+	/usr/share/kodi/addons folder.
 
-	The OSA leverages the settings interface provided by XBMC. Each addon has its own individual settings defined in a
-	settings.xml file located in the addon's resources/ folder.
+	The OSA collects the modules it can find, loads their icons, and launches them individually when the user clicks on an icon.
 
-	The OSG detects changes to the settings by identifying the differences between a newly read settings.xml and the values from 
-	a previously read settings.xml.
+	The modules can either have their own GUI, or they can leverage the settings interface provided by XBMC. If the OSG uses the XBMC 
+	settings interface, then all of their settings must be stored in the addons settings.xml. This is true even if the source of record
+	is a separate config file.
 
-	The values of the settings displayed by the OSG are only ever populated by the items in the settings.xml. [Note: meaning that 
+	An example of this type is the Pi settings module; the actual settings are read from the config.txt, then written to the 
+	settings.xml for display in kodi, then finally all changes are written back to the config.txt. The Pi module detects user 
+	changes to the settings by identifying the differences between a newly read settings.xml and the values from a previously 
+	read settings.xml.
+
+	The values of the settings displayed by this module are only ever populated by the items in the settings.xml. [Note: meaning that 
 	if the settings data is retrieved from a different source, it will need to be populated in the module before it is displayed
 	to the user.]
 
@@ -28,6 +33,8 @@
 	The key variables in this class are:
 
 		addonid							: The id for the addon. This must be the id declared in the addons addon.xml.
+
+		description 					: The description for the module, shown in the OSA
 
 		reboot_required					: A boolean to declare if the OS needs to be rebooted. If a change in a specific setting 
 									 	  requires an OS reboot to take affect, this is flag that will let the OSG know.
@@ -71,14 +78,14 @@
 										  the settings.xml, the developer should ensure that the external data is loaded into that
 										  xml before the settings window is opened.
 
-
 		settings_retriever_xml			: This method is used to retrieve all the data for the settings listed in the 
 										  setting_data_method from the addons settings.xml.
 
-	The developer is free to create any methods they see fit, but the ones listed above are specifically used by the OSA.
+	The developer is free to create any methods they see fit, but the ones listed above are specifically used by the OSA. 
+	Specifically, the apply_settings method is called when the OSA closes. 
 
 	Settings changes are applied when the OSG is called to close. But this behaviour can be changed to occur when the addon
-	settings window closes by editing the open_settings_window. The method apply_settings will still be called by OSG, so 
+	settings window closes by editing the open_settings_window. The method apply_settings will still be called by OSA, so 
 	keep that in mind.
 
 '''
