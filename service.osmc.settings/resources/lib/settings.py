@@ -163,6 +163,7 @@ class OSMC_gui(xbmcgui.WindowXMLDialog):
 			# except:
 			# log('Settings window for __ %s __ failed to open' % module.get('id', "Unknown"))
 
+
 	def onFocus(self, controlID):
 
 		# update the textbox 'description'
@@ -170,6 +171,7 @@ class OSMC_gui(xbmcgui.WindowXMLDialog):
 			self.getControl(2).setText(self.getControl(controlID).getSelectedItem().getProperty('description'))
 		except:
 			pass
+
 
 	def next_prev_direction_changer(self):
 		''' Sets the direction (onLeft, onRight, etc) for the previous and next buttons in the gui '''
@@ -193,6 +195,7 @@ class OSMC_gui(xbmcgui.WindowXMLDialog):
 		next_button.setNavigation(pos5, pos5, pos6, prev_button)
 
 
+
 class OSMCGui(object):
 
 	def __init__(self, **kwargs):
@@ -200,6 +203,7 @@ class OSMCGui(object):
 		self.queue = kwargs['queue']
 
 		self.create_gui()
+
 
 	def create_gui(self):
 		# known modules is a list of tuples detailing all the known and permissable modules and services
@@ -248,12 +252,13 @@ class OSMCGui(object):
 		try:
 			log('Closing GUI')
 			# self.GUI.close()
-			log('Deleting GUI')
+			# log('Deleting GUI')
 			# del self.GUI
-			log('GUI Deleted')
+			# log('GUI Deleted')
 
 		except:
 			pass
+
 
 	def open(self):
 		'''

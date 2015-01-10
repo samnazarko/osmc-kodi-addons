@@ -106,7 +106,7 @@ class Main(object):
 		self.listener = comms.communicator(self.parent_queue, socket_file='/var/tmp/osmc.settings.update.sockfile')
 		self.listener.start()
 
-		# grab the settings
+		# grab the settings, saves them into a dict called seld.s
 		self.update_settings()
 
 		# a class to handle scheduling update checks
@@ -116,9 +116,6 @@ class Main(object):
 		# this holding pattern holds a function that represents the completion of a process that was put on hold
 		# while the user was watching media or the system was active
 		self.function_holding_pattern = False
-
-		# a flag to put the boot update request into its own holding pattern
-		self.boot_function_holding_pattern = False
 
 		# monitor for identifying addon settings updates and kodi abort requests
 		self.monitor = Monitah(parent_queue = self.parent_queue)
@@ -303,6 +300,9 @@ class Main(object):
 	def position_icon(self):
 		''' sets the position of the icon '''
 
+		return
+		# this is suppressed for the time-being while we try and find a way to detect the skin resolution
+
 		w = 1920
 		h = 1080
 
@@ -451,7 +451,7 @@ class Main(object):
 
 		except AttributeError:
 
-			# on a AttributeError create the dialog and start showing it, the name error will be raised if pDialog doesnt exist
+			# on an AttributeError create the dialog and start showing it, the AttributeError will be raised if pDialog doesnt exist
 
 			self.pDialog = xbmcgui.DialogProgressBG()
 			self.pDialog.create('OSMC Update', 'Update Running.')
