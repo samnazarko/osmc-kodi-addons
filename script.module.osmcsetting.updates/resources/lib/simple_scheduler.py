@@ -7,7 +7,7 @@ class SimpleScheduler(object):
 
 	def __init__(self, setting_dict):
 
-		self.frequency 		= setting_dict.get('check_freq', "Daily")		# how often the action occurs (Never, Daily, Weekly, Monthly)
+		self.frequency 		= setting_dict.get('check_freq', 1)				# how often the action occurs (Never, Daily, Weekly, Monthly)
 		self.specific_time	= setting_dict.get('check_time', 0)				# whether the action should take place at a specific or random time (boolean)
 		self.day 			= setting_dict.get('check_weekday', 0) 			# the weekday when the action should occur, Monday=0, Sunday=6
 		self.daynum 		= setting_dict.get('check_day', 1)				# the days from month end that the action should occur [-16, 16]
@@ -34,7 +34,7 @@ class SimpleScheduler(object):
 
 		right_now = datetime.datetime.now()
 
-		if self.frequency == 'Daily':
+		if self.frequency == 1:
 
 			# the initial trigger time will be this day, and the users specified hour and minute (using defaults if not provided)
 
@@ -42,7 +42,7 @@ class SimpleScheduler(object):
 			self.trigger_time = self.set_trigger_time(right_now)
 			
 
-		elif self.frequency == 'Weekly':
+		elif self.frequency == 2:
 
 			# the initial trigger time will be this year and month, but the day is the one the user has chosen, as well as the users 
 			# specified hour and minute (using defaults if not provided)
@@ -57,7 +57,7 @@ class SimpleScheduler(object):
 			self.trigger_time = self.set_trigger_time( right_now.replace(day=new_day) )
 
 
-		elif self.frequency == 'Monthly':
+		elif self.frequency == 3:
 
 			# the initial trigger time will be this year and month, but the day number is the one the user has chosen, as well as the users 
 			# specified hour and minute (using defaults if not provided)
@@ -97,15 +97,15 @@ class SimpleScheduler(object):
 
 		right_now = datetime.datetime.now()
 
-		if self.frequency == 'Daily':
+		if self.frequency == 1:
 
 			self.trigger_time = self.trigger_time + datetime.timedelta(days=1)
 
-		elif self.frequency == 'Weekly':
+		elif self.frequency == 2:
 
 			self.trigger_time =  self.trigger_time + datetime.timedelta(days=7)
 
-		elif self.frequency == 'Monthly':
+		elif self.frequency == 3:
 
 			if self.daynum > 0:
 				trigger_day = self.daynum

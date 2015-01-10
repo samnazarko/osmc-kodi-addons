@@ -3,7 +3,7 @@
 	<!-- 32001: Update Schedule -->
 	<category label="32001">
 		<!-- 32002: How often do you want to check for updates? -->
-		<setting default="32004" id="check_freq" label="32002" lvalues="32003|32004|32005|32006" type="labelenum"/>
+		<setting default="1" id="check_freq" label="32002" lvalues="32003|32004|32005|32006" type="enum"/>
 		<!-- 32003: Never, 32004: Daily, 32005: Weekly, 32006: Monthly -->
 		<!-- . -->
 		<!-- 32007: Day -->
@@ -31,7 +31,7 @@
 	</category>
 	<category label="When Update Available">
 		<!-- 32064: Action when updates are found -->
-		<setting default="32057" id="on_upd_detected" label="32064" lvalues="32057|32058|32059|32060|32061|32062" type="labelenum"/>
+		<setting default="0" id="on_upd_detected" label="32064" lvalues="32057|32058|32059|32060|32061|32062" type="enum"/>
 		<!-- 32057: "Prompt for all actions" -->
 		<!-- 32058: "Display icon on home screen only" -->
 		<!-- 32059: "Download updates, then prompt" -->
