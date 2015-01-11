@@ -213,6 +213,7 @@ class OSMCGui(object):
 									"script.module.osmcsetting.pi":						0,
 									"script.module.osmcsetting.pioverclock":			1,
 									"script.module.osmcsetting.updates":				2,
+									"script.module.osmcsetting.networking":				3,
 									}
 
 		# order of addon hierarchy
