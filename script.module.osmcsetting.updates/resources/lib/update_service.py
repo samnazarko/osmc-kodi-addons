@@ -392,8 +392,8 @@ class Main(object):
 				self.s[k] = v
 				if k in self.scheduler_settings:
 					update_scheduler = True
-				elif k in self.icon_settings:
-					reposition_icon = True
+				# elif k in self.icon_settings:
+					# reposition_icon = True
 
 		# reconstruct the scheduler if needed
 		if update_scheduler:
@@ -611,8 +611,10 @@ class Main(object):
 		# if not any(['osmc' in x.shortname.lower() for x in available_updates]):
 		# 	log('There are no osmc packages')
 		# 	return
+		if not available_updates: return 		# dont bother doing anything else if there are no updates FOR TESTING ONLY
 
 		log('The following packages have newer versions and are upgradable: ')
+
 
 		for pkg in available_updates:
 			if pkg.is_upgradable:

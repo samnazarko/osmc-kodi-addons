@@ -53,7 +53,7 @@
 	</category>
 	<category label="Manual Controls">
 		<!-- 32056: Scan for updates now -->
-		<setting action="RunScript($CWD/resources/lib/call_parent.py, user_update_now)" id="update_now" label="32056" option="close" type="action"/>
+		<setting action="RunScript($CWD/resources/lib/call_parent.py, update)" id="update_now" label="32056" option="close" type="action"/>
 		<!-- 32053: Install available updates Now -->
 		<setting action="RunScript($CWD/resources/lib/call_parent.py, commit)" id="commit_now" label="32053" option="close" type="action"/>
 		<!-- 32053: Install downloaded updates -->
